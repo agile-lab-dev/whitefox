@@ -1,0 +1,112 @@
+openapi: "3.0.2"
+info:
+  title: Metastore
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /metastore:
+    post:
+      summary: Add a new metastore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                comment:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - hive2
+                    - hive3
+                    - glue
+                    - iceberg_hadoop
+                    - iceberg_hive
+                    - iceberg_jdbc
+                    - iceberg_nessie
+                properties:
+                  anyOf:
+                    - $ref: "#/components/schemas/GlueProperties"
+                    - $ref: "#/components/schemas/Hive2Properties"
+                    - $ref: "#/components/schemas/Hive3Properties"
+                    - $ref: "#/components/schemas/IcebergHadoopProperties"
+                    - $ref: "#/components/schemas/IcebergJdbcProperties"
+                    - $ref: "#/components/schemas/IcebergNessieProperties"
+                skipValidation:
+                  type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Storage"
+        "403":
+          description: Storage already exists
+
+components:
+  schemas:
+    Hive2Properties:
+      type: object
+      properties: {}
+    Hive3Properties:
+      type: object
+      properties: {}
+    GlueProperties:
+      type: object
+      properties:
+        catalogId:
+          type: string
+        credentials:
+          $ref: "#/components/schemas/SimpleAwsCredentials"
+    IcebergHadoopProperties:
+      type: object
+      properties: {}
+    IcebergJdbcProperties:
+      type: object
+      properties: {}
+    IcebergNessieProperties:
+      type: object
+      properties: {}
+    SimpleAwsCredentials:
+      type: object
+      properties:
+        awsAccessKeyId:
+          type: string
+        awsSecretAccessKey:
+          type: string
+        region:
+          type: string
+    Storage:
+      type: object
+      properties:
+        name:
+          type: string
+        comment:
+          type: string
+        owner:
+          type: string
+        id:
+          type: string
+        type:
+          type: string
+        uri:
+          type: string
+          example: s3://my-nice-bucket/some/prefix
+        validatedAt:
+          type: integer
+          format: int64
+        createdAt:
+          type: integer
+          format: int64
+        createdBy:
+          type: string
+        updatedAt:
+          type: integer
+          format: int64
+        updatedBy:
+          type: string

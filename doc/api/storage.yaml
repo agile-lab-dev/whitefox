@@ -1,0 +1,196 @@
+openapi: "3.0.2"
+info:
+  title: Storage
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /storage:
+    post:
+      summary: Add a new storage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                comment:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - gcs
+                    - s3
+                    - abfs
+                credentials:
+                  oneOf:
+                    - $ref: "#/components/schemas/SimpleAwsCredentials"
+                uri:
+                  type: string
+                  example: s3://my-nice-bucket/some/prefix
+                skipValidation:
+                  type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Storage"
+        "403":
+          description: Storage already exists
+    get:
+      summary: List storage
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Storage"
+
+  /storage/{id}:
+    patch:
+      summary: Update an existing storage
+      parameters:
+        - required: true
+          name: id
+          in: path
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                comment:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - gcs
+                    - s3
+                    - abfs
+                credentials:
+                  oneOf:
+                    - $ref: "#/components/schemas/SimpleAwsCredentials"
+                uri:
+                  type: string
+                  example: s3://my-nice-bucket/some/prefix
+                skipValidation:
+                  type: boolean
+                force:
+                  type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Storage"
+        "404":
+          description: Storage does not exists
+    delete:
+      summary: Delete an existing storage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: force
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: deleted
+        "404":
+          description: Storage does not exists
+    get:
+      summary: Describe storage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Storage"
+        "404":
+          description: Storage does not exists
+  /storage/{id}/validate:
+    post:
+      summary: Validate an existing storage
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result: 
+                    type: string
+                    enum:
+                      - success
+                      - failure
+                  message:
+                    type: string
+        "404":
+          description: storage does not exist
+        
+
+components:
+  schemas:
+    SimpleAwsCredentials:
+      type: object
+      properties:
+        awsAccessKeyId:
+          type: string
+        awsSecretAccessKey:
+          type: string
+        region:
+          type: string
+    Storage:
+      type: object
+      properties:
+        name:
+          type: string
+        comment:
+          type: string
+        owner:
+          type: string
+        id:
+          type: string
+        type:
+          type: string
+        uri:
+          type: string
+          example: s3://my-nice-bucket/some/prefix
+        validatedAt:
+          type: integer
+          format: int64
+        createdAt:
+          type: integer
+          format: int64
+        createdBy:
+          type: string
+        updatedAt:
+          type: integer
+          format: int64
+        updatedBy:
+          type: string

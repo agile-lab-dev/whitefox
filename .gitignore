@@ -115,3 +115,5 @@ spark-warehouse/
 
 # For venv
 *.venv
+.gradle
+build/
