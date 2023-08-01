@@ -54,10 +54,13 @@ paths:
           description: OK
           content:
             application/json:
-              schema:
-                type: array
-                items: 
-                  $ref: "#/components/schemas/Metastore"
+              schema: 
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Metastore"
   /metastore/{id}:
     patch:
       summary: update an existing metastore

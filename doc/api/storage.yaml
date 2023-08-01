@@ -48,10 +48,13 @@ paths:
           description: OK
           content:
             application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Storage"
+              schema: 
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Storage"
 
   /storage/{id}:
     patch:
