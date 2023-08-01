@@ -5,6 +5,134 @@ info:
 servers:
   - url: https://api.server.test/v1
 paths:
+  "/shares":
+    post:
+      tags:
+        - lake-sharing
+      summary: Create a new share
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateShareInput"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareInfo"
+  "/shares/{share}":
+    delete:
+      tags:
+        - lake-sharing
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share"
+          schema:
+            type: string
+      summary: Delete a share
+      responses:
+        "200":
+          description: recipient deleted
+    patch:
+      tags:
+        - lake-sharing
+      summary: update an existing share
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateShareInput"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareInfo"
+  "/shares/{share}/recipients":
+    put:
+      tags:
+        - lake-sharing
+      summary: add a recipient to share
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share"
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                principals:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: recipients added
+          content:
+            application/json:
+              schema:
+                type: object
+                description: all the recipients currently part of the share
+                properties:
+                  principals:
+                    type: array
+                    items:
+                      type: string 
+  "/shares/{share}/tables":
+    put:
+      tags:
+        - lake-sharing
+      summary: add a table to a share
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share"
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tables:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      providerId:
+                        type: string
+                      fullyQualifiedName:
+                        type: string
+      responses:
+        "200":
+          description: tables added
+          content:
+            application/json:
+              schema:
+                type: object
+                description: all the tables currently part of the share
+                properties:
+                  tables:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        providerId:
+                          type: string
+                        fullyQualifiedName:
+                          type: string
   "/delta/shares":
     get:
       tags:
@@ -15,6 +143,192 @@ paths:
         Without any query parameters the request will return the first page
         of "shares" available to the authenticated recipient
       parameters: &pagination
+        - in: query
+          name: maxResults
+          required: false
+          description: |
+            The maximum number of results to be returned in a single page. If
+            the number of potential results exceeds the number of maximum
+            results, the response will contain a `nextpageToken` which can be
+            used in subsequent requests.
+          example: "30"
+          schema:
+            type: number
+            format: int32
+            default: 500
+        - in: query
+          name: pageToken
+          required: false
+          description: Optionally provided page token for requesting a subsequent page of results
+          schema:
+            type: string
+      responses:
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "200":
+          description: |
+            The user could successfully list the shares
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListShareResponse"
+  "/delta/shares/{share}":
+    get:
+      tags:
+        - delta-sharing
+      operationId: "GetShare"
+      summary: "get the metadata of a share"
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share"
+          schema:
+            type: string
+      responses:
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "200":
+          description: "The share's metadata was successfully returned"
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Share"
+  "/delta/shares/{share}/schemas":
+    get:
+      operationId: "ListSchemas"
+      summary: "List the schemas in a share"
+      tags:
+        - delta-sharing
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share to list the schemas"
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          required: false
+          description: |
+            The maximum number of results to be returned in a single page. If
+            the number of potential results exceeds the number of maximum
+            results, the response will contain a `nextpageToken` which can be
+            used in subsequent requests.
+          example: "30"
+          schema:
+            type: number
+            format: int32
+            default: 500
+        - in: query
+          name: pageToken
+          required: false
+          description: Optionally provided page token for requesting a subsequent page of results
+          schema:
+            type: string
+      responses:
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "200":
+          description: |
+            The user could successfully list the schemas in the given share
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSchemasResponse"
+  "/delta/shares/{share}/schemas/{schema}/tables":
+    get:
+      operationId: "ListTables"
+      summary: "List the tables in a given share's schema"
+      tags:
+        - delta-sharing
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share for finding the named schema"
+          schema:
+            type: string
+        - in: path
+          name: schema
+          required: true
+          description: "Named schema for listing tables"
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          required: false
+          description: |
+            The maximum number of results to be returned in a single page. If
+            the number of potential results exceeds the number of maximum
+            results, the response will contain a `nextpageToken` which can be
+            used in subsequent requests.
+          example: "30"
+          schema:
+            type: number
+            format: int32
+            default: 500
+        - in: query
+          name: pageToken
+          required: false
+          description: Optionally provided page token for requesting a subsequent page of results
+          schema:
+            type: string
+      responses:
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "200":
+          description: |
+            The user could successfully list the tables for the given schema in the given share
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListTablesResponse"
+  "/delta/shares/{share}/all-tables":
+    get:
+      tags:
+        - delta-sharing
+      operationId: "ListAllTables"
+      summary: "List the tables under all schemas in a share"
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share for finding the named schema"
+          schema:
+            type: string
         - in: query
           name: maxResults
           required: false
@@ -48,202 +362,15 @@ paths:
           $ref: "#/components/responses/500"
         "200":
           description: |
-            The user could successfully list the shares
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListShareResponse"
-  '/delta/shares/{share}':
-    get:
-      tags:
-        - delta-sharing
-      operationId: 'GetShare'
-      summary: 'get the metadata of a share'
-      parameters:
-        - in: path
-          name: share
-          required: true
-          description: 'Named share'
-          schema:
-            type: string
-      responses:
-        '400':
-          $ref: "#/components/responses/400"
-        '401':
-          $ref: "#/components/responses/401"
-        '403':
-          $ref: "#/components/responses/403"
-        '404':
-          $ref: "#/components/responses/404"
-        '500':
-          $ref: "#/components/responses/500"
-        '200':
-          description: 'The share''s metadata was successfully returned'
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/Share"
-  '/delta/shares/{share}/schemas':
-    get:
-      operationId: 'ListSchemas'
-      summary: 'List the schemas in a share'
-      tags:
-        - delta-sharing
-      parameters:
-        - in: path
-          name: share
-          required: true
-          description: 'Named share to list the schemas'
-          schema:
-            type: string
-        - in: query
-          name: maxResults
-          required: false
-          description: |
-            The maximum number of results to be returned in a single page. If
-            the number of potential results exceeds the number of maximum
-            results, the response will contain a `nextpageToken` which can be
-            used in subsequent requests.
-          example: '30'
-          schema:
-            type: number
-            format: int32
-            default: 500
-        - in: query
-          name: pageToken
-          required: false
-          description: Optionally provided page token for requesting a subsequent page of results
-          schema:
-            type: string
-      responses:
-        '400':
-          $ref: "#/components/responses/400"
-        '401':
-          $ref: "#/components/responses/401"
-        '403':
-          $ref: "#/components/responses/403"
-        '404':
-          $ref: "#/components/responses/404"
-        '500':
-          $ref: "#/components/responses/500"
-        '200':
-          description: |
-            The user could successfully list the schemas in the given share
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListSchemasResponse'
-  '/delta/shares/{share}/schemas/{schema}/tables':
-    get:
-      operationId: 'ListTables'
-      summary: "List the tables in a given share's schema"
-      tags:
-        - delta-sharing
-      parameters:
-        - in: path
-          name: share
-          required: true
-          description: 'Named share for finding the named schema'
-          schema:
-            type: string
-        - in: path
-          name: schema
-          required: true
-          description: 'Named schema for listing tables'
-          schema:
-            type: string
-        - in: query
-          name: maxResults
-          required: false
-          description: |
-            The maximum number of results to be returned in a single page. If
-            the number of potential results exceeds the number of maximum
-            results, the response will contain a `nextpageToken` which can be
-            used in subsequent requests.
-          example: '30'
-          schema:
-            type: number
-            format: int32
-            default: 500
-        - in: query
-          name: pageToken
-          required: false
-          description: Optionally provided page token for requesting a subsequent page of results
-          schema:
-            type: string
-      responses:
-        '400':
-          $ref: "#/components/responses/400"
-        '401':
-          $ref: "#/components/responses/401"
-        '403':
-          $ref: "#/components/responses/403"
-        '404':
-          $ref: "#/components/responses/404"
-        '500':
-          $ref: "#/components/responses/500"
-        '200':
-          description: |
-            The user could successfully list the tables for the given schema in the given share
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListTablesResponse'
-  '/delta/shares/{share}/all-tables':
-    get:
-      tags:
-        - delta-sharing
-      operationId: 'ListAllTables'
-      summary: "List the tables under all schemas in a share"
-      parameters:
-        - in: path
-          name: share
-          required: true
-          description: 'Named share for finding the named schema'
-          schema:
-            type: string
-        - in: query
-          name: maxResults
-          required: false
-          description: |
-            The maximum number of results to be returned in a single page. If
-            the number of potential results exceeds the number of maximum
-            results, the response will contain a `nextpageToken` which can be
-            used in subsequent requests.
-          example: '30'
-          schema:
-            type: number
-            format: int32
-            default: 500
-        - in: query
-          name: pageToken
-          required: false
-          description: Optionally provided page token for requesting a subsequent page of results
-          schema:
-            type: string
-
-      responses:
-        '400':
-          $ref: "#/components/responses/400"
-        '401':
-          $ref: "#/components/responses/401"
-        '403':
-          $ref: "#/components/responses/403"
-        '404':
-          $ref: "#/components/responses/404"
-        '500':
-          $ref: "#/components/responses/500"
-        '200':
-          description: |
             The user could successfully list the tables under all schemas in a share
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListTablesResponse'
-  '/delta/shares/{share}/schemas/{schema}/tables/{table}/version':
+                $ref: "#/components/schemas/ListTablesResponse"
+  "/delta/shares/{share}/schemas/{schema}/tables/{table}/version":
     get:
-      operationId: 'GetTableVersion'
-      summary: 'Return the table version'
+      operationId: "GetTableVersion"
+      summary: "Return the table version"
       description: |
         This is the API for clients to get a table version without any other
         extra information. The server usually can implement this API
@@ -257,77 +384,77 @@ paths:
         - in: path
           name: share
           required: true
-          description: 'Named share for finding the named schema'
+          description: "Named share for finding the named schema"
           schema:
             type: string
         - in: path
           name: schema
           required: true
-          description: 'Named schema for finding the named table'
+          description: "Named schema for finding the named table"
           schema:
             type: string
         - in: path
           name: table
           required: true
-          description: 'Named table'
+          description: "Named table"
           schema:
             type: string
         - in: query
           name: startingTimestamp
           required: false
-          description: 'Starting Timestamp'
+          description: "Starting Timestamp"
           schema:
             type: string
       responses:
-        '400':
+        "400":
           $ref: "#/components/responses/400"
-        '401':
+        "401":
           $ref: "#/components/responses/401"
-        '403':
+        "403":
           $ref: "#/components/responses/403"
-        '404':
+        "404":
           $ref: "#/components/responses/404"
-        '500':
+        "500":
           $ref: "#/components/responses/500"
-        '200':
-          description: 'The table was found and has a version'
+        "200":
+          description: "The table was found and has a version"
           headers:
             Delta-Table-Version:
-              description: 'A long value which represents the current table version'
+              description: "A long value which represents the current table version"
               schema:
                 type: integer
                 format: int64
-  '/delta/shares/{share}/schemas/{schema}/tables/{table}/metadata':
+  "/delta/shares/{share}/schemas/{schema}/tables/{table}/metadata":
     get:
-      operationId: 'GetTableMetadata'
-      summary: 'Query the metadata and schema of the given table'
+      operationId: "GetTableMetadata"
+      summary: "Query the metadata and schema of the given table"
       tags:
         - delta-sharing
       parameters: *tableParameters
       responses:
-        '400':
+        "400":
           $ref: "#/components/responses/400"
-        '401':
+        "401":
           $ref: "#/components/responses/401"
-        '403':
+        "403":
           $ref: "#/components/responses/403"
-        '404':
+        "404":
           $ref: "#/components/responses/404"
-        '500':
+        "500":
           $ref: "#/components/responses/500"
-        '200':
+        "200":
           description: |
             A sequence of JSON strings containing the table protocol
             and then the table metadata
           headers:
             Delta-Table-Version:
-              description: 'A long value which represents the current table version'
+              description: "A long value which represents the current table version"
               schema:
                 type: integer
           content:
-            'application/x-ndjson':
+            "application/x-ndjson":
               schema:
-                $ref: '#/components/schemas/TableMetadataResponse'
+                $ref: "#/components/schemas/TableMetadataResponse"
 
 components:
   schemas:
@@ -360,9 +487,9 @@ components:
       properties:
         name: &schemaName
           type: string
-          example: 'acme_vaccine_data'
+          example: "acme_vaccine_data"
         share: *shareName
-    
+
     ListSchemasResponse:
       type: object
       required:
@@ -372,8 +499,8 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/Schema'
-    
+            $ref: "#/components/schemas/Schema"
+
     ListTablesResponse:
       type: object
       required:
@@ -383,13 +510,13 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/Table'
+            $ref: "#/components/schemas/Table"
     Table:
       type: object
       properties:
         name: &tableName
           type: string
-          example: 'vaccine_ingredients'
+          example: "vaccine_ingredients"
         share: *shareName
         schema: *schemaName
 
@@ -453,7 +580,56 @@ components:
           }
         }
         ```
-
+    CreateShareInput:
+      type: object
+      properties:
+        name:
+          type: string
+        comment:
+          type: string
+        recipients:
+          type: array
+          items:
+            type: string
+        tables:
+          type: array
+          items:
+            type: object
+            properties:
+              providerId:
+                type: string
+              fullyQualifiedName:
+                type: string
+    ShareInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        comment:
+          type: string
+        recipients:
+          type: array
+          items:
+            type: string
+        tables:
+          type: array
+          items:
+            type: object
+            properties:
+              providerId:
+                type: string
+              fullyQualifiedName:
+                type: string
+        createdAt:
+          type: integer
+          format: int64
+        createdBy:
+          type: string
+        updatedAt:
+          type: integer
+          format: int64
+        updatedBy:
+          type: string
     CommonErrorResponse:
       type: object
       properties:

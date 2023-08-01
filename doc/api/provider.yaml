@@ -7,6 +7,8 @@ servers:
 paths:
   /provider:
     post:
+      tags:
+       - lake-sharing
       summary: Add a new provider
       requestBody:
         content:
@@ -24,6 +26,8 @@ paths:
           description: Provider already exists
     get:
       summary: List all providers
+      tags:
+       - lake-sharing
       responses:
         "200":
           description: OK
@@ -40,6 +44,8 @@ paths:
   /provider/{id}:
     patch:
       summary: Update an existing provider
+      tags:
+       - lake-sharing
       parameters:
         - name: id
           in: path
@@ -62,6 +68,8 @@ paths:
           description: "Provider not found"
     delete:
       summary: Delete a provider
+      tags:
+       - lake-sharing
       parameters:
         - name: id
           in: path
@@ -79,6 +87,8 @@ paths:
         "404":
           description: Provider does not exist
     get:
+      tags:
+       - lake-sharing
       parameters:
         - name: id
           in: path

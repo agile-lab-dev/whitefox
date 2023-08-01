@@ -8,6 +8,8 @@ paths:
   /storage:
     post:
       summary: Add a new storage
+      tags:
+       - lake-sharing
       requestBody:
         content:
           application/json:
@@ -43,6 +45,8 @@ paths:
           description: Storage already exists
     get:
       summary: List storage
+      tags:
+       - lake-sharing
       responses:
         "200":
           description: OK
@@ -59,6 +63,8 @@ paths:
   /storage/{id}:
     patch:
       summary: Update an existing storage
+      tags:
+       - lake-sharing
       parameters:
         - required: true
           name: id
@@ -102,6 +108,8 @@ paths:
           description: Storage does not exists
     delete:
       summary: Delete an existing storage
+      tags:
+       - lake-sharing
       parameters:
         - name: id
           required: true
@@ -120,6 +128,8 @@ paths:
           description: Storage does not exists
     get:
       summary: Describe storage
+      tags:
+       - lake-sharing
       parameters:
         - name: id
           required: true
@@ -138,6 +148,8 @@ paths:
   /storage/{id}/validate:
     post:
       summary: Validate an existing storage
+      tags:
+       - lake-sharing
       responses:
         "200":
           description: Ok
