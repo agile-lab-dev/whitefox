@@ -40,6 +40,13 @@ paths:
     patch:
       tags:
         - lake-sharing
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share"
+          schema:
+            type: string
       summary: update an existing share
       requestBody:
         content:
