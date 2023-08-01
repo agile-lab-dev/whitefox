@@ -1,0 +1,11 @@
+components:
+  schemas:    
+    SimpleAwsCredentials:
+      type: object
+      properties:
+        awsAccessKeyId:
+          type: string
+        awsSecretAccessKey:
+          type: string
+        region:
+          type: string

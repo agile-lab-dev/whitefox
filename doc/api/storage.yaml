@@ -26,7 +26,7 @@ paths:
                     - abfs
                 credentials:
                   oneOf:
-                    - $ref: "#/components/schemas/SimpleAwsCredentials"
+                    - $ref: "common.yaml#/components/schemas/SimpleAwsCredentials"
                 uri:
                   type: string
                   example: s3://my-nice-bucket/some/prefix
@@ -80,7 +80,7 @@ paths:
                     - abfs
                 credentials:
                   oneOf:
-                    - $ref: "#/components/schemas/SimpleAwsCredentials"
+                    - $ref: "common.yaml#/components/schemas/SimpleAwsCredentials"
                 uri:
                   type: string
                   example: s3://my-nice-bucket/some/prefix
@@ -131,7 +131,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Storage"
         "404":
-          description: Storage does not exists
+          description: Storage does not exist
   /storage/{id}/validate:
     post:
       summary: Validate an existing storage
@@ -156,15 +156,6 @@ paths:
 
 components:
   schemas:
-    SimpleAwsCredentials:
-      type: object
-      properties:
-        awsAccessKeyId:
-          type: string
-        awsSecretAccessKey:
-          type: string
-        region:
-          type: string
     Storage:
       type: object
       properties:

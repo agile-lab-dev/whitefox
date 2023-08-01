@@ -1,0 +1,123 @@
+openapi: "3.0.2"
+info:
+  title: Provider
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /provider:
+    post:
+      summary: Add a new provider
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProviderInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+        "403":
+          description: Provider already exists
+    get:
+      summary: List all providers
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/Provider"
+
+  /provider/{id}:
+    patch:
+      summary: Update an existing provider
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProviderInput"
+      responses:
+        "200":
+          description: OK, provider updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+        "404":
+          description: "Provider not found"
+    delete:
+      summary: Delete a provider
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: force
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: deleted
+        "404":
+          description: Provider does not exist
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+        "404":
+          description: Provider does not exist
+
+components:
+  schemas:
+    Provider:
+      type: object
+      properties:
+        id:
+          type: string
+        storage:
+          $ref: "storage.yaml#/components/schemas/Storage"
+        metastore:
+          $ref: "metastore.yaml#/components/schemas/Metastore"
+        createdAt:
+          type: integer
+          format: int64
+        createdBy:
+          type: string
+        updatedAt:
+          type: integer
+          format: int64
+        updatedBy:
+          type: string
+
+    ProviderInput:
+      type: object
+      properties:
+        storageId:
+          type: string
+        metastoreId:
+          type: string
