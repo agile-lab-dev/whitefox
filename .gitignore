@@ -115,3 +115,4 @@ spark-warehouse/
 
 # For venv
 *.venv
+.metals
