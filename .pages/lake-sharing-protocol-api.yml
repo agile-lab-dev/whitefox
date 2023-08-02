@@ -1,0 +1,772 @@
+openapi: "3.0.2"
+info:
+  title: lake-sharing
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /provider:
+    post:
+      tags:
+        - lake-sharing
+        - provider
+      summary: Add a new provider
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProviderInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+        "403":
+          description: Provider already exists
+    get:
+      summary: List all providers
+      tags:
+        - lake-sharing
+        - provider
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Provider"
+  /provider/{id}:
+    patch:
+      summary: Update an existing provider
+      tags:
+        - lake-sharing
+        - provider
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProviderInput"
+      responses:
+        "200":
+          description: OK, provider updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+        "404":
+          description: "Provider not found"
+    delete:
+      summary: Delete a provider
+      tags:
+        - lake-sharing
+        - provider
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: force
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: deleted
+        "404":
+          description: Provider does not exist
+    get:
+      tags:
+        - lake-sharing
+        - provider
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+        "404":
+          description: Provider does not exist
+  /metastore:
+    post:
+      summary: Add a new metastore
+      tags:
+        - lake-sharing
+        - metastore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                comment:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - glue
+                    - hive2
+                    - hive3
+                    - iceberg_hadoop
+                    - iceberg_hive
+                    - iceberg_jdbc
+                    - iceberg_nessie
+                properties:
+                  anyOf:
+                    - $ref: "#/components/schemas/GlueProperties"
+                    - $ref: "#/components/schemas/Hive2Properties"
+                    - $ref: "#/components/schemas/Hive3Properties"
+                    - $ref: "#/components/schemas/IcebergHadoopProperties"
+                    - $ref: "#/components/schemas/IcebergJdbcProperties"
+                    - $ref: "#/components/schemas/IcebergNessieProperties"
+                skipValidation:
+                  type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Metastore"
+        "403":
+          description: Storage already exists
+    get:
+      summary: list all metastores
+      tags:
+        - lake-sharing
+        - metastore
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Metastore"
+  /metastore/{id}:
+    patch:
+      summary: update an existing metastore
+      tags:
+        - lake-sharing
+        - metastore
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                comment:
+                  type: string
+                owner:
+                  type: string
+                type:
+                  type: string
+                properties:
+                  anyOf:
+                    - $ref: "#/components/schemas/GlueProperties"
+                    - $ref: "#/components/schemas/Hive2Properties"
+                    - $ref: "#/components/schemas/Hive3Properties"
+                    - $ref: "#/components/schemas/IcebergHadoopProperties"
+                    - $ref: "#/components/schemas/IcebergJdbcProperties"
+                    - $ref: "#/components/schemas/IcebergNessieProperties"
+                skipValidation:
+                  type: boolean
+                force:
+                  type: boolean
+      responses:
+        "200":
+          description: OK, metastore updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Metastore"
+        "404":
+          description: "Metastore not found"
+    delete:
+      summary: delete a metastore
+      tags:
+        - lake-sharing
+        - metastore
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: force
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: deleted
+        "404":
+          description: metastore does not exists
+    get:
+      tags:
+        - lake-sharing
+        - metastore
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Metastore"
+        "404":
+          description: Metastore does not exist
+  /metastore/{id}/validate:
+    post:
+      tags:
+        - lake-sharing
+        - metastore
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - success
+                      - failure
+                  message:
+                    type: string
+  /storage:
+    post:
+      summary: Add a new storage
+      tags:
+        - lake-sharing
+        - storage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                comment:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - gcs
+                    - s3
+                    - abfs
+                credentials:
+                  oneOf:
+                    - $ref: "#/components/schemas/SimpleAwsCredentials"
+                uri:
+                  type: string
+                  example: s3://my-nice-bucket/some/prefix
+                skipValidation:
+                  type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Storage"
+        "403":
+          description: Storage already exists
+    get:
+      summary: List storage
+      tags:
+        - lake-sharing
+        - storage
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Storage"
+
+  /storage/{id}:
+    patch:
+      summary: Update an existing storage
+      tags:
+        - lake-sharing
+        - storage
+      parameters:
+        - required: true
+          name: id
+          in: path
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                comment:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - gcs
+                    - s3
+                    - abfs
+                credentials:
+                  oneOf:
+                    - $ref: "#/components/schemas/SimpleAwsCredentials"
+                uri:
+                  type: string
+                  example: s3://my-nice-bucket/some/prefix
+                skipValidation:
+                  type: boolean
+                force:
+                  type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Storage"
+        "404":
+          description: Storage does not exists
+    delete:
+      summary: Delete an existing storage
+      tags:
+        - lake-sharing
+        - storage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: force
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: deleted
+        "404":
+          description: Storage does not exists
+    get:
+      summary: Describe storage
+      tags:
+        - lake-sharing
+        - storage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Storage"
+        "404":
+          description: Storage does not exist
+  /storage/{id}/validate:
+    post:
+      summary: Validate an existing storage
+      tags:
+        - lake-sharing
+        - storage
+      parameters:
+        - required: true
+          name: id
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - success
+                      - failure
+                  message:
+                    type: string
+        "404":
+          description: storage does not exist
+  /shares:
+    post:
+      tags:
+        - lake-sharing
+        - share
+      summary: Create a new share
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateShareInput"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareInfo"
+  "/shares/{share}":
+    delete:
+      tags:
+        - lake-sharing
+        - share
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share"
+          schema:
+            type: string
+      summary: Delete a share
+      responses:
+        "200":
+          description: recipient deleted
+    patch:
+      tags:
+        - lake-sharing
+        - share
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share"
+          schema:
+            type: string
+      summary: update an existing share
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateShareInput"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareInfo"
+  "/shares/{share}/recipients":
+    put:
+      tags:
+        - lake-sharing
+        - share
+      summary: add a recipient to share
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share"
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                principals:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: recipients added
+          content:
+            application/json:
+              schema:
+                type: object
+                description: all the recipients currently part of the share
+                properties:
+                  principals:
+                    type: array
+                    items:
+                      type: string
+  "/shares/{share}/tables":
+    put:
+      tags:
+        - lake-sharing
+        - share
+      summary: add a table to a share
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: "Named share"
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tables:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      providerId:
+                        type: string
+                      fullyQualifiedName:
+                        type: string
+      responses:
+        "200":
+          description: tables added
+          content:
+            application/json:
+              schema:
+                type: object
+                description: all the tables currently part of the share
+                properties:
+                  tables:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        providerId:
+                          type: string
+                        fullyQualifiedName:
+                          type: string
+
+components:
+  schemas:
+    Hive2Properties:
+      type: object
+      properties: {}
+    Hive3Properties:
+      type: object
+      properties: {}
+    GlueProperties:
+      type: object
+      properties:
+        catalogId:
+          type: string
+        credentials:
+          $ref: "#/components/schemas/SimpleAwsCredentials"
+    IcebergHadoopProperties:
+      type: object
+      properties: {}
+    IcebergJdbcProperties:
+      type: object
+      properties: {}
+    IcebergNessieProperties:
+      type: object
+      properties: {}
+    Metastore:
+      type: object
+      properties:
+        name:
+          type: string
+        comment:
+          type: string
+        owner:
+          type: string
+        id:
+          type: string
+        type:
+          type: string
+        properties:
+          anyOf:
+            - $ref: "#/components/schemas/GlueProperties"
+            - $ref: "#/components/schemas/Hive2Properties"
+            - $ref: "#/components/schemas/Hive3Properties"
+            - $ref: "#/components/schemas/IcebergHadoopProperties"
+            - $ref: "#/components/schemas/IcebergJdbcProperties"
+            - $ref: "#/components/schemas/IcebergNessieProperties"
+        validatedAt:
+          type: integer
+          format: int64
+        createdAt:
+          type: integer
+          format: int64
+        createdBy:
+          type: string
+        updatedAt:
+          type: integer
+          format: int64
+        updatedBy:
+          type: string
+    SimpleAwsCredentials:
+      type: object
+      properties:
+        awsAccessKeyId:
+          type: string
+        awsSecretAccessKey:
+          type: string
+        region:
+          type: string
+    Storage:
+      type: object
+      properties:
+        name:
+          type: string
+        comment:
+          type: string
+        owner:
+          type: string
+        id:
+          type: string
+        type:
+          type: string
+        uri:
+          type: string
+          example: s3://my-nice-bucket/some/prefix
+        validatedAt:
+          type: integer
+          format: int64
+        createdAt:
+          type: integer
+          format: int64
+        createdBy:
+          type: string
+        updatedAt:
+          type: integer
+          format: int64
+        updatedBy:
+          type: string
+    Provider:
+      type: object
+      properties:
+        id:
+          type: string
+        storage:
+          $ref: "#/components/schemas/Storage"
+        metastore:
+          $ref: "#/components/schemas/Metastore"
+        createdAt:
+          type: integer
+          format: int64
+        createdBy:
+          type: string
+        updatedAt:
+          type: integer
+          format: int64
+        updatedBy:
+          type: string
+    CreateShareInput:
+      type: object
+      properties:
+        name:
+          type: string
+        comment:
+          type: string
+        recipients:
+          type: array
+          items:
+            type: string
+        tables:
+          type: array
+          items:
+            type: object
+            properties:
+              providerId:
+                type: string
+              fullyQualifiedName:
+                type: string
+    ShareInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        comment:
+          type: string
+        recipients:
+          type: array
+          items:
+            type: string
+        tables:
+          type: array
+          items:
+            type: object
+            properties:
+              providerId:
+                type: string
+              fullyQualifiedName:
+                type: string
+        createdAt:
+          type: integer
+          format: int64
+        createdBy:
+          type: string
+        updatedAt:
+          type: integer
+          format: int64
+        updatedBy:
+          type: string
+    ProviderInput:
+      type: object
+      properties:
+        storageId:
+          type: string
+        metastoreId:
+          type: string
