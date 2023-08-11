@@ -8,7 +8,7 @@ To qualify all the APIs as:
 
 ## Concepts:
 
-Towards the recipients, the logical organization of tables is the following:
+Towards recipients, the logical organization of tables is the following:
 
 ![external_logical_org](imgs/external_logical_org.drawio.png)
 

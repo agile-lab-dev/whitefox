@@ -5,7 +5,7 @@ info:
 servers:
   - url: https://api.server.test/v1
 paths:
-  /provider:
+  /providers:
     post:
       tags:
         - lake-sharing
@@ -42,7 +42,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Provider"
-  /provider/{id}:
+  /providers/{id}:
     patch:
       summary: Update an existing provider
       tags:
@@ -108,7 +108,117 @@ paths:
                 $ref: "#/components/schemas/Provider"
         "404":
           description: Provider does not exist
-  /metastore:
+  /providers/{providerId}/tables:
+    post:
+      tags:
+        - lake-sharing
+        - table
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTableInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableInfo"
+    get:
+      tags:
+        - lake-sharing
+        - table
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TableInfo"
+  /providers/{providerId}/tables/{tableName}:
+    patch:
+      tags:
+        - lake-sharing
+        - table
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tableName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchTableInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableInfo"
+    delete:
+      tags:
+        - lake-sharing
+        - table
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tableName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+    get:
+      tags:
+        - lake-sharing
+        - table
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tableName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableInfo"
+  /metastores:
     post:
       summary: Add a new metastore
       tags:
@@ -170,7 +280,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Metastore"
-  /metastore/{id}:
+  /metastores/{id}:
     patch:
       summary: update an existing metastore
       tags:
@@ -257,7 +367,7 @@ paths:
                 $ref: "#/components/schemas/Metastore"
         "404":
           description: Metastore does not exist
-  /metastore/{id}/validate:
+  /metastores/{id}/validate:
     post:
       tags:
         - lake-sharing
@@ -475,7 +585,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ShareInfo"
-  "/shares/{share}":
+  /shares/{share}:
     delete:
       tags:
         - lake-sharing
@@ -515,7 +625,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ShareInfo"
-  "/shares/{share}/recipients":
+  /shares/{share}/recipients:
     put:
       tags:
         - lake-sharing
@@ -551,7 +661,7 @@ paths:
                     type: array
                     items:
                       type: string
-  "/shares/{share}/tables":
+  /shares/{share}/tables:
     put:
       tags:
         - lake-sharing
@@ -573,12 +683,7 @@ paths:
                 tables:
                   type: array
                   items:
-                    type: object
-                    properties:
-                      providerId:
-                        type: string
-                      fullyQualifiedName:
-                        type: string
+                    $ref: "#/components/schemas/TableReference"
       responses:
         "200":
           description: tables added
@@ -591,12 +696,7 @@ paths:
                   tables:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        providerId:
-                          type: string
-                        fullyQualifiedName:
-                          type: string
+                      $ref: "#/components/schemas/TableReference"
 
 components:
   schemas:
@@ -727,12 +827,14 @@ components:
         tables:
           type: array
           items:
-            type: object
-            properties:
-              providerId:
-                type: string
-              fullyQualifiedName:
-                type: string
+            $ref: "#/components/schemas/TableReference"
+    TableReference:
+      type: object
+      properties:
+        providerId:
+          type: string
+        name:
+          type: string
     ShareInfo:
       type: object
       properties:
@@ -747,12 +849,7 @@ components:
         tables:
           type: array
           items:
-            type: object
-            properties:
-              providerId:
-                type: string
-              fullyQualifiedName:
-                type: string
+            $ref: "#/components/schemas/TableReference"
         createdAt:
           type: integer
           format: int64
@@ -763,6 +860,67 @@ components:
           format: int64
         updatedBy:
           type: string
+
+    TableInfo:
+      type: object
+      properties:
+        providerId:
+          type: string
+        name:
+          type: string
+        comment:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+        validatedAt:
+          type: integer
+          format: int64
+        createdAt:
+          type: integer
+          format: int64
+        createdBy:
+          type: string
+        updatedAt:
+          type: integer
+          format: int64
+        updatedBy:
+          type: string
+    CreateTableInput:
+      type: object
+      properties:
+        name:
+          type: string
+        comment:
+          type: string
+        skipValidation:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+      example:
+        name: customer
+        properties:
+          database: finance
+          tableName: customer_123
+          type: iceberg
+    PatchTableInput:
+      type: object
+      properties:
+        providerId:
+          type: string
+        name:
+          type: string
+        comment:
+          type: string
+        skipValidation:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     ProviderInput:
       type: object
       properties:
