@@ -150,6 +150,37 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TableInfo"
+  /providers/{providerId}/tables/{tableName}/validate:
+    post:
+      tags:
+        - lake-sharing
+        - table
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tableName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - success
+                      - failure
+                  message:
+                    type: string
   /providers/{providerId}/tables/{tableName}:
     patch:
       tags:
@@ -191,6 +222,11 @@ paths:
         - name: tableName
           in: path
           required: true
+          schema:
+            type: string
+        - name: force
+          in: query
+          required: false
           schema:
             type: string
       responses:
