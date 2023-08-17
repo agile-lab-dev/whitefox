@@ -636,7 +636,7 @@ paths:
       summary: Delete a share
       responses:
         "200":
-          description: recipient deleted
+          description: schema deleted
     patch:
       tags:
         - lake-sharing
@@ -697,43 +697,152 @@ paths:
                     type: array
                     items:
                       type: string
-  /shares/{share}/tables:
-    put:
+  /shares/{share}/{schema}:
+    post:
       tags:
         - lake-sharing
         - share
-      summary: add a table to a share
+        - schema
+      summary: create a schema in a share
       parameters:
         - in: path
           name: share
           required: true
-          description: "Named share"
+          description: name of the share
+          schema:
+            type: string
+        - in: path
+          name: schema
+          required: true
+          description: name of the schema to be created
+          schema:
+            type: string
+      responses:
+        "200":
+          description: schema created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareInfo"
+    delete:
+      tags:
+        - lake-sharing
+        - share
+        - schema
+      summary: delete a schema from a share
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: name of the share
+          schema:
+            type: string
+        - in: path
+          name: schema
+          required: true
+          description: name of the schema to be deleted
+          schema:
+            type: string
+      responses:
+        "204":
+          description: schema deleted
+        "404":
+          description: schema not found
+  /shares/{share}/{schema}/tables:
+    post:
+      tags:
+        - lake-sharing
+        - share
+        - schema
+        - table
+      summary: add a table to a schema
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: name of the share
+          schema:
+            type: string
+        - in: path
+          name: schema
+          required: true
+          description: name of the schema where the table will be added
           schema:
             type: string
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                tables:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/TableReference"
+              $ref: "#/components/schemas/TableReference"
       responses:
         "200":
-          description: tables added
+          description: table added to schema
           content:
             application/json:
               schema:
-                type: object
-                description: all the tables currently part of the share
-                properties:
-                  tables:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/TableReference"
+                $ref: "#/components/schemas/TableInfo"
+    get:
+      tags:
+        - lake-sharing
+        - share
+        - schema
+        - table
+      summary: list tables within a schema
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: name of the share
+          schema:
+            type: string
+        - in: path
+          name: schema
+          required: true
+          description: name of the schema for which tables will be listed
+          schema:
+            type: string
+      responses:
+        "200":
+          description: list of tables within the schema
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TableInfo"
 
+  /shares/{share}/{schema}/tables/{table}:
+    delete:
+      tags:
+        - lake-sharing
+        - share
+        - schema
+        - table
+      summary: delete a table from a schema
+      parameters:
+        - in: path
+          name: share
+          required: true
+          description: name of the share
+          schema:
+            type: string
+        - in: path
+          name: schema
+          required: true
+          description: name of the schema from which the table will be deleted
+          schema:
+            type: string
+        - in: path
+          name: table
+          required: true
+          description: name of the table to be deleted
+          schema:
+            type: string
+      responses:
+        "204":
+          description: table deleted
+        "404":
+          description: table not found
 components:
   schemas:
     Hive2Properties:
@@ -860,10 +969,10 @@ components:
           type: array
           items:
             type: string
-        tables:
+        schemas:
           type: array
           items:
-            $ref: "#/components/schemas/TableReference"
+            type: string
     TableReference:
       type: object
       properties:
@@ -882,10 +991,10 @@ components:
           type: array
           items:
             type: string
-        tables:
+        schemas:
           type: array
           items:
-            $ref: "#/components/schemas/TableReference"
+            type: string
         createdAt:
           type: integer
           format: int64
@@ -928,6 +1037,7 @@ components:
       properties:
         name:
           type: string
+          description: alias inside this provider of this table, must be unique
         comment:
           type: string
         skipValidation:
