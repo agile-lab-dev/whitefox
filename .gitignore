@@ -3,3 +3,4 @@
 # For venv
 *.venv
 .metals/
+.vscode/
