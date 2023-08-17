@@ -2,15 +2,29 @@ openapi: "3.0.2"
 info:
   title: lake-sharing
   version: "1.0"
+  description: additive extension to delta-sharing API with the aim to provide a full-fledged experience (both publishers and consumers) and open to table formats different from Delta Lake
+  contact:
+    email: communityimpact@agilelab.it
+    name: Agile Lab
+    url: https://www.agilelab.it
 servers:
   - url: https://api.server.test/v1
+tags:
+  - name: lake-sharing
+  - name: provider
+  - name: table
+  - name: metastore
+  - name: storage
+  - name: share
+  - name: schema
 paths:
   /providers:
     post:
       tags:
         - lake-sharing
         - provider
-      summary: Add a new provider
+      operationId: AddProvider
+      description: Add a new provider
       requestBody:
         content:
           application/json:
@@ -26,7 +40,8 @@ paths:
         "403":
           description: Provider already exists
     get:
-      summary: List all providers
+      operationId: ListProviders
+      description: List all providers
       tags:
         - lake-sharing
         - provider
@@ -44,7 +59,8 @@ paths:
                       $ref: "#/components/schemas/Provider"
   /providers/{id}:
     patch:
-      summary: Update an existing provider
+      description: Update an existing provider
+      operationId: UpdateProvider
       tags:
         - lake-sharing
         - provider
@@ -69,7 +85,8 @@ paths:
         "404":
           description: "Provider not found"
     delete:
-      summary: Delete a provider
+      operationId: DeleteProvider
+      description: Delete a provider
       tags:
         - lake-sharing
         - provider
@@ -90,6 +107,8 @@ paths:
         "404":
           description: Provider does not exist
     get:
+      operationId: GetProvider
+      description: Get a provider related info
       tags:
         - lake-sharing
         - provider
@@ -110,6 +129,8 @@ paths:
           description: Provider does not exist
   /providers/{providerId}/tables:
     post:
+      description: Create a new table for provider
+      operationId: CreateTableInProvider
       tags:
         - lake-sharing
         - table
@@ -135,6 +156,8 @@ paths:
       tags:
         - lake-sharing
         - table
+      description: get the list of tables declared by this provider
+      operationId: ListTablesInProvider
       parameters:
         - name: providerId
           in: path
@@ -152,6 +175,8 @@ paths:
                   $ref: "#/components/schemas/TableInfo"
   /providers/{providerId}/tables/{tableName}/validate:
     post:
+      description: Validate the table
+      operationId: ValidateTable
       tags:
         - lake-sharing
         - table
@@ -183,6 +208,8 @@ paths:
                     type: string
   /providers/{providerId}/tables/{tableName}:
     patch:
+      operationId: PatchTableInProvider
+      description: Update a table in a Provider
       tags:
         - lake-sharing
         - table
@@ -210,6 +237,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/TableInfo"
     delete:
+      operationId: DeleteTableInProvider
+      description: Delete a table from a provider
       tags:
         - lake-sharing
         - table
@@ -233,6 +262,8 @@ paths:
         "200":
           description: OK
     get:
+      description: get the description of a table in a provider
+      operationId: DescribeTableInProvider
       tags:
         - lake-sharing
         - table
@@ -256,7 +287,8 @@ paths:
                 $ref: "#/components/schemas/TableInfo"
   /metastores:
     post:
-      summary: Add a new metastore
+      description: Create a new metastore
+      operationId: CreateMetastore
       tags:
         - lake-sharing
         - metastore
@@ -300,7 +332,8 @@ paths:
         "403":
           description: Storage already exists
     get:
-      summary: list all metastores
+      description: list all metastores
+      operationId: ListMetastores
       tags:
         - lake-sharing
         - metastore
@@ -318,7 +351,8 @@ paths:
                       $ref: "#/components/schemas/Metastore"
   /metastores/{id}:
     patch:
-      summary: update an existing metastore
+      description: update an existing metastore
+      operationId: UpdateMetastore
       tags:
         - lake-sharing
         - metastore
@@ -364,7 +398,8 @@ paths:
         "404":
           description: "Metastore not found"
     delete:
-      summary: delete a metastore
+      operationId: DeleteMetastore
+      description: delete a metastore
       tags:
         - lake-sharing
         - metastore
@@ -385,6 +420,8 @@ paths:
         "404":
           description: metastore does not exists
     get:
+      operationId: DescribeMetastore
+      description: Get info about a given metastore
       tags:
         - lake-sharing
         - metastore
@@ -405,6 +442,8 @@ paths:
           description: Metastore does not exist
   /metastores/{id}/validate:
     post:
+      operationId: ValidateMetastore
+      description: Validate a metastore
       tags:
         - lake-sharing
         - metastore
@@ -431,7 +470,8 @@ paths:
                     type: string
   /storage:
     post:
-      summary: Add a new storage
+      operationId: CreateStorage
+      description: Add a new storage
       tags:
         - lake-sharing
         - storage
@@ -469,7 +509,8 @@ paths:
         "403":
           description: Storage already exists
     get:
-      summary: List storage
+      operationId: ListStorage
+      description: List storage
       tags:
         - lake-sharing
         - storage
@@ -488,7 +529,8 @@ paths:
 
   /storage/{id}:
     patch:
-      summary: Update an existing storage
+      operationId: UpdateStorage
+      description: Update an existing storage
       tags:
         - lake-sharing
         - storage
@@ -534,7 +576,8 @@ paths:
         "404":
           description: Storage does not exists
     delete:
-      summary: Delete an existing storage
+      operationId: DeleteStorage
+      description: Delete an existing storage
       tags:
         - lake-sharing
         - storage
@@ -555,7 +598,8 @@ paths:
         "404":
           description: Storage does not exists
     get:
-      summary: Describe storage
+      operationId: DescribeStorage
+      description: Describe storage
       tags:
         - lake-sharing
         - storage
@@ -576,7 +620,8 @@ paths:
           description: Storage does not exist
   /storage/{id}/validate:
     post:
-      summary: Validate an existing storage
+      operationId: ValidateStorage
+      description: Validate an existing storage
       tags:
         - lake-sharing
         - storage
@@ -605,10 +650,11 @@ paths:
           description: storage does not exist
   /shares:
     post:
+      operationId: CreateShare
+      description: Create a new share
       tags:
         - lake-sharing
         - share
-      summary: Create a new share
       requestBody:
         content:
           application/json:
@@ -623,6 +669,8 @@ paths:
                 $ref: "#/components/schemas/ShareInfo"
   /shares/{share}:
     delete:
+      operationId: DeleteShare
+      description: Delete a share
       tags:
         - lake-sharing
         - share
@@ -633,11 +681,12 @@ paths:
           description: "Named share"
           schema:
             type: string
-      summary: Delete a share
       responses:
         "200":
           description: schema deleted
     patch:
+      operationId: UpdateShare
+      description: update an existing share
       tags:
         - lake-sharing
         - share
@@ -648,7 +697,6 @@ paths:
           description: "Named share"
           schema:
             type: string
-      summary: update an existing share
       requestBody:
         content:
           application/json:
@@ -663,10 +711,11 @@ paths:
                 $ref: "#/components/schemas/ShareInfo"
   /shares/{share}/recipients:
     put:
+      operationId: AddRecipientToShare
+      description: add a recipient to share
       tags:
         - lake-sharing
         - share
-      summary: add a recipient to share
       parameters:
         - in: path
           name: share
@@ -699,11 +748,12 @@ paths:
                       type: string
   /shares/{share}/{schema}:
     post:
+      operationId: CreateSchema
+      description: create a schema in a share
       tags:
         - lake-sharing
         - share
         - schema
-      summary: create a schema in a share
       parameters:
         - in: path
           name: share
@@ -725,11 +775,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ShareInfo"
     delete:
+      operationId: DeleteSchema
+      description: delete a schema from a share
       tags:
         - lake-sharing
         - share
         - schema
-      summary: delete a schema from a share
       parameters:
         - in: path
           name: share
@@ -750,12 +801,13 @@ paths:
           description: schema not found
   /shares/{share}/{schema}/tables:
     post:
+      operationId: AddTableToSchema
+      description: add a table to a schema
       tags:
         - lake-sharing
         - share
         - schema
         - table
-      summary: add a table to a schema
       parameters:
         - in: path
           name: share
@@ -782,12 +834,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/TableInfo"
     get:
+      operationId: ListTablesInSchema
+      description: list tables within a schema
       tags:
         - lake-sharing
         - share
         - schema
         - table
-      summary: list tables within a schema
       parameters:
         - in: path
           name: share
@@ -813,12 +866,13 @@ paths:
 
   /shares/{share}/{schema}/tables/{table}:
     delete:
+      operationId: DeleteTableFromSchema
       tags:
         - lake-sharing
         - share
         - schema
         - table
-      summary: delete a table from a schema
+      description: delete a table from a schema
       parameters:
         - in: path
           name: share
