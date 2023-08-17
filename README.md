@@ -16,7 +16,7 @@ This repository contains:
 
 # Reporting Issues
 
-We use [GitHub Issues](https://github.com/agilelab-dev/lake-sharing/issues) to track community reported issues. You can also [contact Agile Lab](mailto://communityimpact@agilelab.it) for getting answers.
+We use [GitHub Issues](https://github.com/agile-lab-dev/lake-sharing/issues) to track community reported issues. You can also [contact Agile Lab](mailto://communityimpact@agilelab.it) for getting answers.
 
 # Contributing 
 We welcome contributions to Lake Sharing. See our [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
