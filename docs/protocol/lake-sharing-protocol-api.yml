@@ -509,6 +509,7 @@ paths:
         "403":
           description: Storage already exists
     get:
+      operationId: ListStorage
       description: List storage
       tags:
         - lake-sharing
