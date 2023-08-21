@@ -14,11 +14,9 @@ info:
     url: "https://www.gnu.org/licenses/agpl-3.0.en.html"
 
 servers:
-  - url: 'http://localhost:8000/api/v1'
+  - url: 'http://localhost:8000/delta-api/v1'
     description: Local dev server (APIv1)
-  - url: 'https://sharing.delta.io/delta-sharing'
-    description: 'Demo Delta Sharing server'
-
+  
 tags:
 - name: 'shares'
   description: Share discovery APIs
