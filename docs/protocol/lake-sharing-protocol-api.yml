@@ -517,7 +517,6 @@ paths:
       operationId: DescribeStorage
       description: Describe storage
       tags:
-        - lake-sharing
         - storage
       parameters:
         - name: name
