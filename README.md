@@ -1,31 +1,60 @@
-# Lake Sharing: An Open Protocol for Secure Data Sharing
+# lake-sharing
 
-Fork of Delta-Sharing with the following goals:
+This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
-- allow to share data in different table formats (iceberg, hudi, hive-style) leveraging the delta-sharing protocol and adding new APIs where needed
-- lake-sharing protocol will cover not only data-sharing needs but also administration needs, such as the creation of shares, configuration of sources, etc.
-- provide a production-grade server implementation of both the original delta-sharing protocol and the new lake-sharing protocol
+If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
-This repository contains:
+## Running the application in dev mode
 
-- the original delta-sharing protocol
-- the lake-sharing protocol
-- a reference implementation of a server that implements both protocols
-- lake-sharing clients
+You can run your application in dev mode that enables live coding using:
+```shell script
+./gradlew quarkusDev
+```
 
-# Protocols
+> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
 
-The original delta-sharing protocol is rendered [here](https://agile-lab-dev.github.io/lake-sharing/delta-sharing.html)
+## Packaging and running the application
 
-Lake-sharing protocol is rendered [here](https://agile-lab-dev.github.io/lake-sharing/)
+The application can be packaged using:
+```shell script
+./gradlew build
+```
+It produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory.
+Be aware that it’s not an _über-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
 
+The application is now runnable using `java -jar build/quarkus-app/quarkus-run.jar`.
 
-# Reporting Issues
+If you want to build an _über-jar_, execute the following command:
+```shell script
+./gradlew build -Dquarkus.package.type=uber-jar
+```
 
-We use [GitHub Issues](https://github.com/agile-lab-dev/lake-sharing/issues) to track community-reported issues. You can also [contact Agile Lab](mailto:communityimpact@agilelab.it) for getting answers.
+The application, packaged as an _über-jar_, is now runnable using `java -jar build/*-runner.jar`.
 
-# Contributing 
-We welcome contributions to Lake Sharing. See our [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+## Creating a native executable
 
-# License
-[Apache License 2.0](LICENSE.txt).
+You can create a native executable using: 
+```shell script
+./gradlew build -Dquarkus.package.type=native
+```
+
+Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
+```shell script
+./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true
+```
+
+You can then execute your native executable with: `./build/lake-sharing-1.0.0-SNAPSHOT-runner`
+
+If you want to learn more about building native executables, please consult https://quarkus.io/guides/gradle-tooling.
+
+## Related Guides
+
+- RESTEasy Reactive ([guide](https://quarkus.io/guides/resteasy-reactive)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
+
+## Provided Code
+
+### RESTEasy Reactive
+
+Easily start your Reactive RESTful Web Services
+
+[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
