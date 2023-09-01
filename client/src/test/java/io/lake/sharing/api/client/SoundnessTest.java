@@ -1,17 +1,16 @@
+package io.lake.sharing.api.client;
+
 import io.delta.sharing.api.client.OfficialApi;
 import io.delta.sharing.api.model.QueryRequest;
-import io.lake.sharing.api.client.*;
 import io.lake.sharing.api.model.*;
-import io.lake.sharing.api.utils.ApiException;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 
-public class Testo {
+public class SoundnessTest {
 
-    @Test
-    public void testHelloEndpoint() throws ApiException, io.delta.sharing.api.utils.ApiException {
+//    @org.junit.jupiter.api.Test this is commented because we only want to compile the test, not run it
+    public void testHelloEndpoint(){
         final var metastoreApi = new MetastoreApi();
         final var storageApi = new StorageApi();
         final var providerApi = new ProviderApi();

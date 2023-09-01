@@ -25,16 +25,13 @@ val quarkusPlatformVersion: String by project
 
 dependencies {
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
-    implementation("io.quarkus:quarkus-rest-client-reactive-jackson")
+    implementation("io.quarkus:quarkus-rest-client-reactive-jackson") // TODO check
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-resteasy-reactive")
     implementation("org.openapitools:jackson-databind-nullable:0.2.6")
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
 }
-
-group = "org.acme"
-version = "1.0.0-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -53,7 +50,8 @@ tasks.register<GenerateTask>("openapiGenerateLakeSharing") {
             "dateLibrary" to "java8",
             "openApiNullable" to "true",
             "serializationLibrary" to "jackson",
-            "useJakartaEe" to "true"
+            "useJakartaEe" to "true",
+            "useRuntimeException" to "true"
         )
     )
 }
@@ -71,7 +69,8 @@ tasks.register<GenerateTask>("openapiGenerateDeltaSharing") {
             "dateLibrary" to "java8",
             "openApiNullable" to "true",
             "serializationLibrary" to "jackson",
-            "useJakartaEe" to "true"
+            "useJakartaEe" to "true",
+            "useRuntimeException" to "true"
         )
     )
 }
