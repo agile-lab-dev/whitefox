@@ -1,3 +1,7 @@
+rootProject.name = "lakesharing-multiproject"
+include("client")
+include("server")
+
 pluginManagement {
     val quarkusPluginVersion: String by settings
     val quarkusPluginId: String by settings
@@ -10,4 +14,3 @@ pluginManagement {
         id(quarkusPluginId) version quarkusPluginVersion
     }
 }
-rootProject.name="lake-sharing"
