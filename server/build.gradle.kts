@@ -6,6 +6,7 @@ plugins {
     java
     id("io.quarkus")
     id("org.openapi.generator")
+    id("com.diffplug.spotless") version "6.21.0"
 }
 
 repositories {
@@ -33,6 +34,30 @@ dependencies {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+spotless {
+    java {
+        // Use the default importOrder configuration
+        importOrder()
+        // optional: you can specify import groups directly
+        // note: you can use an empty string for all the imports you didn't specify explicitly, '|' to join group without blank line, and '\\#` prefix for static imports
+        // optional: instead of specifying import groups directly you can specify a config file
+        // export config file: https://github.com/diffplug/spotless/blob/main/ECLIPSE_SCREENSHOTS.md#creating-spotlessimportorder
+
+        removeUnusedImports()
+
+        // Cleanthat will refactor your code, but it may break your style: apply it before your formatter
+        cleanthat()          // has its own section below
+
+        // Choose one of these formatters.
+        googleJavaFormat()   // has its own section below
+//        prettier()           // has its own section below
+//        clangFormat()        // has its own section below
+
+        formatAnnotations()  // fixes formatting of type annotations, see below
+//        licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
+    }
 }
 
 buildscript {
