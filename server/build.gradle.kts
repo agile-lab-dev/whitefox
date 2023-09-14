@@ -68,6 +68,32 @@ tasks.register<GenerateTask>("openapiGenerateLakeSharing") {
     )
 }
 
+
+tasks.register<GenerateTask>("openapiGenerateDeltaSharing") {
+    generatorName.set("jaxrs-spec")
+    inputSpec.set("$rootDir/docs/protocol/delta-sharing-protocol-api.yml")
+    outputDir.set(generatedSourcesDir)
+    additionalProperties.set(
+            mapOf(
+                    "apiPackage" to "io.delta.sharing.api.server",
+                    "dateLibrary" to "java8",
+                    "disallowAdditionalPropertiesIfNotPresent" to "false",
+                    "generateBuilders" to "true",
+                    "generatePom" to "false",
+                    "interfaceOnly" to "true",
+//                    "legacyDiscriminatorBehavior" to "false",
+                    "library" to "quarkus",
+                    "modelPackage" to "io.delta.sharing.api.server.model",
+                    "returnResponse" to "true",
+                    "supportAsync" to "true",
+                    "useJakartaEe" to "true",
+//                    "useMicroProfileOpenAPIAnnotations" to "false",
+//                    "useOneOfInterfaces" to "true",
+                    "useSwaggerAnnotations" to "false"
+            )
+    )
+}
+
 tasks.withType<Test> {
     systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
 }
@@ -75,7 +101,7 @@ tasks.withType<Test> {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-parameters")
-    dependsOn(tasks.named("openapiGenerateLakeSharing"))
+    dependsOn(tasks.named("openapiGenerateLakeSharing"), tasks.named("openapiGenerateDeltaSharing"))
 }
 
 tasks.quarkusBuild {

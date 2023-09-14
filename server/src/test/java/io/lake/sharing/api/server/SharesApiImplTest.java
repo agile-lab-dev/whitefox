@@ -13,7 +13,7 @@ public class SharesApiImplTest {
         given()
                 .when().get("/shares")
                 .then()
-                .statusCode(405);
+                .statusCode(200);
     }
 
     @Test
