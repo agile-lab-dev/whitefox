@@ -5,7 +5,6 @@ import static io.restassured.RestAssured.given;
 import io.delta.sharing.encoders.DeltaPageTokenEncoder;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.Response;
-import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -24,7 +23,7 @@ public class DeltaSharesApiImplTest {
   }
 
   @Test
-  public void listShares() throws IOException {
+  public void listShares() {
     given()
         .queryParam("maxResults", 50.0)
         .queryParam("pageToken", encoder.encodePageToken("0"))
