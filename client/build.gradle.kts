@@ -7,13 +7,7 @@ plugins {
     id("io.quarkus")
     id("org.openapi.generator")
 }
-buildscript {
-    configurations.all {
-        resolutionStrategy {
-            force("org.yaml:snakeyaml:1.33")
-        }
-    }
-}
+
 repositories {
     mavenCentral()
     mavenLocal()
@@ -46,7 +40,7 @@ tasks.register<GenerateTask>("openapiGenerateLakeSharing") {
         mapOf(
             "apiPackage" to "io.lake.sharing.api.client",
             "invokerPackage" to "io.lake.sharing.api.utils",
-            "modelPackage" to "io.lake.sharing.api.model",
+            "modelPackage" to "io.lake.sharing.api.client.model",
             "dateLibrary" to "java8",
             "openApiNullable" to "true",
             "serializationLibrary" to "jackson",

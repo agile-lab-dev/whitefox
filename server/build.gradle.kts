@@ -1,6 +1,11 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
+val generatedSourcesDir = "${layout.buildDirectory.get()}/generated/openapi"
+
 plugins {
     java
     id("io.quarkus")
+    id("org.openapi.generator")
 }
 
 repositories {
@@ -28,6 +33,31 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+tasks.register<GenerateTask>("openapiGenerateLakeSharing") {
+    generatorName.set("jaxrs-spec")
+    inputSpec.set("$rootDir/docs/protocol/lake-sharing-protocol-api.yml")
+    outputDir.set(generatedSourcesDir)
+    additionalProperties.set(
+            mapOf(
+                    "apiPackage" to "io.lake.sharing.api.server",
+                    "dateLibrary" to "java8",
+                    "disallowAdditionalPropertiesIfNotPresent" to "false",
+                    "generateBuilders" to "true",
+                    "generatePom" to "false",
+                    "interfaceOnly" to "true",
+                    "legacyDiscriminatorBehavior" to "true",
+                    "library" to "quarkus",
+                    "modelPackage" to "io.lake.sharing.api.server.model",
+                    "returnResponse" to "true",
+                    "supportAsync" to "true",
+                    "useJakartaEe" to "true",
+                    "useMicroProfileOpenAPIAnnotations" to "true",
+                    "useOneOfInterfaces" to "true",
+                    "useSwaggerAnnotations" to "false"
+            )
+    )
+}
+
 tasks.withType<Test> {
     systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
 }
@@ -35,9 +65,19 @@ tasks.withType<Test> {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-parameters")
+    dependsOn(tasks.named("openapiGenerateLakeSharing"))
 }
+
 tasks.quarkusBuild {
     nativeArgs {
         "additional-build-args" to "-H:-CheckToolchain"
+    }
+}
+
+sourceSets {
+    getByName("main") {
+        java {
+            srcDir("$generatedSourcesDir/src/main/java")
+        }
     }
 }

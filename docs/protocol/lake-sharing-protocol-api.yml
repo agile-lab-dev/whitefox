@@ -476,6 +476,7 @@ paths:
                 credentials:
                   oneOf:
                     - $ref: "#/components/schemas/SimpleAwsCredentials"
+                    - $ref: "#/components/schemas/SimpleAzureCredentials"
                 uri:
                   type: string
                   example: s3://my-nice-bucket/some/prefix
@@ -908,6 +909,13 @@ components:
         awsSecretAccessKey:
           type: string
         region:
+          type: string
+    SimpleAzureCredentials:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
           type: string
     Storage:
       type: object
