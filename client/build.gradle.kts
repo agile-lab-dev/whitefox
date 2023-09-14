@@ -31,6 +31,15 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
+
+buildscript {
+    configurations.all {
+        resolutionStrategy {
+            force("org.yaml:snakeyaml:1.33")
+        }
+    }
+}
+
 tasks.register<GenerateTask>("openapiGenerateLakeSharing") {
     generatorName.set("java")
     inputSpec.set("$rootDir/docs/protocol/lake-sharing-protocol-api.yml")
@@ -42,7 +51,9 @@ tasks.register<GenerateTask>("openapiGenerateLakeSharing") {
             "invokerPackage" to "io.lake.sharing.api.utils",
             "modelPackage" to "io.lake.sharing.api.client.model",
             "dateLibrary" to "java8",
+            "sourceFolder" to "src/gen/java",
             "openApiNullable" to "true",
+            "annotationLibrary" to "none",
             "serializationLibrary" to "jackson",
             "useJakartaEe" to "true",
             "useRuntimeException" to "true"
@@ -62,6 +73,8 @@ tasks.register<GenerateTask>("openapiGenerateDeltaSharing") {
             "modelPackage" to "io.delta.sharing.api.model",
             "dateLibrary" to "java8",
             "openApiNullable" to "true",
+            "sourceFolder" to "src/gen/java",
+            "annotationLibrary" to "none",
             "serializationLibrary" to "jackson",
             "useJakartaEe" to "true",
             "useRuntimeException" to "true"
@@ -81,7 +94,7 @@ tasks.withType<JavaCompile> {
 sourceSets {
     getByName("main") {
         java {
-            srcDir("$generatedSourcesDir/src/main/java")
+            srcDir("$generatedSourcesDir/src/gen/java")
         }
     }
 }
