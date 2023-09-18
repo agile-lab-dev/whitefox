@@ -12,7 +12,7 @@ repositories {
 
 // Enable deprecation messages when compiling Java code
 tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs.add("-Xlint:deprecation")
+    options.compilerArgs.add()
 }
 spotless {
     java {
