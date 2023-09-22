@@ -17,7 +17,7 @@ public class StorageManager {
         this.shares = new ConcurrentHashMap<>();
     }
 
-    protected StorageManager(ConcurrentMap<String, Share> shares){
+    public StorageManager(ConcurrentMap<String, Share> shares){
         this.shares = shares;
     }
 
