@@ -8,9 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -52,21 +50,16 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
       Optional<ContentAndToken.Token> nextPageToken,
       int maxResults,
       int totalSize,
-      Stream<T> func) {
+      Stream<T> data) {
     Integer start =
         nextPageToken.map(s -> Integer.valueOf(encoder.decodePageToken(s.value))).orElse(0);
-    if (start > totalSize) {
-      throw new RuntimeException(
-          String.format("Invalid Next Page Token: token %s is larger than totalSize", start));
-    }
+    CompletionStage<List<T>> page =
+        PagingUtils.getPage(start, maxResults, totalSize, data, ioExecutorService);
     int end = start + maxResults;
     Optional<String> optionalToken =
         end < totalSize ? Optional.of(Integer.toString(end)) : Optional.empty();
 
-    return CompletableFuture.supplyAsync(
-            () -> func.skip(start).limit(maxResults).collect(Collectors.toList()),
-            ioExecutorService)
-        .whenComplete((x, y) -> func.close())
+    return page.whenComplete((x, y) -> data.close())
         .thenApply(
             pageContent ->
                 optionalToken
