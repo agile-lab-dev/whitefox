@@ -7,25 +7,24 @@ import io.delta.sharing.api.server.model.Share;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 public class StorageManagerTest {
 
   @Test
-  public void getUnknownShare() throws ExecutionException, InterruptedException {
-    StorageManager storageManager = new InMemoryStorageManager();
-    Optional<Share> unknown = storageManager.getShare("unknown").toCompletableFuture().get();
+  public void getUnknownShare() {
+    StorageManager storageManager = new StorageManager();
+    Optional<Share> unknown = storageManager.getShare("unknown");
     assertEquals(Optional.empty(), unknown);
   }
 
   @Test
-  public void getShare() throws ExecutionException, InterruptedException {
+  public void getShare() {
     ConcurrentHashMap<String, Share> shares = new ConcurrentHashMap<>();
     shares.put("key", new Share().id("id").name("name"));
-    StorageManager storageManager = new InMemoryStorageManager(shares);
-    Optional<Share> share = storageManager.getShare("key").toCompletableFuture().get();
+    StorageManager storageManager = new StorageManager(shares);
+    Optional<Share> share = storageManager.getShare("key");
     assertTrue(share.isPresent());
     assertEquals("id", share.get().getId());
     assertEquals("name", share.get().getName());

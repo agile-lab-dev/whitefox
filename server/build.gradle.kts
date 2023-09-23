@@ -32,6 +32,7 @@ dependencies {
     implementation("org.openapitools:jackson-databind-nullable:0.2.6")
     implementation("org.eclipse.microprofile.openapi:microprofile-openapi-api:3.1.1")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+    implementation("org.apache.commons:commons-lang3:3.12.0")
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
