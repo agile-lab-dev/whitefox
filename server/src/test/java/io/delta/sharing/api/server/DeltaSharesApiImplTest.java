@@ -4,13 +4,14 @@ import static io.restassured.RestAssured.given;
 
 import io.delta.sharing.encoders.DeltaPageTokenEncoder;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 public class DeltaSharesApiImplTest {
 
-  DeltaPageTokenEncoder encoder = new DeltaPageTokenEncoder();
+  @Inject DeltaPageTokenEncoder encoder;
 
   @Test
   public void getUnknownShare() {

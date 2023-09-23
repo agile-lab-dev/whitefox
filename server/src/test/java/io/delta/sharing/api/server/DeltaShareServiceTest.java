@@ -5,13 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.delta.sharing.api.server.model.Share;
 import io.delta.sharing.encoders.DeltaPageTokenEncoder;
-import io.quarkus.test.junit.QuarkusTest;
 import io.sharing.persistence.InMemoryStorageManager;
 import java.util.Optional;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Test;
 
-@QuarkusTest
 public class DeltaShareServiceTest {
   DeltaPageTokenEncoder encoder = new DeltaPageTokenEncoder();
   Integer defaultMaxResults = 10;
