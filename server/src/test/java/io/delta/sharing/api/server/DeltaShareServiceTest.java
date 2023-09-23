@@ -17,7 +17,8 @@ public class DeltaShareServiceTest {
 
   @Test
   public void getUnknownShare() throws ExecutionException, InterruptedException {
-    DeltaSharesService deltaSharesService = new DeltaSharesServiceImpl(new InMemoryStorageManager());
+    DeltaSharesService deltaSharesService =
+        new DeltaSharesServiceImpl(new InMemoryStorageManager());
     Optional<Share> unknown = deltaSharesService.getShare("unknown").toCompletableFuture().get();
     assertEquals(Optional.empty(), unknown);
   }
