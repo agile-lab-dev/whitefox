@@ -1,6 +1,7 @@
 package io.delta.sharing.api.server;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
 import io.delta.sharing.encoders.DeltaPageTokenEncoder;
 import io.quarkus.test.junit.QuarkusTest;
@@ -31,11 +32,19 @@ public class DeltaSharesApiImplTest {
         .when()
         .get("/shares")
         .then()
-        .statusCode(200);
+        .statusCode(200)
+        .body("items", is(empty()))
+        .body("token", is(nullValue()));
   }
 
   @Test
   public void listSharesNoParams() {
-    given().when().get("/shares").then().statusCode(200);
+    given()
+        .when()
+        .get("/shares")
+        .then()
+        .statusCode(200)
+        .body("items", is(empty()))
+        .body("token", is(nullValue()));
   }
 }
