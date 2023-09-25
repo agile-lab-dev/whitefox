@@ -2,10 +2,10 @@ package io.delta.sharing.encoders;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import jakarta.inject.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Base64;
 
-@Singleton
+@ApplicationScoped
 public class DeltaPageTokenEncoder {
 
   public String encodePageToken(String id) {

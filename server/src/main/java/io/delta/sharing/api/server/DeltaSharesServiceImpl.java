@@ -9,7 +9,6 @@ import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Stream;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
@@ -42,29 +41,19 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
   public CompletionStage<ContentAndToken<List<Share>>> listShares(
       Optional<ContentAndToken.Token> nextPageToken, Optional<Integer> maxResults) {
     Integer finalMaxResults = maxResults.orElse(defaultMaxResults);
-    var resAndSize = storageManager.getShares();
-    return getPage(nextPageToken, finalMaxResults, resAndSize.size, resAndSize.result);
-  }
-
-  private <T> CompletionStage<ContentAndToken<List<T>>> getPage(
-      Optional<ContentAndToken.Token> nextPageToken,
-      int maxResults,
-      int totalSize,
-      Stream<T> data) {
     Integer start =
         nextPageToken.map(s -> Integer.valueOf(encoder.decodePageToken(s.value))).orElse(0);
-    CompletionStage<List<T>> page =
-        PagingUtils.getPage(start, maxResults, totalSize, data, ioExecutorService);
-    int end = start + maxResults;
-    Optional<String> optionalToken =
-        end < totalSize ? Optional.of(Integer.toString(end)) : Optional.empty();
+    var resAndSize = storageManager.getShares(start, finalMaxResults);
+    int end = start + finalMaxResults;
 
-    return page.whenComplete((x, y) -> data.close())
-        .thenApply(
-            pageContent ->
-                optionalToken
-                    .map(encoder::encodePageToken)
-                    .map(t -> ContentAndToken.of(pageContent, t))
-                    .orElse(ContentAndToken.withoutToken(pageContent)));
+    return resAndSize.thenApplyAsync(
+        pageContent -> {
+          Optional<String> optionalToken =
+              end < pageContent.size ? Optional.of(Integer.toString(end)) : Optional.empty();
+          return optionalToken
+              .map(encoder::encodePageToken)
+              .map(t -> ContentAndToken.of(pageContent.result, t))
+              .orElse(ContentAndToken.withoutToken(pageContent.result));
+        });
   }
 }

@@ -1,12 +1,17 @@
 package io.delta.sharing.api.server;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import java.util.concurrent.Executors;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-@Singleton
+@ApplicationScoped
 public class IOExecutorService extends DelegateExecutorService {
+
+  // For CDI 2.0 to work
+  public IOExecutorService() {
+    super(null);
+  }
 
   @Inject
   public IOExecutorService(

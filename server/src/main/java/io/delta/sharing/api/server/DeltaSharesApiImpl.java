@@ -24,7 +24,7 @@ public class DeltaSharesApiImpl implements SharesApi {
   public CompletionStage<Response> getShare(String share) {
     return deltaSharesService
         .getShare(share)
-        .thenApply(
+        .thenApplyAsync(
             o ->
                 o.map(s -> Response.ok(s).build())
                     .orElse(Response.status(Response.Status.NOT_FOUND).build()));
@@ -80,7 +80,7 @@ public class DeltaSharesApiImpl implements SharesApi {
             Optional.ofNullable(pageToken).map(ContentAndToken.Token::new),
             Optional.ofNullable(maxResults).map(BigDecimal::intValue))
         .toCompletableFuture()
-        .thenApply(
+        .thenApplyAsync(
             c ->
                 Response.ok(
                         init.items(c.getContent().orElse(Collections.emptyList()))
