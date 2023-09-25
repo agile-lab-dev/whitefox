@@ -19,8 +19,7 @@ public class DeltaShareServiceTest {
   @Test
   public void getUnknownShare() throws ExecutionException, InterruptedException {
     DeltaSharesService deltaSharesService =
-        new DeltaSharesServiceImpl(
-            new InMemoryStorageManager(), defaultMaxResults, encoder, new IOExecutorService(1));
+        new DeltaSharesServiceImpl(new InMemoryStorageManager(), defaultMaxResults, encoder);
     Optional<Share> unknown = deltaSharesService.getShare("unknown").toCompletableFuture().get();
     assertEquals(Optional.empty(), unknown);
   }
@@ -30,11 +29,7 @@ public class DeltaShareServiceTest {
     ConcurrentMap<String, Share> shares = new ConcurrentHashMap<>();
     shares.put("key", new Share().id("key").name("name"));
     DeltaSharesService deltaSharesService =
-        new DeltaSharesServiceImpl(
-            new InMemoryStorageManager(shares),
-            defaultMaxResults,
-            encoder,
-            new IOExecutorService(1));
+        new DeltaSharesServiceImpl(new InMemoryStorageManager(shares), defaultMaxResults, encoder);
     Optional<Share> share = deltaSharesService.getShare("key").toCompletableFuture().get();
     assertTrue(share.isPresent());
     assertEquals("name", share.get().getName());
@@ -46,11 +41,7 @@ public class DeltaShareServiceTest {
     ConcurrentMap<String, Share> shares = new ConcurrentHashMap<>();
     shares.put("key", new Share().id("key").name("name"));
     DeltaSharesService deltaSharesService =
-        new DeltaSharesServiceImpl(
-            new InMemoryStorageManager(shares),
-            defaultMaxResults,
-            encoder,
-            new IOExecutorService(1));
+        new DeltaSharesServiceImpl(new InMemoryStorageManager(shares), defaultMaxResults, encoder);
     var sharesWithNextToken =
         deltaSharesService
             .listShares(Optional.empty(), Optional.of(30))
@@ -65,11 +56,7 @@ public class DeltaShareServiceTest {
     ConcurrentMap<String, Share> shares = new ConcurrentHashMap<>();
     shares.put("key", new Share().id("key").name("name"));
     DeltaSharesService deltaSharesService =
-        new DeltaSharesServiceImpl(
-            new InMemoryStorageManager(shares),
-            defaultMaxResults,
-            encoder,
-            new IOExecutorService(1));
+        new DeltaSharesServiceImpl(new InMemoryStorageManager(shares), defaultMaxResults, encoder);
     var sharesWithNextToken =
         deltaSharesService
             .listShares(Optional.empty(), Optional.of(30))

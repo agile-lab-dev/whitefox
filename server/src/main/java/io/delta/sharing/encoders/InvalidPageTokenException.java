@@ -5,6 +5,10 @@ public class InvalidPageTokenException extends RuntimeException {
     super(cause);
   }
 
+  public InvalidPageTokenException(String message) {
+    super(message);
+  }
+
   public InvalidPageTokenException(String message, Throwable cause) {
     super(message, cause);
   }

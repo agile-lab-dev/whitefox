@@ -10,7 +10,7 @@ public class IOExecutorService extends DelegateExecutorService {
 
   // For CDI 2.0 to work
   public IOExecutorService() {
-    super(null);
+    this(32);
   }
 
   @Inject

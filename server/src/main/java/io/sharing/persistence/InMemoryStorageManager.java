@@ -1,6 +1,7 @@
 package io.sharing.persistence;
 
 import io.delta.sharing.api.server.model.Share;
+import io.delta.sharing.encoders.InvalidPageTokenException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -33,7 +34,7 @@ public class InMemoryStorageManager implements StorageManager {
   public CompletionStage<ResultAndTotalSize<List<Share>>> getShares(int offset, int maxResultSize) {
     var totalSize = shares.size();
     if (offset > totalSize) {
-      throw new RuntimeException(
+      throw new InvalidPageTokenException(
           String.format("Invalid Next Page Token: token %s is larger than totalSize", offset));
     }
     return CompletableFuture.completedFuture(

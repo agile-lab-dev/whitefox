@@ -17,19 +17,16 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
   private final StorageManager storageManager;
   private final Integer defaultMaxResults;
   private final DeltaPageTokenEncoder encoder;
-  private final IOExecutorService ioExecutorService;
 
   @Inject
   public DeltaSharesServiceImpl(
       StorageManager storageManager,
       @ConfigProperty(name = "io.delta.sharing.api.server.defaultMaxResults")
           Integer defaultMaxResults,
-      DeltaPageTokenEncoder encoder,
-      IOExecutorService ioExecutorService) {
+      DeltaPageTokenEncoder encoder) {
     this.storageManager = storageManager;
     this.defaultMaxResults = defaultMaxResults;
     this.encoder = encoder;
-    this.ioExecutorService = ioExecutorService;
   }
 
   @Override
