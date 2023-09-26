@@ -35,8 +35,8 @@ public class ContentAndToken<A> {
     return new ContentAndToken<T>(content, token);
   }
 
-  public Optional<A> getContent() {
-    return Optional.ofNullable(content);
+  public A getContent() {
+    return content;
   }
 
   public Optional<String> getToken() {

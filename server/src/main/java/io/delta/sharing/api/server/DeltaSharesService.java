@@ -1,6 +1,7 @@
 package io.delta.sharing.api.server;
 
 import io.delta.sharing.api.ContentAndToken;
+import io.delta.sharing.api.server.model.Schema;
 import io.delta.sharing.api.server.model.Share;
 import java.util.List;
 import java.util.Optional;
@@ -11,4 +12,7 @@ public interface DeltaSharesService {
 
   CompletionStage<ContentAndToken<List<Share>>> listShares(
       Optional<ContentAndToken.Token> nextPageToken, Optional<Integer> maxResults);
+
+  CompletionStage<Optional<ContentAndToken<List<Schema>>>> listSchemas(
+      String share, Optional<ContentAndToken.Token> nextPageToken, Optional<Integer> maxResults);
 }

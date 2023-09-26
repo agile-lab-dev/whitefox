@@ -1,19 +1,34 @@
 package io.delta.sharing.api.server;
 
 import io.delta.sharing.api.ContentAndToken;
+import io.delta.sharing.api.server.model.CommonErrorResponse;
+import io.delta.sharing.api.server.model.ListSchemasResponse;
 import io.delta.sharing.api.server.model.ListShareResponse;
 import io.delta.sharing.api.server.model.QueryRequest;
+import io.quarkus.runtime.util.ExceptionUtil;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
-import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
-public class DeltaSharesApiImpl implements SharesApi {
+public class DeltaSharesApiImpl implements DeltaApiApi {
 
   private final DeltaSharesService deltaSharesService;
+  private static final Function<Throwable, Response> exceptionToResponse =
+      t -> Response.status(Response.Status.BAD_GATEWAY)
+          .entity(new CommonErrorResponse()
+              .errorCode("BAD GATEWAY")
+              .message(ExceptionUtil.generateStackTrace(t)))
+          .build();
+
+  private <T> Response optionalToNotFound(Optional<T> opt, Function<T, Response> fn) {
+    return opt.map(fn)
+        .orElse(Response.status(Response.Status.NOT_FOUND)
+            .entity(new CommonErrorResponse().errorCode("1").message("NOT FOUND"))
+            .build());
+  }
 
   @Inject
   public DeltaSharesApiImpl(DeltaSharesService deltaSharesService) {
@@ -22,9 +37,10 @@ public class DeltaSharesApiImpl implements SharesApi {
 
   @Override
   public CompletionStage<Response> getShare(String share) {
-    return deltaSharesService.getShare(share).thenApplyAsync(o -> o.map(
-            s -> Response.ok(s).build())
-        .orElse(Response.status(Response.Status.NOT_FOUND).build()));
+    return deltaSharesService
+        .getShare(share)
+        .thenApplyAsync(o -> optionalToNotFound(o, s -> Response.ok(s).build()))
+        .exceptionallyAsync(exceptionToResponse);
   }
 
   @Override
@@ -57,37 +73,42 @@ public class DeltaSharesApiImpl implements SharesApi {
 
   @Override
   public CompletionStage<Response> listALLTables(
-      String share, BigDecimal maxResults, String pageToken) {
-    Response res = Response.ok().build();
-    return CompletableFuture.completedFuture(res);
+      String share, Integer maxResults, String pageToken) {
+    return CompletableFuture.completedFuture(Response.ok().build());
   }
 
   @Override
-  public CompletionStage<Response> listSchemas(
-      String share, BigDecimal maxResults, String pageToken) {
-    Response res = Response.ok().build();
-    return CompletableFuture.completedFuture(res);
+  public CompletionStage<Response> listSchemas(String share, Integer maxResults, String pageToken) {
+    var shares = deltaSharesService.listSchemas(
+        share,
+        Optional.ofNullable(pageToken).map(ContentAndToken.Token::new),
+        Optional.ofNullable(maxResults));
+    return shares
+        .thenApplyAsync(o -> optionalToNotFound(o, ct -> Response.ok(ct.getToken()
+                .map(t -> new ListSchemasResponse().nextPageToken(t).items(ct.getContent()))
+                .orElse(new ListSchemasResponse().items(ct.getContent())))
+            .build()))
+        .exceptionallyAsync(exceptionToResponse);
   }
 
   @Override
-  public CompletionStage<Response> listShares(BigDecimal maxResults, String pageToken) {
-    ListShareResponse init = new ListShareResponse();
+  public CompletionStage<Response> listShares(Integer maxResults, String pageToken) {
     return deltaSharesService
         .listShares(
             Optional.ofNullable(pageToken).map(ContentAndToken.Token::new),
-            Optional.ofNullable(maxResults).map(BigDecimal::intValue))
+            Optional.ofNullable(maxResults))
         .toCompletableFuture()
-        .thenApplyAsync(c -> Response.ok(init.items(c.getContent().orElse(Collections.emptyList()))
-                .nextPageToken(c.getToken().orElse(null)))
+        .thenApplyAsync(c -> Response.ok(c.getToken()
+                .map(t -> new ListShareResponse().items(c.getContent()).nextPageToken(t))
+                .orElse(new ListShareResponse().items(c.getContent())))
             .build())
-        .exceptionally(t -> Response.status(501).build()); // TODO add some error info?
+        .exceptionallyAsync(exceptionToResponse);
   }
 
   @Override
   public CompletionStage<Response> listTables(
-      String share, String schema, BigDecimal maxResults, String pageToken) {
-    Response res = Response.ok().build();
-    return CompletableFuture.completedFuture(res);
+      String share, String schema, Integer maxResults, String pageToken) {
+    return CompletableFuture.completedFuture(Response.ok().build());
   }
 
   @Override

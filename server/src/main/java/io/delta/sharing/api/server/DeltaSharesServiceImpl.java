@@ -1,6 +1,7 @@
 package io.delta.sharing.api.server;
 
 import io.delta.sharing.api.ContentAndToken;
+import io.delta.sharing.api.server.model.Schema;
 import io.delta.sharing.api.server.model.Share;
 import io.delta.sharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.persistence.StorageManager;
@@ -52,5 +53,25 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
           .map(t -> ContentAndToken.of(pageContent.result, t))
           .orElse(ContentAndToken.withoutToken(pageContent.result));
     });
+  }
+
+  @Override
+  public CompletionStage<Optional<ContentAndToken<List<Schema>>>> listSchemas(
+      String share, Optional<ContentAndToken.Token> nextPageToken, Optional<Integer> maxResults) {
+    Integer finalMaxResults = maxResults.orElse(defaultMaxResults);
+    Integer start = nextPageToken
+        .map(s -> Integer.valueOf(encoder.decodePageToken(s.value)))
+        .orElse(0);
+    var resAndSize = storageManager.listSchemas(share, start, finalMaxResults);
+    int end = start + finalMaxResults;
+
+    return resAndSize.thenApplyAsync(optPageContent -> optPageContent.map(pageContent -> {
+      Optional<String> optionalToken =
+          end < pageContent.size ? Optional.of(Integer.toString(end)) : Optional.empty();
+      return optionalToken
+          .map(encoder::encodePageToken)
+          .map(t -> ContentAndToken.of(pageContent.result, t))
+          .orElse(ContentAndToken.withoutToken(pageContent.result));
+    }));
   }
 }
