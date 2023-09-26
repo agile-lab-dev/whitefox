@@ -76,20 +76,24 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
   }
 
   @Override
-  public CompletionStage<Optional<ContentAndToken<List<Table>>>> listTables(String share, String schema, Optional<ContentAndToken.Token> nextPageToken, Optional<Integer> maxResults) {
+  public CompletionStage<Optional<ContentAndToken<List<Table>>>> listTables(
+      String share,
+      String schema,
+      Optional<ContentAndToken.Token> nextPageToken,
+      Optional<Integer> maxResults) {
     Integer finalMaxResults = maxResults.orElse(defaultMaxResults);
     Integer start = nextPageToken
-            .map(s -> Integer.valueOf(encoder.decodePageToken(s.value)))
-            .orElse(0);
+        .map(s -> Integer.valueOf(encoder.decodePageToken(s.value)))
+        .orElse(0);
     var resAndSize = storageManager.listTables(share, schema, start, finalMaxResults);
     int end = start + finalMaxResults;
     return resAndSize.thenApplyAsync(optPageContent -> optPageContent.map(pageContent -> {
       Optional<String> optionalToken =
-              end < pageContent.size ? Optional.of(Integer.toString(end)) : Optional.empty();
+          end < pageContent.size ? Optional.of(Integer.toString(end)) : Optional.empty();
       return optionalToken
-              .map(encoder::encodePageToken)
-              .map(t -> ContentAndToken.of(pageContent.result, t))
-              .orElse(ContentAndToken.withoutToken(pageContent.result));
+          .map(encoder::encodePageToken)
+          .map(t -> ContentAndToken.of(pageContent.result, t))
+          .orElse(ContentAndToken.withoutToken(pageContent.result));
     }));
   }
 }

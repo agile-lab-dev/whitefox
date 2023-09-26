@@ -6,10 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.api.deltasharing.model.Schema;
 import io.whitefox.api.deltasharing.model.Share;
-import io.whitefox.persistence.memory.InMemoryStorageManager;
+import io.whitefox.api.deltasharing.model.Table;
 import io.whitefox.persistence.StorageManager;
+import io.whitefox.persistence.memory.InMemoryStorageManager;
 import io.whitefox.persistence.memory.PSchema;
 import io.whitefox.persistence.memory.PShare;
+import io.whitefox.persistence.memory.PTable;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Test;
@@ -117,7 +119,21 @@ public class DeltaShareServiceTest {
   }
 
   @Test
-  public void listTables() {
-    assertEquals(0,1);
+  public void listTables() throws ExecutionException, InterruptedException {
+    var shares = List.of(new PShare(
+        "name", "key", Map.of("default", new PSchema("default", List.of(new PTable("table1"))))));
+    StorageManager storageManager = new InMemoryStorageManager(shares);
+    DeltaSharesService deltaSharesService =
+        new DeltaSharesServiceImpl(storageManager, 100, encoder);
+    var resultSchemas = deltaSharesService
+        .listTables("name", "default", Optional.empty(), Optional.empty())
+        .toCompletableFuture()
+        .get();
+    assertTrue(resultSchemas.isPresent());
+    assertTrue(resultSchemas.get().getToken().isEmpty());
+    assertEquals(1, resultSchemas.get().getContent().size());
+    assertEquals(
+        new Table().name("table1").schema("default").share("name"),
+        resultSchemas.get().getContent().get(0));
   }
 }

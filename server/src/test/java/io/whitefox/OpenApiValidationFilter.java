@@ -66,7 +66,8 @@ public class OpenApiValidationFilter implements Filter {
       FilterContext ctx) {
     try {
       ValidationResults results = OpenApi3Validator.instance().validate(api);
-      LOGGER.error("invalid OpenAPI definition: {}", results);
+      if (!results.isValid())
+        LOGGER.error("invalid OpenAPI definition: {}", results);
 
       RestAssuredRequest request = new RestAssuredRequest(requestSpec);
       RequestValidator validator = new RequestValidator(api);
