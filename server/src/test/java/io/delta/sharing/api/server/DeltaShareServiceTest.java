@@ -6,13 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.delta.sharing.api.server.model.Schema;
 import io.delta.sharing.api.server.model.Share;
 import io.delta.sharing.encoders.DeltaPageTokenEncoder;
+import io.whitefox.persistence.InMemoryStorageManager;
+import io.whitefox.persistence.StorageManager;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
-
-import io.whitefox.persistence.InMemoryStorageManager;
-import io.whitefox.persistence.StorageManager;
 import org.junit.jupiter.api.Test;
 
 public class DeltaShareServiceTest {
