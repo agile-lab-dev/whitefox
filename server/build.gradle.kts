@@ -82,7 +82,7 @@ tasks.quarkusBuild {
 buildscript {
     configurations.all {
         resolutionStrategy {
-            force("org.yaml:snakeyaml:1.33")
+            force("org.yaml:snakeyaml:2.2")
         }
     }
 }
