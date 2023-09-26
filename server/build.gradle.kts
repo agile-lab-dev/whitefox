@@ -37,7 +37,7 @@ dependencies {
     testImplementation("io.rest-assured:rest-assured")
 }
 
-tasks.register<GenerateTask>("openapiGenerateWhiteFox") {
+tasks.register<GenerateTask>("openapiGenerateWhitefox") {
     generatorName.set("jaxrs-spec")
     inputSpec.set("$rootDir/docs/protocol/whitefox-protocol-api.yml")
     outputDir.set(generatedCodeDirectory(layout, openApiCodeGenDir))
@@ -70,7 +70,7 @@ tasks.withType<Test> {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-parameters")
-    dependsOn(tasks.named("openapiGenerateWhiteFox"), tasks.named("openapiGenerateDeltaSharing"))
+    dependsOn(tasks.named("openapiGenerateWhitefox"), tasks.named("openapiGenerateDeltaSharing"))
 }
 
 tasks.quarkusBuild {

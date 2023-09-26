@@ -54,7 +54,7 @@ buildscript {
     }
 }
 
-tasks.register<GenerateTask>("openapiGenerateWhiteFox") {
+tasks.register<GenerateTask>("openapiGenerateWhitefox") {
     generatorName.set("java")
     inputSpec.set("$rootDir/docs/protocol/whitefox-protocol-api.yml")
     library.set("native")
@@ -76,7 +76,7 @@ tasks.withType<Test> {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-parameters")
-    dependsOn(tasks.named("openapiGenerateWhiteFox"), tasks.named("openapiGenerateDeltaSharing"))
+    dependsOn(tasks.named("openapiGenerateWhitefox"), tasks.named("openapiGenerateDeltaSharing"))
 }
 
 spotless {

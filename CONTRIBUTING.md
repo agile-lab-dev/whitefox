@@ -6,7 +6,7 @@ This guide is for people who would like to be involved in building Whitefox.
 
 ## How can I help?
 
-WhiteFox follows a standard
+Whitefox follows a standard
 [fork and pull](https://help.github.com/articles/using-pull-requests/)
 model for contributions via GitHub pull requests.
 
