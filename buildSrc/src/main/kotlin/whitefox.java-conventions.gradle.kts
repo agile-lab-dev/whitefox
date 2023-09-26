@@ -25,6 +25,10 @@ spotless {
         formatAnnotations()
     }
 }
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 val gitVersion: groovy.lang.Closure<String> by extra
 group = "io.whitefox"
 version = gitVersion()
