@@ -66,4 +66,16 @@ public class DeltaSharesApiImplTest {
         .body("items", is(empty()))
         .body("nextPageToken", is(nullValue()));
   }
+
+  @Test
+  public void listTables() {
+    given()
+        .when()
+        .filter(filter)
+        .get("delta-api/v1/shares/{share}/{table}", "name", "default")
+        .then()
+        .statusCode(200)
+        .body("items", is(empty()))
+        .body("nextPageToken", is(nullValue()));
+  }
 }
