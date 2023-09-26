@@ -1,8 +1,8 @@
 package io.whitefox.persistence;
 
-import io.delta.sharing.api.server.model.Schema;
-import io.delta.sharing.api.server.model.Share;
-import io.delta.sharing.encoders.InvalidPageTokenException;
+import io.whitefox.api.deltasharing.encoders.InvalidPageTokenException;
+import io.whitefox.api.deltasharing.model.Schema;
+import io.whitefox.api.deltasharing.model.Share;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;

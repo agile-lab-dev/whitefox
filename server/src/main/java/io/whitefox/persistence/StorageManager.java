@@ -1,7 +1,7 @@
 package io.whitefox.persistence;
 
-import io.delta.sharing.api.server.model.Schema;
-import io.delta.sharing.api.server.model.Share;
+import io.whitefox.api.deltasharing.model.Schema;
+import io.whitefox.api.deltasharing.model.Share;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;

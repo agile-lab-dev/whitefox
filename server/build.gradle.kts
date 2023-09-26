@@ -47,8 +47,8 @@ tasks.register<GenerateTask>("openapiGenerateWhitefox") {
     additionalProperties.set(
         serverGeneratorProperties.plus(
             mapOf(
-                "apiPackage" to "io.whitefox.sharing.api.server",
-                "modelPackage" to "io.whitefox.sharing.api.server.model",
+                "apiPackage" to "io.whitefox.api.server",
+                "modelPackage" to "io.whitefox.api.model",
             )
         )
     )
@@ -61,9 +61,8 @@ tasks.register<GenerateTask>("openapiGenerateDeltaSharing") {
     outputDir.set(generatedCodeDirectory(layout, openApiCodeGenDir))
     additionalProperties.set(
         serverGeneratorProperties + mapOf(
-            "additionalModelTypeAnnotations" to "\n@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)",
-            "apiPackage" to "io.delta.sharing.api.server",
-            "modelPackage" to "io.delta.sharing.api.server.model",
+            "apiPackage" to "io.whitefox.api.deltasharing.server",
+            "modelPackage" to "io.whitefox.api.deltasharing.model",
         )
     )
 }
