@@ -166,22 +166,23 @@ public class DeltaShareServiceTest {
 
   @Test
   public void listAllTablesEmpty() throws ExecutionException, InterruptedException {
-    var shares = List.of(new PShare(
+    var shares = List.of(
+        new PShare(
             "name",
             "key",
             Map.of(
-                    "default",
-                    new PSchema("default", List.of(new PTable("table1", "location1"))),
-                    "other",
-                    new PSchema("other", List.of(new PTable("table2", "location2"))))),
-            new PShare("name2", "key2", Map.of()));
+                "default",
+                new PSchema("default", List.of(new PTable("table1", "location1"))),
+                "other",
+                new PSchema("other", List.of(new PTable("table2", "location2"))))),
+        new PShare("name2", "key2", Map.of()));
     StorageManager storageManager = new InMemoryStorageManager(shares);
     DeltaSharesService deltaSharesService =
-            new DeltaSharesServiceImpl(storageManager, 100, encoder);
+        new DeltaSharesServiceImpl(storageManager, 100, encoder);
     var resultSchemas = deltaSharesService
-            .listTablesOfShare("name2", Optional.empty(), Optional.empty())
-            .toCompletableFuture()
-            .get();
+        .listTablesOfShare("name2", Optional.empty(), Optional.empty())
+        .toCompletableFuture()
+        .get();
     assertTrue(resultSchemas.isPresent());
     assertTrue(resultSchemas.get().getToken().isEmpty());
     assertTrue(resultSchemas.get().getContent().isEmpty());
@@ -191,11 +192,11 @@ public class DeltaShareServiceTest {
   public void listAllTablesNoShare() throws ExecutionException, InterruptedException {
     StorageManager storageManager = new InMemoryStorageManager();
     DeltaSharesService deltaSharesService =
-            new DeltaSharesServiceImpl(storageManager, 100, encoder);
+        new DeltaSharesServiceImpl(storageManager, 100, encoder);
     var resultSchemas = deltaSharesService
-            .listTablesOfShare("name2", Optional.empty(), Optional.empty())
-            .toCompletableFuture()
-            .get();
+        .listTablesOfShare("name2", Optional.empty(), Optional.empty())
+        .toCompletableFuture()
+        .get();
     assertTrue(resultSchemas.isEmpty());
   }
 }

@@ -156,25 +156,25 @@ public class DeltaSharesApiImplTest {
   @Test
   public void listAllTables() {
     given()
-            .when()
-            .filter(filter)
-            .get("delta-api/v1/shares/{share}/all-tables", "name")
-            .then()
-            .statusCode(200)
-            .body("items", hasSize(1))
-            .body("items[0].name", is("table1"))
-            .body("items[0].schema", is("default"))
-            .body("items[0].share", is("name"))
-            .body("nextPageToken", is(nullValue()));
+        .when()
+        .filter(filter)
+        .get("delta-api/v1/shares/{share}/all-tables", "name")
+        .then()
+        .statusCode(200)
+        .body("items", hasSize(1))
+        .body("items[0].name", is("table1"))
+        .body("items[0].schema", is("default"))
+        .body("items[0].share", is("name"))
+        .body("nextPageToken", is(nullValue()));
   }
 
   @Test
   public void listAllOfMissingShare() {
     given()
-            .when()
-            .filter(filter)
-            .get("delta-api/v1/shares/{share}/all-tables", "name2")
-            .then()
-            .statusCode(404);
+        .when()
+        .filter(filter)
+        .get("delta-api/v1/shares/{share}/all-tables", "name2")
+        .then()
+        .statusCode(404);
   }
 }
