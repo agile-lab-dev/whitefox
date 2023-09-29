@@ -4,7 +4,6 @@ import io.delta.standalone.DeltaLog;
 import io.delta.standalone.Snapshot;
 import io.delta.standalone.actions.Metadata;
 import io.whitefox.core.Table;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
@@ -15,12 +14,8 @@ import org.apache.hadoop.conf.Configuration;
 public class DeltaSharedTable {
 
   private final DeltaLog deltaLog;
-  private final Configuration configuration;
-  private final Path dataPath;
 
-  private DeltaSharedTable(DeltaLog deltaLog, Configuration configuration, Path dataPath) {
-    this.configuration = configuration;
-    this.dataPath = dataPath;
+  private DeltaSharedTable(DeltaLog deltaLog) {
     this.deltaLog = deltaLog;
   }
 
@@ -34,7 +29,7 @@ public class DeltaSharedTable {
       throw new IllegalArgumentException(
           String.format("Cannot find a delta table at %s", dataPath));
     }
-    return new DeltaSharedTable(dt, configuration, dataPath);
+    return new DeltaSharedTable(dt);
   }
 
   public Optional<Metadata> getMetadata(Optional<String> startingTimestamp) {

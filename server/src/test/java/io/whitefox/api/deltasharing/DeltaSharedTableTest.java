@@ -36,6 +36,21 @@ public class DeltaSharedTableTest {
   }
 
   @Test
+  void getTableMetadata() {
+    var PTable = new Table("delta-table", tablePath("delta-table"), "default", "share1");
+    var DTable = DeltaSharedTable.of(PTable);
+    var metadata = DTable.getMetadata(Optional.empty());
+    assertTrue(metadata.isPresent());
+    assertEquals("56d48189-cdbc-44f2-9b0e-2bded4c79ed7", metadata.get().getId());
+  }
+
+  @Test
+  void getUnknownTableMetadata() {
+    var unknownPTable = new Table("notFound", "location1", "default", "share1");
+    assertThrows(IllegalArgumentException.class, () -> DeltaSharedTable.of(unknownPTable));
+  }
+
+  @Test
   void getTableVersionNonExistingTable() throws ExecutionException, InterruptedException {
     var PTable = new Table("delta-table", tablePath("delta-table-not-exists"), "default", "share1");
     var exception = assertThrows(IllegalArgumentException.class, () -> DeltaSharedTable.of(PTable));

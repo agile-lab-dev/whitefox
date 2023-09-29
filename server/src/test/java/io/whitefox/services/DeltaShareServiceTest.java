@@ -1,8 +1,10 @@
 package io.whitefox.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static io.whitefox.api.server.DeltaUtils.tablePath;
+import static org.junit.jupiter.api.Assertions.*;
 
+import io.delta.standalone.types.*;
+import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
 import io.whitefox.core.Table;
@@ -186,5 +188,38 @@ public class DeltaShareServiceTest {
     var resultSchemas =
         deltaSharesService.listTablesOfShare("name2", Optional.empty(), Optional.empty());
     assertTrue(resultSchemas.isEmpty());
+  }
+
+  @Test
+  public void getTableMetadata() {
+    var shares = List.of(new Share(
+        "name",
+        "key",
+        Map.of(
+            "default",
+            new Schema(
+                "default",
+                List.of(new Table("table1", tablePath("delta-table"), "default", "name")),
+                "name"))));
+    StorageManager storageManager = new InMemoryStorageManager(shares);
+    DeltaSharesService deltaSharesService = new DeltaSharesServiceImpl(storageManager, 100, loader);
+    var tableMetadata = deltaSharesService.getTableMetadata("name", "default", "table1", null);
+    assertTrue(tableMetadata.isPresent());
+    assertEquals("56d48189-cdbc-44f2-9b0e-2bded4c79ed7", tableMetadata.get().getId());
+  }
+
+  @Test
+  public void tableMetadataNotFound() {
+    var shares = List.of(new Share(
+        "name",
+        "key",
+        Map.of(
+            "default",
+            new Schema(
+                "default", List.of(new Table("table1", "location1", "default", "name")), "name"))));
+    StorageManager storageManager = new InMemoryStorageManager(shares);
+    DeltaSharesService deltaSharesService = new DeltaSharesServiceImpl(storageManager, 100, loader);
+    var resultTable = deltaSharesService.getTableMetadata("name", "default", "tableNotFound", null);
+    assertTrue(resultTable.isEmpty());
   }
 }
