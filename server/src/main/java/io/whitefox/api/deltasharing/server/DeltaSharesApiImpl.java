@@ -65,8 +65,8 @@ public class DeltaSharesApiImpl implements DeltaApiApi {
   @Override
   public CompletionStage<Response> getTableVersion(
       String share, String schema, String table, String startingTimestamp) {
-    Response res = Response.ok().build();
-    return CompletableFuture.completedFuture(res);
+    var version = deltaSharesService.getTableVersion(share, schema, table, Optional.ofNullable(startingTimestamp));
+    return version.thenApplyAsync(o -> optionalToNotFound(o, ct -> Response.ok().header("Delta-Table-Version", ct).build())).exceptionallyAsync(exceptionToResponse);
   }
 
   @Override

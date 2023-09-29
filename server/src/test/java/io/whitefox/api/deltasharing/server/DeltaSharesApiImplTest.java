@@ -28,12 +28,16 @@ public class DeltaSharesApiImplTest {
     var storageManager = new InMemoryStorageManager(List.of(new PShare(
         "name",
         "key",
+<<<<<<< HEAD
         Map.of(
             "default",
             new PSchema(
                 "default",
                 List.of(new PTable("table1", "location1", "default", "name")),
                 "name")))));
+=======
+        Map.of("default", new PSchema("default", List.of(new PTable("table1", "src/test/resources/delta/samples/delta-table")))))));
+>>>>>>> daeeed7 (draft of getTableVersionAPI)
     QuarkusMock.installMockForType(storageManager, StorageManager.class);
   }
 

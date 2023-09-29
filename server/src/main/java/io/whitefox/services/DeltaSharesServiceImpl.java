@@ -53,6 +53,13 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
   }
 
   @Override
+  public CompletionStage<Optional<Integer>> getTableVersion(
+      String share, String schema, String table, Optional<String> startingTimestamp) {
+    var tableRes = storageManager.getTableVersion(share, schema, table, startingTimestamp);
+    return tableRes.thenApplyAsync(v -> v);
+  }
+
+  @Override
   public CompletionStage<ContentAndToken<List<Share>>> listShares(
       Optional<ContentAndToken.Token> nextPageToken, Optional<Integer> maxResults) {
     Integer finalMaxResults = maxResults.orElse(defaultMaxResults);

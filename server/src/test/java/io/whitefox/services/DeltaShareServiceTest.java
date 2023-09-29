@@ -21,6 +21,38 @@ public class DeltaShareServiceTest {
   Integer defaultMaxResults = 10;
 
   @Test
+  public void getTableVersionForAnonExistingTable()
+      throws ExecutionException, InterruptedException {
+    var shares = List.of(new PShare("share1", "key", Collections.emptyMap()));
+    StorageManager storageManager = new InMemoryStorageManager(shares);
+    DeltaSharesService deltaSharesService =
+        new DeltaSharesServiceImpl(storageManager, defaultMaxResults, encoder);
+    Optional<Integer> version = deltaSharesService
+        .getTableVersion("share1", "schema1", "table1", Optional.empty())
+        .toCompletableFuture()
+        .get();
+    assertTrue(version.isEmpty());
+  }
+
+  @Test
+  public void getTableVersionWithoutTimestamp() throws ExecutionException, InterruptedException {
+    var schemas = new HashMap<String, PSchema>();
+    var schema = new PSchema(
+        "name", List.of(new PTable("table1", "src/test/resources/delta/samples/delta-table")));
+    schemas.put("schema1", schema);
+    var shares = List.of(new PShare("share1", "key", schemas));
+    StorageManager storageManager = new InMemoryStorageManager(shares);
+    DeltaSharesService deltaSharesService =
+        new DeltaSharesServiceImpl(storageManager, defaultMaxResults, encoder);
+    Optional<Integer> version = deltaSharesService
+        .getTableVersion("share1", "schema1", "table1", Optional.empty())
+        .toCompletableFuture()
+        .get();
+    assertTrue(version.isPresent());
+    assertEquals(0, version.get());
+  }
+
+  @Test
   public void getUnknownShare() throws ExecutionException, InterruptedException {
     DeltaSharesService deltaSharesService =
         new DeltaSharesServiceImpl(new InMemoryStorageManager(), defaultMaxResults, encoder);
