@@ -21,7 +21,7 @@ public class DeltaShareServiceTest {
   Integer defaultMaxResults = 10;
 
   @Test
-  public void getTableVersionForAnonExistingTable()
+  public void getTableVersionForANonExistingTable()
       throws ExecutionException, InterruptedException {
     var shares = List.of(new PShare("share1", "key", Collections.emptyMap()));
     StorageManager storageManager = new InMemoryStorageManager(shares);
@@ -38,7 +38,7 @@ public class DeltaShareServiceTest {
   public void getTableVersionWithoutTimestamp() throws ExecutionException, InterruptedException {
     var schemas = new HashMap<String, PSchema>();
     var schema = new PSchema(
-        "name", List.of(new PTable("table1", "src/test/resources/delta/samples/delta-table")));
+        "name", List.of(new PTable("table1", "src/test/resources/delta/samples/delta-table", "schema1", "share1")), "share1");
     schemas.put("schema1", schema);
     var shares = List.of(new PShare("share1", "key", schemas));
     StorageManager storageManager = new InMemoryStorageManager(shares);

@@ -1,5 +1,6 @@
 package io.whitefox.services;
 
+import io.whitefox.api.deltasharing.DeltaSharedTable;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.api.deltasharing.model.Schema;
 import io.whitefox.api.deltasharing.model.Share;
@@ -12,6 +13,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -55,8 +57,10 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
   @Override
   public CompletionStage<Optional<Integer>> getTableVersion(
       String share, String schema, String table, Optional<String> startingTimestamp) {
-    var tableRes = storageManager.getTableVersion(share, schema, table, startingTimestamp);
-    return tableRes.thenApplyAsync(v -> v);
+    var tableRes = storageManager.getTable(share, schema, table);
+    return tableRes.thenApply(t -> t.map(DeltaSharedTable::new)).thenCompose(odt -> odt.map(
+            dt -> dt.getTableVersion(startingTimestamp).thenApply(Optional::ofNullable))
+        .orElseGet(() -> CompletableFuture.completedFuture(Optional.empty())));
   }
 
   @Override
