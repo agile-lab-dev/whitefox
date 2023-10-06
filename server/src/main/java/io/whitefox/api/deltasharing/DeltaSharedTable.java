@@ -34,15 +34,14 @@ public class DeltaSharedTable {
     return getSnapshot(startingTimestamp).thenApply(Snapshot::getMetadata);
   }
 
-  public CompletionStage<Integer> getTableVersion(Optional<String> startingTimestamp) {
-    return getSnapshot(startingTimestamp)
-        .thenApply(s -> Long.valueOf(s.getVersion()).intValue());
+  public CompletionStage<Long> getTableVersion(Optional<String> startingTimestamp) {
+    return getSnapshot(startingTimestamp).thenApply(Snapshot::getVersion);
   }
 
   private CompletionStage<Snapshot> getSnapshot(Optional<String> startingTimestamp) {
     return startingTimestamp
         .map(this::getTimestamp)
-        .map(t -> getSnapshotForTimestampAsOf(t.getTime()))
+        .map(t -> getSnapshotForTimestampAsOf(t.getTime()).thenApply(o -> o.orElseThrow(() -> new RuntimeException("Could not find snapshot for provided timestamp."))))
         .orElse(getSnapshot());
   }
 
@@ -50,8 +49,11 @@ public class DeltaSharedTable {
     return deltaLog.thenApply(DeltaLog::snapshot);
   }
 
-  private CompletionStage<Snapshot> getSnapshotForTimestampAsOf(long l) {
-    return deltaLog.thenApply(d -> d.getSnapshotForTimestampAsOf(l));
+  private CompletionStage<Optional<Snapshot>> getSnapshotForTimestampAsOf(long l) {
+    return deltaLog
+        .thenApply(d -> Optional.of(d.getSnapshotForTimestampAsOf(l)))
+        .exceptionally(e ->
+                Optional.empty());
   }
 
   private Timestamp getTimestamp(String timestamp) {

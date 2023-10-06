@@ -32,7 +32,8 @@ public class DeltaSharesApiImplTest {
             "default",
             new PSchema(
                 "default",
-                List.of(new PTable("table1", "location1", "default", "name")),
+                List.of(new PTable(
+                    "table1", "src/test/resources/delta/samples/delta-table", "default", "name")),
                 "name")))));
     QuarkusMock.installMockForType(storageManager, StorageManager.class);
   }
@@ -181,5 +182,49 @@ public class DeltaSharesApiImplTest {
         .get("delta-api/v1/shares/{share}/all-tables", "name2")
         .then()
         .statusCode(404);
+  }
+
+  @Test
+  public void getTableVersion() {
+    given()
+        .when()
+        .filter(filter)
+        .get(
+            "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
+            "name",
+            "default",
+            "table1")
+        .then()
+        .statusCode(200)
+        .header("Delta-Table-Version", is("0"));
+  }
+
+  @Test
+  public void getTableVersionMissingTable() {
+    given()
+            .when()
+            .filter(filter)
+            .get(
+                    "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
+                    "name",
+                    "default",
+                    "table2")
+            .then()
+            .statusCode(404);
+  }
+
+  @Test
+  public void getTableVersionBadTimestamp() {
+    given()
+            .when()
+            .filter(filter)
+            .queryParam("startingTimestamp", "2024-10-20T10:15:30+01:00")
+            .get(
+                    "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
+                    "name",
+                    "default",
+                    "table1")
+            .then()
+            .statusCode(502);
   }
 }

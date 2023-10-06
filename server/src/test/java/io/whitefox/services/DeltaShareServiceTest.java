@@ -27,7 +27,7 @@ public class DeltaShareServiceTest {
     StorageManager storageManager = new InMemoryStorageManager(shares);
     DeltaSharesService deltaSharesService =
         new DeltaSharesServiceImpl(storageManager, defaultMaxResults, encoder);
-    Optional<Integer> version = deltaSharesService
+    Optional<Long> version = deltaSharesService
         .getTableVersion("share1", "schema1", "table1", Optional.empty())
         .toCompletableFuture()
         .get();
@@ -38,19 +38,42 @@ public class DeltaShareServiceTest {
   public void getTableVersionWithoutTimestamp() throws ExecutionException, InterruptedException {
     var schemas = new HashMap<String, PSchema>();
     var schema = new PSchema(
-        "name", List.of(new PTable("table1", "src/test/resources/delta/samples/delta-table", "schema1", "share1")), "share1");
+        "name",
+        List.of(new PTable(
+            "delta-table", "src/test/resources/delta/samples/delta-table", "schema1", "share1")),
+        "share1");
     schemas.put("schema1", schema);
     var shares = List.of(new PShare("share1", "key", schemas));
     StorageManager storageManager = new InMemoryStorageManager(shares);
     DeltaSharesService deltaSharesService =
         new DeltaSharesServiceImpl(storageManager, defaultMaxResults, encoder);
-    Optional<Integer> version = deltaSharesService
-        .getTableVersion("share1", "schema1", "table1", Optional.empty())
+    Optional<Long> version = deltaSharesService
+        .getTableVersion("share1", "schema1", "delta-table", Optional.empty())
         .toCompletableFuture()
         .get();
     assertTrue(version.isPresent());
     assertEquals(0, version.get());
   }
+
+  // TODO: new table version 2
+  //  @Test
+  //  public void getTableVersionWithTimestamp() throws ExecutionException, InterruptedException {
+  //    var schemas = new HashMap<String, PSchema>();
+  //    var schema = new PSchema(
+  //            "name", List.of(new PTable("table1", "src/test/resources/delta/samples/delta-table",
+  // "schema1", "share1")), "share1");
+  //    schemas.put("schema1", schema);
+  //    var shares = List.of(new PShare("share1", "key", schemas));
+  //    StorageManager storageManager = new InMemoryStorageManager(shares);
+  //    DeltaSharesService deltaSharesService =
+  //            new DeltaSharesServiceImpl(storageManager, defaultMaxResults, encoder);
+  //    Optional<Integer> version = deltaSharesService
+  //            .getTableVersion("share1", "schema1", "table1", Optional.empty())
+  //            .toCompletableFuture()
+  //            .get();
+  //    assertTrue(version.isPresent());
+  //    assertEquals(0, version.get());
+  //  }
 
   @Test
   public void getUnknownShare() throws ExecutionException, InterruptedException {
