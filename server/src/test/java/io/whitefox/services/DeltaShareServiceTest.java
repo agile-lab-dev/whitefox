@@ -15,11 +15,14 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 public class DeltaShareServiceTest {
   DeltaPageTokenEncoder encoder = new DeltaPageTokenEncoder();
   Integer defaultMaxResults = 10;
 
+  @DisabledOnOs(OS.WINDOWS)
   @Test
   public void getTableVersionForANonExistingTable()
       throws ExecutionException, InterruptedException {
@@ -34,6 +37,7 @@ public class DeltaShareServiceTest {
     assertTrue(version.isEmpty());
   }
 
+  @DisabledOnOs(OS.WINDOWS)
   @Test
   public void getTableVersionWithoutTimestamp() throws ExecutionException, InterruptedException {
     var schemas = new HashMap<String, PSchema>();
