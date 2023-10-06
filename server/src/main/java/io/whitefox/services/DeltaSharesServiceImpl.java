@@ -54,13 +54,8 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
         .thenApplyAsync(o -> o.map(DeltaSharesServiceImpl::pShareToShare));
   }
 
-  @Override
-  public CompletionStage<Optional<Long>> getTableVersion(
-      String share, String schema, String table, Optional<String> startingTimestamp) {
-    var tableRes = storageManager.getTable(share, schema, table);
-    return tableRes.thenApply(t -> t.map(DeltaSharedTable::new)).thenCompose(odt -> odt.map(
-            dt -> dt.getTableVersion(startingTimestamp).thenApply(Optional::ofNullable))
-        .orElseGet(() -> CompletableFuture.completedFuture(Optional.empty())));
+  public CompletionStage<Optional<PTable>> getTable(String share, String schema, String table) {
+    return storageManager.getTable(share, schema, table);
   }
 
   @Override
