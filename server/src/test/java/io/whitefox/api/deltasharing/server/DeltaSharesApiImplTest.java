@@ -202,29 +202,29 @@ public class DeltaSharesApiImplTest {
   @Test
   public void getTableVersionMissingTable() {
     given()
-            .when()
-            .filter(filter)
-            .get(
-                    "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
-                    "name",
-                    "default",
-                    "table2")
-            .then()
-            .statusCode(404);
+        .when()
+        .filter(filter)
+        .get(
+            "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
+            "name",
+            "default",
+            "table2")
+        .then()
+        .statusCode(404);
   }
 
   @Test
   public void getTableVersionBadTimestamp() {
     given()
-            .when()
-            .filter(filter)
-            .queryParam("startingTimestamp", "2024-10-20T10:15:30+01:00")
-            .get(
-                    "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
-                    "name",
-                    "default",
-                    "table1")
-            .then()
-            .statusCode(502);
+        .when()
+        .filter(filter)
+        .queryParam("startingTimestamp", "2024-10-20T10:15:30+01:00")
+        .get(
+            "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
+            "name",
+            "default",
+            "table1")
+        .then()
+        .statusCode(502);
   }
 }
