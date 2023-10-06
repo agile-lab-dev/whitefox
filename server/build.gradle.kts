@@ -75,6 +75,7 @@ tasks.register<GenerateTask>("openapiGenerateDeltaSharing") {
 }
 
 tasks.withType<Test> {
+    forkEvery = 1
     systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
 }
 tasks.withType<JavaCompile> {
