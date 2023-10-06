@@ -14,6 +14,7 @@ import java.util.function.Function;
 public class DeltaSharesApiImpl implements DeltaApiApi {
 
   private final DeltaSharesService deltaSharesService;
+  private static final String DELTA_TABLE_VERSION = "Delta-Table-Version";
   private static final Function<Throwable, Response> exceptionToResponse =
       t -> Response.status(Response.Status.BAD_GATEWAY)
           .entity(new CommonErrorResponse()
@@ -69,7 +70,7 @@ public class DeltaSharesApiImpl implements DeltaApiApi {
         share, schema, table, Optional.ofNullable(startingTimestamp));
     return version
         .thenApplyAsync(o -> optionalToNotFound(
-            o, ct -> Response.ok().header("Delta-Table-Version", ct).build()))
+            o, ct -> Response.ok().header(DELTA_TABLE_VERSION, ct).build()))
         .exceptionallyAsync(exceptionToResponse);
   }
 
