@@ -75,9 +75,26 @@ tasks.register<GenerateTask>("openapiGenerateDeltaSharing") {
 }
 
 tasks.withType<Test> {
-    forkEvery = 1
     systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
+    forkEvery = 1
 }
+
+val runAllOtherTests by tasks.creating(Test::class) {
+    description = "Runs all other test classes by not forking the jvm thread."
+    filter {
+        excludeTestsMatching("io.whitefox.api.deltasharing.DeltaSharedTableTest.*")
+    }
+    forkEvery = 0
+}
+
+
+val runDeltaTests by tasks.creating(Test::class) {
+    description = "Runs delta test classes by forking the jvm thread."
+    filter {
+        includeTestsMatching("io.whitefox.api.deltasharing.DeltaSharedTableTest.*")
+    }
+}
+
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-parameters")
