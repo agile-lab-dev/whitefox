@@ -7,8 +7,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class DeltaShareTableLoader implements TableLoader<DeltaSharedTable> {
 
-    @Override
-    public DeltaSharedTable loadTable(PTable pTable) {
-        return new DeltaSharedTable(pTable);
-    }
+  @Override
+  public DeltaSharedTable loadTable(PTable pTable) {
+    return new DeltaSharedTable(pTable);
+  }
 }

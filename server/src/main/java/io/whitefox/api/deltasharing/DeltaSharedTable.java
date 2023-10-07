@@ -41,9 +41,10 @@ public class DeltaSharedTable {
   private CompletionStage<Snapshot> getSnapshot(Optional<String> startingTimestamp) {
     return startingTimestamp
         .map(this::getTimestamp)
-        .map(t -> getSnapshotForTimestampAsOf(t.getTime())
-            .thenApply(o -> o.orElseThrow(
-                () -> new RuntimeException("Could not find snapshot for provided timestamp."))))
+        .map(t -> t.thenApply(Timestamp::getTime))
+        .map(t -> t.thenCompose(this::getSnapshotForTimestampAsOf))
+        .map(snapshot -> snapshot.thenApply(s -> s.orElseThrow(
+            () -> new RuntimeException("Could not find snapshot for provided timestamp."))))
         .orElse(getSnapshot());
   }
 
@@ -52,14 +53,29 @@ public class DeltaSharedTable {
   }
 
   private CompletionStage<Optional<Snapshot>> getSnapshotForTimestampAsOf(long l) {
-    return deltaLog
-        .thenApply(d -> Optional.of(d.getSnapshotForTimestampAsOf(l)))
-        .exceptionally(e -> Optional.empty());
+    try {
+      var snapshot = deltaLog.thenApply(d -> Optional.of(d.getSnapshotForTimestampAsOf(l)));
+      return snapshot.handle((s, e) -> {
+        if (e instanceof IllegalArgumentException) {
+          // IllegalArgumentException - if the timestamp is before the earliest possible snapshot or
+          // after the latest possible snapshot
+          return Optional.empty();
+        } else return s;
+      });
+    } catch (RuntimeException e) {
+      // RuntimeException - if the snapshot is unable to be recreated
+      return CompletableFuture.failedFuture(e);
+    }
   }
 
-  private Timestamp getTimestamp(String timestamp) {
-    return new Timestamp(OffsetDateTime.parse(timestamp, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-        .toInstant()
-        .toEpochMilli());
+  private CompletionStage<Timestamp> getTimestamp(String timestamp) {
+    try {
+      return CompletableFuture.completedStage(
+          new Timestamp(OffsetDateTime.parse(timestamp, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+              .toInstant()
+              .toEpochMilli()));
+    } catch (Throwable e) {
+      return CompletableFuture.failedFuture(e);
+    }
   }
 }

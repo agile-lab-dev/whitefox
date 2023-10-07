@@ -4,5 +4,5 @@ import io.whitefox.persistence.memory.PTable;
 
 public interface TableLoader<T> {
 
-    T loadTable(PTable pTable);
+  T loadTable(PTable pTable);
 }

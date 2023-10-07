@@ -1,6 +1,5 @@
 package io.whitefox.services;
 
-import io.whitefox.api.deltasharing.DeltaSharedTable;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.api.deltasharing.model.Schema;
 import io.whitefox.api.deltasharing.model.Share;
@@ -13,7 +12,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 

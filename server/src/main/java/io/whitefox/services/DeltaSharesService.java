@@ -4,7 +4,6 @@ import io.whitefox.api.deltasharing.model.Schema;
 import io.whitefox.api.deltasharing.model.Share;
 import io.whitefox.api.deltasharing.model.Table;
 import io.whitefox.persistence.memory.PTable;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;

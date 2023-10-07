@@ -15,8 +15,6 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 
 public class DeltaShareServiceTest {
   DeltaPageTokenEncoder encoder = new DeltaPageTokenEncoder();
