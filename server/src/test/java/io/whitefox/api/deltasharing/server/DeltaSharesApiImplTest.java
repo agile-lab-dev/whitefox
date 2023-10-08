@@ -237,15 +237,15 @@ public class DeltaSharesApiImplTest {
   @Test
   public void getTableVersionBadTimestamp() {
     given()
-            .when()
-            .filter(filter)
-            .queryParam("startingTimestamp", "acbsadqwafsdas")
-            .get(
-                    "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
-                    "name",
-                    "default",
-                    "table1")
-            .then()
-            .statusCode(502);
+        .when()
+        .filter(filter)
+        .queryParam("startingTimestamp", "acbsadqwafsdas")
+        .get(
+            "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
+            "name",
+            "default",
+            "table1")
+        .then()
+        .statusCode(502);
   }
 }

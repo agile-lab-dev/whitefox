@@ -3,7 +3,6 @@ package io.whitefox.api.deltasharing.loader;
 import io.whitefox.api.deltasharing.DeltaSharedTable;
 import io.whitefox.persistence.memory.PTable;
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped

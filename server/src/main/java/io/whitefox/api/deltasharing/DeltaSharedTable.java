@@ -21,7 +21,6 @@ public class DeltaSharedTable {
   private final Path dataPath;
 
   private DeltaSharedTable(DeltaLog deltaLog, Configuration configuration, Path dataPath) {
-
     this.configuration = configuration;
     this.dataPath = dataPath;
     this.deltaLog = deltaLog;
@@ -30,11 +29,18 @@ public class DeltaSharedTable {
   public static CompletionStage<DeltaSharedTable> of(PTable table) {
     var configuration = new Configuration();
     var dataPath = Paths.get(table.location());
-    return CompletableFuture.supplyAsync(
-            () -> DeltaLog.forTable(configuration, dataPath.toString()))
+    return CompletableFuture.supplyAsync(() -> {
+          var dt = DeltaLog.forTable(configuration, dataPath.toString());
+          var snap = dt.update();
+          if (snap.getVersion() == -1) {
+            throw new IllegalArgumentException(
+                String.format("Cannot find a delta table at %s", dataPath));
+          } else {
+            return dt;
+          }
+        })
         .thenApplyAsync(dl -> new DeltaSharedTable(dl, configuration, dataPath));
   }
-
 
   public CompletionStage<Optional<Metadata>> getMetadata(Optional<String> startingTimestamp) {
     return getSnapshot(startingTimestamp).thenApply(o -> o.map(Snapshot::getMetadata));
