@@ -219,7 +219,7 @@ public class DeltaSharesApiImplTest {
 
   @DisabledOnOs(OS.WINDOWS)
   @Test
-  public void getTableVersionBadTimestamp() {
+  public void getTableVersionNotFoundTimestamp() {
     given()
         .when()
         .filter(filter)
@@ -230,6 +230,22 @@ public class DeltaSharesApiImplTest {
             "default",
             "table1")
         .then()
-        .statusCode(502);
+        .statusCode(404);
+  }
+
+  @DisabledOnOs(OS.WINDOWS)
+  @Test
+  public void getTableVersionBadTimestamp() {
+    given()
+            .when()
+            .filter(filter)
+            .queryParam("startingTimestamp", "acbsadqwafsdas")
+            .get(
+                    "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
+                    "name",
+                    "default",
+                    "table1")
+            .then()
+            .statusCode(502);
   }
 }

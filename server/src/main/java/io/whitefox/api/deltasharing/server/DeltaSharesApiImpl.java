@@ -1,7 +1,6 @@
 package io.whitefox.api.deltasharing.server;
 
 import io.quarkus.runtime.util.ExceptionUtil;
-import io.whitefox.api.deltasharing.loader.DeltaShareTableLoader;
 import io.whitefox.api.deltasharing.model.*;
 import io.whitefox.services.ContentAndToken;
 import io.whitefox.services.DeltaSharesService;
@@ -78,15 +77,11 @@ public class DeltaSharesApiImpl implements DeltaApiApi {
   public CompletionStage<Response> getTableVersion(
       String share, String schema, String table, String startingTimestamp) {
     return deltaSharesService
-        .getTable(share, schema, table)
-        .thenCompose(o -> optionalToNotFoundAsync(o, pTable -> new DeltaShareTableLoader()
-            .loadTable(pTable)
-            .getTableVersion(Optional.ofNullable(startingTimestamp))
-            .thenApply(t -> Response.ok()
-                .status(Response.Status.OK.getStatusCode())
-                .header(DELTA_TABLE_VERSION_HEADER, t)
-                .build())
-            .exceptionally(exceptionToResponse)))
+        .getTableVersion(share, schema, table, startingTimestamp)
+        .thenApply(opt -> optionalToNotFound(opt, t -> Response.ok()
+            .status(Response.Status.OK.getStatusCode())
+            .header(DELTA_TABLE_VERSION_HEADER, t)
+            .build()))
         .exceptionally(exceptionToResponse);
   }
 

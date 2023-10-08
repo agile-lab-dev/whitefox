@@ -28,7 +28,7 @@ public class DeltaSharedTableTest {
   @Test
   void getTableVersion() throws ExecutionException, InterruptedException {
     var PTable = new PTable("delta-table", tablePath("delta-table"), "default", "share1");
-    var DTable = new DeltaSharedTable(PTable);
+    var DTable = DeltaSharedTable.of(PTable).toCompletableFuture().get();
     var version = DTable.getTableVersion(Optional.empty());
     assertEquals(0, version.toCompletableFuture().get());
   }
@@ -37,15 +37,15 @@ public class DeltaSharedTableTest {
   void getTableVersionNonExistingTable() throws ExecutionException, InterruptedException {
     var PTable =
         new PTable("delta-table", tablePath("delta-table-not-exists"), "default", "share1");
-    var DTable = new DeltaSharedTable(PTable);
+    var DTable = DeltaSharedTable.of(PTable).toCompletableFuture().get();
     var version = DTable.getTableVersion(Optional.empty());
     assertEquals(-1, version.toCompletableFuture().get());
   }
 
   @Test
-  void getTableVersionWithTimestamp() {
+  void getTableVersionWithTimestamp() throws ExecutionException, InterruptedException {
     var PTable = new PTable("delta-table", tablePath("delta-table"), "default", "share1");
-    var DTable = new DeltaSharedTable(PTable);
+    var DTable = DeltaSharedTable.of(PTable).toCompletableFuture().get();
     var version = DTable.getTableVersion(Optional.of("2023-09-30T10:15:30+01:00"));
     Exception e = assertThrows(
         ExecutionException.class, () -> version.toCompletableFuture().get());
@@ -53,9 +53,9 @@ public class DeltaSharedTableTest {
   }
 
   @Test
-  void getTableVersionWithBadTimestamp() {
+  void getTableVersionWithBadTimestamp() throws ExecutionException, InterruptedException {
     var PTable = new PTable("delta-table", tablePath("delta-table"), "default", "share1");
-    var DTable = new DeltaSharedTable(PTable);
+    var DTable = DeltaSharedTable.of(PTable).toCompletableFuture().get();
     var version = DTable.getTableVersion(Optional.of("2024-10-20T10:15:30+01:00"));
     Exception e = assertThrows(
         ExecutionException.class, () -> version.toCompletableFuture().get());

@@ -1,6 +1,7 @@
 package io.whitefox.services;
 
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
+import io.whitefox.api.deltasharing.loader.DeltaShareTableLoader;
 import io.whitefox.api.deltasharing.model.Schema;
 import io.whitefox.api.deltasharing.model.Share;
 import io.whitefox.api.deltasharing.model.Table;
@@ -12,6 +13,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -21,6 +23,7 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
   private final StorageManager storageManager;
   private final Integer defaultMaxResults;
   private final DeltaPageTokenEncoder encoder;
+  private final DeltaShareTableLoader tableLoader;
 
   private static Share pShareToShare(PShare p) {
     return new Share().id(p.id()).name(p.name());
@@ -39,10 +42,12 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
       StorageManager storageManager,
       @ConfigProperty(name = "io.delta.sharing.api.server.defaultMaxResults")
           Integer defaultMaxResults,
-      DeltaPageTokenEncoder encoder) {
+      DeltaPageTokenEncoder encoder,
+      DeltaShareTableLoader tableLoader) {
     this.storageManager = storageManager;
     this.defaultMaxResults = defaultMaxResults;
     this.encoder = encoder;
+    this.tableLoader = tableLoader;
   }
 
   @Override
@@ -52,8 +57,14 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
         .thenApplyAsync(o -> o.map(DeltaSharesServiceImpl::pShareToShare));
   }
 
-  public CompletionStage<Optional<PTable>> getTable(String share, String schema, String table) {
-    return storageManager.getTable(share, schema, table);
+  @Override
+  public CompletionStage<Optional<Long>> getTableVersion(
+      String share, String schema, String table, String startingTimestamp) {
+    return storageManager.getTable(share, schema, table).thenCompose(optTable -> optTable
+        .map(t -> tableLoader
+            .loadTable(t)
+            .thenCompose(dst -> dst.getTableVersion(Optional.ofNullable(startingTimestamp))))
+        .orElse(CompletableFuture.completedFuture(Optional.empty())));
   }
 
   @Override

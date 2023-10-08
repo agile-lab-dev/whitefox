@@ -5,6 +5,7 @@ import io.delta.standalone.Snapshot;
 import io.delta.standalone.actions.Metadata;
 import io.whitefox.persistence.memory.PTable;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,56 +16,53 @@ import org.apache.hadoop.conf.Configuration;
 
 public class DeltaSharedTable {
 
-  private final CompletionStage<DeltaLog> deltaLog;
+  private final DeltaLog deltaLog;
   private final Configuration configuration;
   private final Path dataPath;
 
-  public DeltaSharedTable(PTable pTable) {
-    this.configuration = new Configuration();
-    this.dataPath = Path.of(pTable.location());
-    this.deltaLog = deltaLog();
+  private DeltaSharedTable(DeltaLog deltaLog, Configuration configuration, Path dataPath) {
+
+    this.configuration = configuration;
+    this.dataPath = dataPath;
+    this.deltaLog = deltaLog;
   }
 
-  private CompletionStage<DeltaLog> deltaLog() {
+  public static CompletionStage<DeltaSharedTable> of(PTable table) {
+    var configuration = new Configuration();
+    var dataPath = Paths.get(table.location());
     return CompletableFuture.supplyAsync(
-        () -> DeltaLog.forTable(configuration, dataPath.toString()));
+            () -> DeltaLog.forTable(configuration, dataPath.toString()))
+        .thenApplyAsync(dl -> new DeltaSharedTable(dl, configuration, dataPath));
   }
 
-  public CompletionStage<Metadata> getMetadata(Optional<String> startingTimestamp) {
-    return getSnapshot(startingTimestamp).thenApply(Snapshot::getMetadata);
+
+  public CompletionStage<Optional<Metadata>> getMetadata(Optional<String> startingTimestamp) {
+    return getSnapshot(startingTimestamp).thenApply(o -> o.map(Snapshot::getMetadata));
   }
 
-  public CompletionStage<Long> getTableVersion(Optional<String> startingTimestamp) {
-    return getSnapshot(startingTimestamp).thenApply(Snapshot::getVersion);
+  public CompletionStage<Optional<Long>> getTableVersion(Optional<String> startingTimestamp) {
+    return getSnapshot(startingTimestamp).thenApply(o -> o.map(Snapshot::getVersion));
   }
 
-  private CompletionStage<Snapshot> getSnapshot(Optional<String> startingTimestamp) {
+  private CompletionStage<Optional<Snapshot>> getSnapshot(Optional<String> startingTimestamp) {
     return startingTimestamp
         .map(this::getTimestamp)
         .map(t -> t.thenApply(Timestamp::getTime))
         .map(t -> t.thenCompose(this::getSnapshotForTimestampAsOf))
-        .map(snapshot -> snapshot.thenApply(s -> s.orElseThrow(
-            () -> new RuntimeException("Could not find snapshot for provided timestamp."))))
-        .orElse(getSnapshot());
+        .orElse(getSnapshot().thenApply(Optional::of));
   }
 
   private CompletionStage<Snapshot> getSnapshot() {
-    return deltaLog.thenApply(DeltaLog::snapshot);
+    return CompletableFuture.completedFuture(deltaLog.snapshot());
   }
 
   private CompletionStage<Optional<Snapshot>> getSnapshotForTimestampAsOf(long l) {
     try {
-      var snapshot = deltaLog.thenApply(d -> Optional.of(d.getSnapshotForTimestampAsOf(l)));
-      return snapshot.handle((s, e) -> {
-        if (e instanceof IllegalArgumentException) {
-          // IllegalArgumentException - if the timestamp is before the earliest possible snapshot or
-          // after the latest possible snapshot
-          return Optional.empty();
-        } else return s;
-      });
-    } catch (RuntimeException e) {
-      // RuntimeException - if the snapshot is unable to be recreated
-      return CompletableFuture.failedFuture(e);
+      return CompletableFuture.completedStage(Optional.of(deltaLog.getSnapshotForTimestampAsOf(l)));
+    } catch (IllegalArgumentException iea) {
+      return CompletableFuture.completedFuture(Optional.empty());
+    } catch (Throwable t) {
+      return CompletableFuture.failedFuture(t);
     }
   }
 
