@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.resolver.buildSrcSourceRootsFilePath
+
 // Define Java conventions for this organization.
 plugins {
     java
@@ -27,8 +29,17 @@ spotless {
     }
 }
 
+val generatedSources = listOf("io/whitefox/api/model/**", "io/whitefox/api/deltasharing/model/**")
+
 tasks.jacocoTestReport {
     dependsOn(tasks.check) // tests are required to run before generating the report
+    classDirectories.setFrom(
+            files(classDirectories.files.map {
+                fileTree(it) {
+                    exclude("io/whitefox/api/model/**", "io/whitefox/api/deltasharing/model/**")
+                }
+            })
+    )
 }
 
 java {
