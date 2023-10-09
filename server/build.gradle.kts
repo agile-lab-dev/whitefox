@@ -93,8 +93,9 @@ val deltaTest = tasks.register<Test>("deltaTest") {
     description = "Runs delta test classes by forking the jvm."
     group = "verification"
     filter {
-        includeTestsMatching("io.whitefox.api.deltasharing.DeltaSharedTableTest.*")
-        includeTestsMatching("io.whitefox.services.DeltaLogServiceTest.*")
+        deltaTestClasses.forEach { s ->
+            includeTestsMatching(s)
+        }
     }
     forkEvery = 1
 }

@@ -63,7 +63,7 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
     return storageManager.getTable(share, schema, table).thenCompose(optTable -> optTable
         .map(t -> tableLoader
             .loadTable(t)
-            .thenCompose(dst -> dst.getTableVersion(Optional.ofNullable(startingTimestamp))))
+            .thenApply(dst -> dst.getTableVersion(Optional.ofNullable(startingTimestamp))))
         .orElse(CompletableFuture.completedFuture(Optional.empty())));
   }
 

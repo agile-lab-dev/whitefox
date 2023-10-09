@@ -42,44 +42,37 @@ public class DeltaSharedTable {
         .thenApplyAsync(dl -> new DeltaSharedTable(dl, configuration, dataPath));
   }
 
-  public CompletionStage<Optional<Metadata>> getMetadata(Optional<String> startingTimestamp) {
-    return getSnapshot(startingTimestamp).thenApply(o -> o.map(Snapshot::getMetadata));
+  public Optional<Metadata> getMetadata(Optional<String> startingTimestamp) {
+    return getSnapshot(startingTimestamp).map(Snapshot::getMetadata);
   }
 
-  public CompletionStage<Optional<Long>> getTableVersion(Optional<String> startingTimestamp) {
-    return getSnapshot(startingTimestamp).thenApply(o -> o.map(Snapshot::getVersion));
+  public Optional<Long> getTableVersion(Optional<String> startingTimestamp) {
+    return getSnapshot(startingTimestamp).map(Snapshot::getVersion);
   }
 
-  private CompletionStage<Optional<Snapshot>> getSnapshot(Optional<String> startingTimestamp) {
+  private Optional<Snapshot> getSnapshot(Optional<String> startingTimestamp) {
     return startingTimestamp
         .map(this::getTimestamp)
-        .map(t -> t.thenApply(Timestamp::getTime))
-        .map(t -> t.thenCompose(this::getSnapshotForTimestampAsOf))
-        .orElse(getSnapshot().thenApply(Optional::of));
+        .map(Timestamp::getTime)
+        .map(this::getSnapshotForTimestampAsOf)
+        .orElse(Optional.of(getSnapshot()));
   }
 
-  private CompletionStage<Snapshot> getSnapshot() {
-    return CompletableFuture.completedFuture(deltaLog.snapshot());
+  private Snapshot getSnapshot() {
+    return deltaLog.snapshot();
   }
 
-  private CompletionStage<Optional<Snapshot>> getSnapshotForTimestampAsOf(long l) {
+  private Optional<Snapshot> getSnapshotForTimestampAsOf(long l) {
     try {
-      return CompletableFuture.completedStage(Optional.of(deltaLog.getSnapshotForTimestampAsOf(l)));
+      return Optional.of(deltaLog.getSnapshotForTimestampAsOf(l));
     } catch (IllegalArgumentException iea) {
-      return CompletableFuture.completedFuture(Optional.empty());
-    } catch (Throwable t) {
-      return CompletableFuture.failedFuture(t);
+      return Optional.empty();
     }
   }
 
-  private CompletionStage<Timestamp> getTimestamp(String timestamp) {
-    try {
-      return CompletableFuture.completedStage(
-          new Timestamp(OffsetDateTime.parse(timestamp, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-              .toInstant()
-              .toEpochMilli()));
-    } catch (Throwable e) {
-      return CompletableFuture.failedFuture(e);
-    }
+  private Timestamp getTimestamp(String timestamp) {
+    return new Timestamp(OffsetDateTime.parse(timestamp, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+        .toInstant()
+        .toEpochMilli());
   }
 }
