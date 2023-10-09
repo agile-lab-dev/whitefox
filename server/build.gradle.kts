@@ -101,6 +101,7 @@ val deltaTest = tasks.register<Test>("deltaTest") {
 }
 tasks.check {
     dependsOn(deltaTest)
+    finalizedBy(tasks.jacocoTestReport)
 }
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
