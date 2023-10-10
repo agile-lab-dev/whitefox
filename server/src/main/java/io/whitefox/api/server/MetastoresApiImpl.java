@@ -3,13 +3,44 @@ package io.whitefox.api.server;
 import io.whitefox.api.model.generated.CreateMetastore;
 import io.whitefox.api.model.generated.UpdateMetastore;
 import io.whitefox.api.server.generated.MetastoresApi;
+import io.quarkus.security.identity.SecurityIdentity;
+import io.whitefox.api.deltasharing.Mappers;
+import io.whitefox.api.model.UpdateMetastore;
+import io.whitefox.core.MetastoreType;
+import io.whitefox.core.Principal;
+import io.whitefox.core.services.MetastoreService;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
-public class MetastoresApiImpl implements MetastoresApi {
+public class MetastoresApiImpl implements MetastoresApi, ApiUtils {
+
+  private final MetastoreService metastoreService;
+
+  @Inject
+  public MetastoresApiImpl(MetastoreService metastoreService) {
+    this.metastoreService = metastoreService;
+  }
+
   @Override
-  public Response createMetastore(CreateMetastore createMetastore) {
-    Response res = Response.ok().build();
-    return res;
+  public Response createMetastore(io.whitefox.api.model.CreateMetastore createMetastore) {
+    return wrapExceptions(
+        () -> Response.status(Response.Status.CREATED)
+            .entity(metastoreService.createStorageManager(
+                Mappers.api2createMetastore(createMetastore, getRequestPrincipal())))
+            .build(),
+        exceptionToResponse);
+  }
+
+  private static MetastoreType getMetastoreType(
+      io.whitefox.api.model.CreateMetastore.TypeEnum type) {
+    return switch (type) {
+      case GLUE -> MetastoreType.GLUE;
+      default -> throw new IllegalArgumentException("Unknown metastore type " + type.value());
+    };
+  }
+
+  private Principal getRequestPrincipal() {
+    return new Principal("Mr. Fox");
   }
 
   @Override

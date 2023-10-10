@@ -1,13 +1,12 @@
 package io.whitefox.persistence.memory;
 
 import io.whitefox.api.deltasharing.encoders.InvalidPageTokenException;
-import io.whitefox.core.ResultAndTotalSize;
-import io.whitefox.core.Schema;
-import io.whitefox.core.Share;
-import io.whitefox.core.Table;
+import io.whitefox.core.*;
+import io.whitefox.persistence.DuplicateKeyException;
 import io.whitefox.persistence.StorageManager;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,15 +18,23 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class InMemoryStorageManager implements StorageManager {
   private final ConcurrentMap<String, Share> shares;
+  private final ConcurrentMap<String, Metastore> metastores;
 
   @Inject
   public InMemoryStorageManager() {
     this.shares = new ConcurrentHashMap<>();
+    metastores = new ConcurrentHashMap<>();
+  }
+
+  public InMemoryStorageManager(List<Share> shares, List<Metastore> metastores) {
+    this.shares = new ConcurrentHashMap<>(
+        shares.stream().collect(Collectors.toMap(Share::name, Function.identity())));
+    this.metastores = new ConcurrentHashMap<>(
+        metastores.stream().collect(Collectors.toMap(Metastore::name, Function.identity())));
   }
 
   public InMemoryStorageManager(List<Share> shares) {
-    this.shares = new ConcurrentHashMap<>(
-        shares.stream().collect(Collectors.toMap(Share::name, Function.identity())));
+    this(shares, Collections.emptyList());
   }
 
   @Override
@@ -154,5 +161,20 @@ public class InMemoryStorageManager implements StorageManager {
             totalSize));
       }
     });
+  }
+
+  @Override
+  public Metastore createMetastore(Metastore metastore) {
+    if (metastores.get(metastore.name()) != null) {
+      throw new DuplicateKeyException(
+          "Metastore with name " + metastore.name() + " already exists");
+    } else {
+      return metastores.put(metastore.name(), metastore);
+    }
+  }
+
+  @Override
+  public Optional<Metastore> getMetastore(String name) {
+    return Optional.ofNullable(metastores.get(name));
   }
 }

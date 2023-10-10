@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class DeltaSharesApiImpl implements DeltaApiApi {
+public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
   private final DeltaSharesService deltaSharesService;
   private final DeltaPageTokenEncoder tokenEncoder;
 
@@ -137,30 +137,6 @@ public class DeltaSharesApiImpl implements DeltaApiApi {
   }
 
   private static final String DELTA_TABLE_VERSION_HEADER = "Delta-Table-Version";
-  private static final Function<Throwable, Response> exceptionToResponse =
-      t -> Response.status(Response.Status.BAD_GATEWAY)
-          .entity(new CommonErrorResponse()
-              .errorCode("BAD GATEWAY")
-              .message(ExceptionUtil.generateStackTrace(t)))
-          .build();
-
-  private Response wrapExceptions(Supplier<Response> f, Function<Throwable, Response> mapper) {
-    try {
-      return f.get();
-    } catch (Throwable t) {
-      return mapper.apply(t);
-    }
-  }
-
-  private Response notFoundResponse() {
-    return Response.status(Response.Status.NOT_FOUND)
-        .entity(new CommonErrorResponse().errorCode("1").message("NOT FOUND"))
-        .build();
-  }
-
-  private <T> Response optionalToNotFound(Optional<T> opt, Function<T, Response> fn) {
-    return opt.map(fn).orElse(notFoundResponse());
-  }
 
   private Optional<ContentAndToken.Token> parseToken(String t) {
     return Optional.ofNullable(t).map(tokenEncoder::decodePageToken);
