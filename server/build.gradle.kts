@@ -47,10 +47,12 @@ dependencies {
     testImplementation("org.openapi4j:openapi-operation-restassured:1.0.7")
 }
 
+val generatedCodeDirectory = generatedCodeDirectory(layout, openApiCodeGenDir)
+
 val openapiGenerateWhitefox = tasks.register<GenerateTask>("openapiGenerateWhitefox") {
     generatorName.set("jaxrs-spec")
     inputSpec.set("$rootDir/docs/protocol/whitefox-protocol-api.yml")
-    outputDir.set(generatedCodeDirectory(layout, openApiCodeGenDir))
+    outputDir.set(generatedCodeDirectory)
     additionalProperties.set(
         serverGeneratorProperties.plus(
             mapOf(
@@ -65,7 +67,7 @@ val openapiGenerateWhitefox = tasks.register<GenerateTask>("openapiGenerateWhite
 val openapiGenerateDeltaSharing = tasks.register<GenerateTask>("openapiGenerateDeltaSharing") {
     generatorName.set("jaxrs-spec")
     inputSpec.set("$rootDir/docs/protocol/delta-sharing-protocol-api.yml")
-    outputDir.set(generatedCodeDirectory(layout, openApiCodeGenDir))
+    outputDir.set(generatedCodeDirectory)
     additionalProperties.set(
         serverGeneratorProperties + mapOf(
             "apiPackage" to "io.whitefox.api.deltasharing.server",
@@ -99,6 +101,29 @@ val deltaTest = tasks.register<Test>("deltaTest") {
     }
     forkEvery = 0
 }
+
+tasks.jacocoTestReport {
+    val packagesToExclude = fileTree("$generatedCodeDirectory/src/gen/java")
+            .map { f -> f.relativeTo( file("$generatedCodeDirectory/src/gen/java")).toString() }
+            .map { path -> path.substringBeforeLast(".") + "**"}
+
+    doFirst {
+        logger.debug("Excluding generated classes: $packagesToExclude")
+    }
+
+    doLast {
+        println("The report can be found at: file://" + reports.html.entryPoint)
+    }
+
+    classDirectories.setFrom(
+            files(classDirectories.files.map {
+                fileTree(it) {
+                    exclude(packagesToExclude)
+                }
+            })
+    )
+}
+
 tasks.check {
     dependsOn(deltaTest)
     finalizedBy(tasks.jacocoTestReport)

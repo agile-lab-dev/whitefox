@@ -2,6 +2,7 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 val openApiCodeGenDir = "generated/openapi"
 
+val generatedCodeDirectory = generatedCodeDirectory(layout, openApiCodeGenDir)
 
 val clientGeneratorProperties = mapOf(
     "apiPackage" to "io.whitefox.sharing.api.client",
@@ -45,7 +46,7 @@ tasks.register<GenerateTask>("openapiGenerateWhitefox") {
     generatorName.set("java")
     inputSpec.set("$rootDir/docs/protocol/whitefox-protocol-api.yml")
     library.set("native")
-    outputDir.set(generatedCodeDirectory(layout, openApiCodeGenDir))
+    outputDir.set(generatedCodeDirectory)
     additionalProperties.set(clientGeneratorProperties)
 }
 
@@ -53,13 +54,36 @@ tasks.register<GenerateTask>("openapiGenerateDeltaSharing") {
     generatorName.set("java")
     inputSpec.set("$rootDir/docs/protocol/delta-sharing-protocol-api.yml")
     library.set("native")
-    outputDir.set(generatedCodeDirectory(layout, openApiCodeGenDir))
+    outputDir.set(generatedCodeDirectory)
     additionalProperties.set(clientGeneratorProperties)
 }
 
 tasks.withType<Test> {
     systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
 }
+
+tasks.jacocoTestReport {
+    val packagesToExclude = fileTree("$generatedCodeDirectory/src/gen/java")
+            .map { f -> f.relativeTo( file("$generatedCodeDirectory/src/gen/java")).toString() }
+            .map { path -> path.substringBeforeLast(".") + "**"}
+
+    doFirst {
+        logger.debug("Excluding generated classes: $packagesToExclude")
+    }
+
+    doLast {
+        println("The report can be found at: file://" + reports.html.entryPoint)
+    }
+
+    classDirectories.setFrom(
+            files(classDirectories.files.map {
+                fileTree(it) {
+                    exclude(packagesToExclude)
+                }
+            })
+    )
+}
+
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-parameters")
@@ -75,7 +99,7 @@ spotless {
 sourceSets {
     getByName("main") {
         java {
-            srcDir("${generatedCodeDirectory(layout, openApiCodeGenDir)}/src/gen/java")
+            srcDir("${generatedCodeDirectory}/src/gen/java")
         }
     }
 }
