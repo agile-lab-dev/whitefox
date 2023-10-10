@@ -82,6 +82,33 @@ tasks.jacocoTestReport {
                 }
             })
     )
+    finalizedBy(tasks.jacocoTestCoverageVerification)
+}
+
+tasks.jacocoTestCoverageVerification {
+
+    val packagesToExclude = fileTree("$generatedCodeDirectory/src/gen/java")
+            .map { f -> f.relativeTo( file("$generatedCodeDirectory/src/gen/java")).toString() }
+            .map { path -> path.substringBeforeLast(".") + "**"}
+
+    classDirectories.setFrom(
+            files(classDirectories.files.map {
+                fileTree(it) {
+                    exclude(packagesToExclude)
+                }
+            })
+    )
+
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.7".toBigDecimal()
+            }
+            limit {
+
+            }
+        }
+    }
 }
 
 tasks.withType<JavaCompile> {
