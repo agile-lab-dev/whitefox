@@ -2,7 +2,6 @@ package io.whitefox.api.deltasharing.server;
 
 import static io.whitefox.api.deltasharing.Mappers.mapList;
 
-import io.quarkus.runtime.util.ExceptionUtil;
 import io.whitefox.api.deltasharing.Mappers;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.api.deltasharing.model.generated.*;
@@ -12,8 +11,6 @@ import io.whitefox.core.services.DeltaSharesService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
   private final DeltaSharesService deltaSharesService;

@@ -6,7 +6,6 @@ import io.whitefox.api.server.generated.MetastoresApi;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.whitefox.api.deltasharing.Mappers;
 import io.whitefox.api.model.UpdateMetastore;
-import io.whitefox.core.MetastoreType;
 import io.whitefox.core.Principal;
 import io.whitefox.core.services.MetastoreService;
 import jakarta.inject.Inject;
@@ -29,14 +28,6 @@ public class MetastoresApiImpl implements MetastoresApi, ApiUtils {
                 Mappers.api2createMetastore(createMetastore, getRequestPrincipal())))
             .build(),
         exceptionToResponse);
-  }
-
-  private static MetastoreType getMetastoreType(
-      io.whitefox.api.model.CreateMetastore.TypeEnum type) {
-    return switch (type) {
-      case GLUE -> MetastoreType.GLUE;
-      default -> throw new IllegalArgumentException("Unknown metastore type " + type.value());
-    };
   }
 
   private Principal getRequestPrincipal() {

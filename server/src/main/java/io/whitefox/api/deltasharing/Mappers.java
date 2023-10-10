@@ -30,7 +30,7 @@ public class Mappers {
     return new CreateMetastore(
         createMetastore.getName(),
         Optional.ofNullable(createMetastore.getComment()),
-        apitToMetastoreType(createMetastore.getType()),
+        apit2MetastoreType(createMetastore.getType()),
         api2CreateMetastoreProperties(createMetastore.getProperties(), createMetastore.getType()),
         principal);
   }
@@ -53,7 +53,7 @@ public class Mappers {
         credentials.getRegion());
   }
 
-  public static MetastoreType apitToMetastoreType(
+  public static MetastoreType apit2MetastoreType(
       io.whitefox.api.model.CreateMetastore.TypeEnum type) {
     return switch (type) {
       case GLUE -> MetastoreType.GLUE;

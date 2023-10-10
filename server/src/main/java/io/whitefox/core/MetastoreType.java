@@ -4,18 +4,15 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum MetastoreType {
-    GLUE("glue");
+  GLUE("glue");
 
-    public final String value;
+  public final String value;
 
-    private MetastoreType(String value) {
-        this.value = value;
-    }
+  private MetastoreType(String value) {
+    this.value = value;
+  }
 
-    public static Optional<MetastoreType> of(String s) {
-        return Arrays.stream(values()).filter(mt -> mt.value.equalsIgnoreCase(s)).findFirst();
-    }
-
-
-
+  public static Optional<MetastoreType> of(String s) {
+    return Arrays.stream(values()).filter(mt -> mt.value.equalsIgnoreCase(s)).findFirst();
+  }
 }

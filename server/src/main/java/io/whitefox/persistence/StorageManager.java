@@ -1,7 +1,6 @@
 package io.whitefox.persistence;
 
 import io.whitefox.core.*;
-
 import java.util.List;
 import java.util.Optional;
 

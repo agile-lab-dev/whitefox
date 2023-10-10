@@ -21,7 +21,6 @@ spotless {
     java {
         importOrder()
         removeUnusedImports()
-        cleanthat()
         palantirJavaFormat().style("GOOGLE")
         formatAnnotations()
     }

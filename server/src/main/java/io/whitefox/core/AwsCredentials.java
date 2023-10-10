@@ -1,4 +1,3 @@
 package io.whitefox.core;
 
-public sealed interface AwsCredentials permits SimpleAwsCredentials {
-}
+public sealed interface AwsCredentials permits SimpleAwsCredentials {}
