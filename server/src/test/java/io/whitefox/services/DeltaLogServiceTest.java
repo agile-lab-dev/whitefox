@@ -1,12 +1,15 @@
 package io.whitefox.services;
 
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
+
 import io.delta.standalone.DeltaLog;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.hadoop.conf.Configuration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 
-// @DisabledOnOs(OS.WINDOWS)
+@DisabledOnOs(WINDOWS)
 public class DeltaLogServiceTest {
 
   /**

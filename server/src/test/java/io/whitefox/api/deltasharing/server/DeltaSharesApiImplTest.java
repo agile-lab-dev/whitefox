@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 @QuarkusTest
 public class DeltaSharesApiImplTest {
@@ -185,7 +187,7 @@ public class DeltaSharesApiImplTest {
         .statusCode(404);
   }
 
-  // @DisabledOnOs(OS.WINDOWS)
+  @DisabledOnOs(OS.WINDOWS)
   @Test
   public void getTableVersion() {
     given()
@@ -201,7 +203,7 @@ public class DeltaSharesApiImplTest {
         .header("Delta-Table-Version", is("0"));
   }
 
-  // @DisabledOnOs(OS.WINDOWS)
+  @DisabledOnOs(OS.WINDOWS)
   @Test
   public void getTableVersionMissingTable() {
     given()
@@ -216,7 +218,7 @@ public class DeltaSharesApiImplTest {
         .statusCode(404);
   }
 
-  // @DisabledOnOs(OS.WINDOWS)
+  @DisabledOnOs(OS.WINDOWS)
   @Test
   public void getTableVersionNotFoundTimestamp() {
     given()
@@ -232,7 +234,7 @@ public class DeltaSharesApiImplTest {
         .statusCode(404);
   }
 
-  // @DisabledOnOs(OS.WINDOWS)
+  @DisabledOnOs(OS.WINDOWS)
   @Test
   public void getTableVersionBadTimestamp() {
     given()
