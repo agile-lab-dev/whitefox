@@ -38,16 +38,18 @@ public class Mappers {
   public static CreateMetastoreProperties api2CreateMetastoreProperties(
       io.whitefox.api.model.CreateMetastoreProperties createMetastore,
       io.whitefox.api.model.CreateMetastore.TypeEnum type) {
-    return switch (type) {
-      case GLUE -> new GlueCreateMetastoreProperties(
-          createMetastore.getCatalogId(), api2awsCredentials(createMetastore.getCredentials()));
-      default -> throw new IllegalArgumentException("Unknown metastore type " + type.value());
-    };
+    switch (type) {
+      case GLUE:
+        return new CreateMetastoreProperties.GlueCreateMetastoreProperties(
+            createMetastore.getCatalogId(), api2awsCredentials(createMetastore.getCredentials()));
+      default:
+        throw new IllegalArgumentException("Unknown metastore type " + type.value());
+    }
   }
 
   public static AwsCredentials api2awsCredentials(
       io.whitefox.api.model.SimpleAwsCredentials credentials) {
-    return new SimpleAwsCredentials(
+    return new AwsCredentials.SimpleAwsCredentials(
         credentials.getAwsAccessKeyId(),
         credentials.getAwsSecretAccessKey(),
         credentials.getRegion());
@@ -55,10 +57,12 @@ public class Mappers {
 
   public static MetastoreType apit2MetastoreType(
       io.whitefox.api.model.CreateMetastore.TypeEnum type) {
-    return switch (type) {
-      case GLUE -> MetastoreType.GLUE;
-      default -> throw new IllegalArgumentException("Unknown metastore type " + type.value());
-    };
+    switch (type) {
+      case GLUE:
+        return MetastoreType.GLUE;
+      default:
+        throw new IllegalArgumentException("Unknown metastore type " + type.value());
+    }
   }
 
   public static <A, B> List<B> mapList(List<A> list, Function<A, B> f) {

@@ -102,11 +102,11 @@ public class InMemoryStorageManager implements StorageManager {
         });
   }
 
-  private class TableAndSchema {
+  private static final class TableAndSchema {
     private final Table table;
     private final Schema schema;
 
-    public TableAndSchema(Table table, Schema schema) {
+    private TableAndSchema(Table table, Schema schema) {
       this.table = table;
       this.schema = schema;
     }
@@ -120,11 +120,11 @@ public class InMemoryStorageManager implements StorageManager {
     }
 
     @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      TableAndSchema that = (TableAndSchema) o;
-      return Objects.equals(table, that.table) && Objects.equals(schema, that.schema);
+    public boolean equals(Object obj) {
+      if (obj == this) return true;
+      if (obj == null || obj.getClass() != this.getClass()) return false;
+      var that = (TableAndSchema) obj;
+      return Objects.equals(this.table, that.table) && Objects.equals(this.schema, that.schema);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class InMemoryStorageManager implements StorageManager {
 
     @Override
     public String toString() {
-      return "TableAndSchema{" + "table=" + table + ", schema=" + schema + '}';
+      return "TableAndSchema[" + "table=" + table + ", " + "schema=" + schema + ']';
     }
   }
 
