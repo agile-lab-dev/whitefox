@@ -187,7 +187,7 @@ public class DeltaSharesApiImplTest {
         .statusCode(404);
   }
 
-  @DisabledOnOs(OS.WINDOWS)
+  //@DisabledOnOs(OS.WINDOWS)
   @Test
   public void getTableVersion() {
     given()
@@ -203,7 +203,7 @@ public class DeltaSharesApiImplTest {
         .header("Delta-Table-Version", is("0"));
   }
 
-  @DisabledOnOs(OS.WINDOWS)
+  //@DisabledOnOs(OS.WINDOWS)
   @Test
   public void getTableVersionMissingTable() {
     given()
@@ -218,7 +218,7 @@ public class DeltaSharesApiImplTest {
         .statusCode(404);
   }
 
-  @DisabledOnOs(OS.WINDOWS)
+  //@DisabledOnOs(OS.WINDOWS)
   @Test
   public void getTableVersionNotFoundTimestamp() {
     given()
@@ -234,7 +234,7 @@ public class DeltaSharesApiImplTest {
         .statusCode(404);
   }
 
-  @DisabledOnOs(OS.WINDOWS)
+  //@DisabledOnOs(OS.WINDOWS)
   @Test
   public void getTableVersionBadTimestamp() {
     given()

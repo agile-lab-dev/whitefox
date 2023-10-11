@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-@DisabledOnOs(OS.WINDOWS)
+//@DisabledOnOs(OS.WINDOWS)
 public class DeltaSharedTableTest {
 
   private static final Path deltaTablesRoot = Paths.get(".")
