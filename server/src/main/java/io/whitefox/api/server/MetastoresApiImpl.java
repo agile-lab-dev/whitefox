@@ -9,8 +9,10 @@ import io.whitefox.api.model.UpdateMetastore;
 import io.whitefox.core.Principal;
 import io.whitefox.core.services.MetastoreService;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
+@Path("whitefox-api/v1/metastores")
 public class MetastoresApiImpl implements MetastoresApi, ApiUtils {
 
   private final MetastoreService metastoreService;
@@ -24,8 +26,8 @@ public class MetastoresApiImpl implements MetastoresApi, ApiUtils {
   public Response createMetastore(io.whitefox.api.model.CreateMetastore createMetastore) {
     return wrapExceptions(
         () -> Response.status(Response.Status.CREATED)
-            .entity(metastoreService.createStorageManager(
-                Mappers.api2createMetastore(createMetastore, getRequestPrincipal())))
+            .entity(Mappers.metastore2api(metastoreService.createStorageManager(
+                Mappers.api2createMetastore(createMetastore, getRequestPrincipal()))))
             .build(),
         exceptionToResponse);
   }
@@ -42,8 +44,11 @@ public class MetastoresApiImpl implements MetastoresApi, ApiUtils {
 
   @Override
   public Response describeMetastore(String name) {
-    Response res = Response.ok().build();
-    return res;
+    return wrapExceptions(
+        () -> optionalToNotFound(
+            metastoreService.getMetastore(name),
+            metastore -> Response.ok(Mappers.metastore2api(metastore)).build()),
+        exceptionToResponse);
   }
 
   @Override

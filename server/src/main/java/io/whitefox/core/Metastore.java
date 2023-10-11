@@ -8,8 +8,8 @@ public final class Metastore {
   private final Optional<String> comment;
   private final Principal owner;
   private final MetastoreType type;
-  private final CreateMetastoreProperties properties;
-  private final Long validatedAt;
+  private final MetastoreProperties properties;
+  private final Optional<Long> validatedAt;
   private final Long createdAt;
   private final Principal createdBy;
   private final Long updatedAt;
@@ -20,8 +20,8 @@ public final class Metastore {
       Optional<String> comment,
       Principal owner,
       MetastoreType type,
-      CreateMetastoreProperties properties,
-      Long validatedAt,
+      MetastoreProperties properties,
+      Optional<Long> validatedAt,
       Long createdAt,
       Principal createdBy,
       Long updatedAt,
@@ -54,11 +54,11 @@ public final class Metastore {
     return type;
   }
 
-  public CreateMetastoreProperties properties() {
+  public MetastoreProperties properties() {
     return properties;
   }
 
-  public Long validatedAt() {
+  public Optional<Long> validatedAt() {
     return validatedAt;
   }
 

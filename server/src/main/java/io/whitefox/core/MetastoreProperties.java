@@ -2,12 +2,12 @@ package io.whitefox.core;
 
 import java.util.Objects;
 
-public interface CreateMetastoreProperties {
-  final class GlueCreateMetastoreProperties implements CreateMetastoreProperties {
+public interface MetastoreProperties {
+  final class GlueMetastoreProperties implements MetastoreProperties {
     private final String catalogId;
     private final AwsCredentials credentials;
 
-    public GlueCreateMetastoreProperties(String catalogId, AwsCredentials credentials) {
+    public GlueMetastoreProperties(String catalogId, AwsCredentials credentials) {
       this.catalogId = catalogId;
       this.credentials = credentials;
     }
@@ -24,7 +24,7 @@ public interface CreateMetastoreProperties {
     public boolean equals(Object obj) {
       if (obj == this) return true;
       if (obj == null || obj.getClass() != this.getClass()) return false;
-      var that = (GlueCreateMetastoreProperties) obj;
+      var that = (GlueMetastoreProperties) obj;
       return Objects.equals(this.catalogId, that.catalogId)
           && Objects.equals(this.credentials, that.credentials);
     }
@@ -36,7 +36,7 @@ public interface CreateMetastoreProperties {
 
     @Override
     public String toString() {
-      return "GlueCreateMetastoreProperties[" + "catalogId="
+      return "GlueMetastoreProperties[" + "catalogId="
           + catalogId + ", " + "credentials="
           + credentials + ']';
     }

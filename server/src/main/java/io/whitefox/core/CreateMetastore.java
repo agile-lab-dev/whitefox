@@ -7,20 +7,24 @@ public final class CreateMetastore {
   private final String name;
   private final Optional<String> comment;
   private final MetastoreType type;
-  private final CreateMetastoreProperties properties;
+  private final MetastoreProperties properties;
   private final Principal currentUser;
+
+  private final boolean skipValidation;
 
   public CreateMetastore(
       String name,
       Optional<String> comment,
       MetastoreType type,
-      CreateMetastoreProperties properties,
-      Principal currentUser) {
+      MetastoreProperties properties,
+      Principal currentUser,
+      boolean skipValidation) {
     this.name = name;
     this.comment = comment;
     this.type = type;
     this.properties = properties;
     this.currentUser = currentUser;
+    this.skipValidation = skipValidation;
   }
 
   public String name() {
@@ -35,7 +39,7 @@ public final class CreateMetastore {
     return type;
   }
 
-  public CreateMetastoreProperties properties() {
+  public MetastoreProperties properties() {
     return properties;
   }
 
@@ -43,30 +47,36 @@ public final class CreateMetastore {
     return currentUser;
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == this) return true;
-    if (obj == null || obj.getClass() != this.getClass()) return false;
-    var that = (CreateMetastore) obj;
-    return Objects.equals(this.name, that.name)
-        && Objects.equals(this.comment, that.comment)
-        && Objects.equals(this.type, that.type)
-        && Objects.equals(this.properties, that.properties)
-        && Objects.equals(this.currentUser, that.currentUser);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(name, comment, type, properties, currentUser);
+  public boolean skipValidation() {
+    return skipValidation;
   }
 
   @Override
   public String toString() {
-    return "CreateMetastore[" + "name="
-        + name + ", " + "comment="
-        + comment + ", " + "type="
-        + type + ", " + "properties="
-        + properties + ", " + "currentUser="
-        + currentUser + ']';
+    return "CreateMetastore{" + "name='"
+        + name + '\'' + ", comment="
+        + comment + ", type="
+        + type + ", properties="
+        + properties + ", currentUser="
+        + currentUser + ", skipValidation="
+        + skipValidation + '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    CreateMetastore that = (CreateMetastore) o;
+    return skipValidation == that.skipValidation
+        && Objects.equals(name, that.name)
+        && Objects.equals(comment, that.comment)
+        && type == that.type
+        && Objects.equals(properties, that.properties)
+        && Objects.equals(currentUser, that.currentUser);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, comment, type, properties, currentUser, skipValidation);
   }
 }

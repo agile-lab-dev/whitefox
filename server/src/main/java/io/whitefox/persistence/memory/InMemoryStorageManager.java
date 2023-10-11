@@ -23,7 +23,7 @@ public class InMemoryStorageManager implements StorageManager {
   @Inject
   public InMemoryStorageManager() {
     this.shares = new ConcurrentHashMap<>();
-    metastores = new ConcurrentHashMap<>();
+    this.metastores = new ConcurrentHashMap<>();
   }
 
   public InMemoryStorageManager(List<Share> shares, List<Metastore> metastores) {
@@ -31,6 +31,11 @@ public class InMemoryStorageManager implements StorageManager {
         shares.stream().collect(Collectors.toMap(Share::name, Function.identity())));
     this.metastores = new ConcurrentHashMap<>(
         metastores.stream().collect(Collectors.toMap(Metastore::name, Function.identity())));
+  }
+
+  public void clear() {
+    metastores.clear();
+    shares.clear();
   }
 
   public InMemoryStorageManager(List<Share> shares) {
@@ -169,7 +174,8 @@ public class InMemoryStorageManager implements StorageManager {
       throw new DuplicateKeyException(
           "Metastore with name " + metastore.name() + " already exists");
     } else {
-      return metastores.put(metastore.name(), metastore);
+      metastores.put(metastore.name(), metastore);
+      return metastore;
     }
   }
 

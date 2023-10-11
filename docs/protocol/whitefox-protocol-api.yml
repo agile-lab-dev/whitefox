@@ -35,8 +35,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Provider"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "403":
-          description: Provider already exists
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     get:
       operationId: ListProviders
       description: List all providers
@@ -54,6 +64,18 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Provider"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /providers/{name}:
     patch:
       description: Update an existing provider
@@ -78,8 +100,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Provider"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: "Provider not found"
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     delete:
       operationId: DeleteProvider
       description: Delete a provider
@@ -99,8 +131,18 @@ paths:
       responses:
         "200":
           description: deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: Provider does not exist
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     get:
       operationId: GetProvider
       description: Get a provider related info
@@ -119,8 +161,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Provider"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: Provider does not exist
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /providers/{providerName}/tables:
     post:
       description: Create a new table for provider
@@ -145,6 +197,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TableInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     get:
       tags:
         - table
@@ -165,6 +229,18 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TableInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /providers/{providerName}/tables/{tableName}/validate:
     post:
       description: Validate the table
@@ -189,6 +265,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationResult"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /providers/{providerName}/tables/{tableName}:
     patch:
       operationId: PatchTableInProvider
@@ -218,6 +306,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TableInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     delete:
       operationId: DeleteTableInProvider
       description: Delete a table from a provider
@@ -242,6 +342,18 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     get:
       description: get the description of a table in a provider
       operationId: DescribeTableInProvider
@@ -265,6 +377,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TableInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /metastores:
     post:
       description: Create a new metastore
@@ -283,8 +407,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Metastore"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "403":
-          description: Storage already exists
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     get:
       description: list all metastores
       operationId: ListMetastores
@@ -302,6 +436,18 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Metastore"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /metastores/{name}:
     patch:
       description: update an existing metastore
@@ -326,8 +472,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Metastore"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: "Metastore not found"
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     delete:
       operationId: DeleteMetastore
       description: delete a metastore
@@ -347,8 +503,18 @@ paths:
       responses:
         "200":
           description: deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: metastore does not exists
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     get:
       operationId: DescribeMetastore
       description: Get info about a given metastore
@@ -367,8 +533,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Metastore"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: Metastore does not exist
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /metastores/{name}/validate:
     post:
       operationId: ValidateMetastore
@@ -388,6 +564,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationResult"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /storage:
     post:
       operationId: CreateStorage
@@ -406,8 +594,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Storage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "403":
-          description: Storage already exists
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     get:
       operationId: ListStorage
       description: List storage
@@ -425,6 +623,18 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Storage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
 
   /storage/{name}:
     patch:
@@ -450,8 +660,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Storage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: Storage does not exists
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     delete:
       operationId: DeleteStorage
       description: Delete an existing storage
@@ -471,8 +691,18 @@ paths:
       responses:
         "200":
           description: deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: Storage does not exists
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     get:
       operationId: DescribeStorage
       description: Describe storage
@@ -491,8 +721,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Storage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: Storage does not exist
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /storage/{name}/validate:
     post:
       operationId: ValidateStorage
@@ -512,8 +752,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationResult"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: storage does not exist
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /shares:
     post:
       operationId: CreateShare
@@ -532,6 +782,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ShareInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /shares/{share}:
     delete:
       operationId: DeleteShare
@@ -548,6 +810,18 @@ paths:
       responses:
         "200":
           description: share deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     patch:
       operationId: UpdateShare
       description: update an existing share
@@ -572,6 +846,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ShareInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /shares/{share}/recipients:
     put:
       operationId: AddRecipientToShare
@@ -608,6 +894,18 @@ paths:
                     type: array
                     items:
                       type: string
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /shares/{share}/{schema}:
     post:
       operationId: CreateSchema
@@ -635,6 +933,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ShareInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     delete:
       operationId: DeleteSchema
       description: delete a schema from a share
@@ -657,8 +967,18 @@ paths:
       responses:
         "204":
           description: schema deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: schema not found
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
   /shares/{share}/{schema}/tables:
     post:
       operationId: AddTableToSchema
@@ -692,6 +1012,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TableInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
     get:
       operationId: ListTablesInSchema
       description: list tables within a schema
@@ -721,6 +1053,18 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TableInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
 
   /shares/{share}/{schema}/tables/{table}:
     delete:
@@ -752,8 +1096,18 @@ paths:
       responses:
         "204":
           description: table deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
-          description: table not found
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
 components:
   schemas:
     StorageCredentials:
@@ -820,16 +1174,18 @@ components:
             - iceberg_jdbc
             - iceberg_nessie
         properties:
-          anyOf:
-            - $ref: "#/components/schemas/GlueProperties"
-            - $ref: "#/components/schemas/Hive2Properties"
-            - $ref: "#/components/schemas/Hive3Properties"
-            - $ref: "#/components/schemas/IcebergHadoopProperties"
-            - $ref: "#/components/schemas/IcebergJdbcProperties"
-            - $ref: "#/components/schemas/IcebergNessieProperties"
+          $ref: "#/components/schemas/MetastoreProperties"
         skipValidation:
           type: boolean
-    UpdateMetastore:          
+    MetastoreProperties:
+      anyOf:
+        - $ref: "#/components/schemas/GlueProperties"
+        - $ref: "#/components/schemas/Hive2Properties"
+        - $ref: "#/components/schemas/Hive3Properties"
+        - $ref: "#/components/schemas/IcebergHadoopProperties"
+        - $ref: "#/components/schemas/IcebergJdbcProperties"
+        - $ref: "#/components/schemas/IcebergNessieProperties"
+    UpdateMetastore:
       type: object
       properties:
         name:
@@ -841,23 +1197,17 @@ components:
         type:
           type: string
         properties:
-          anyOf:
-            - $ref: "#/components/schemas/GlueProperties"
-            - $ref: "#/components/schemas/Hive2Properties"
-            - $ref: "#/components/schemas/Hive3Properties"
-            - $ref: "#/components/schemas/IcebergHadoopProperties"
-            - $ref: "#/components/schemas/IcebergJdbcProperties"
-            - $ref: "#/components/schemas/IcebergNessieProperties"
+          $ref: "#/components/schemas/MetastoreProperties"
         skipValidation:
           type: boolean
         force:
           type: boolean
     Hive2Properties:
       type: object
-      properties: {}
+      properties: { }
     Hive3Properties:
       type: object
-      properties: {}
+      properties: { }
     GlueProperties:
       type: object
       properties:
@@ -867,13 +1217,13 @@ components:
           $ref: "#/components/schemas/SimpleAwsCredentials"
     IcebergHadoopProperties:
       type: object
-      properties: {}
+      properties: { }
     IcebergJdbcProperties:
       type: object
-      properties: {}
+      properties: { }
     IcebergNessieProperties:
       type: object
-      properties: {}
+      properties: { }
     Metastore:
       type: object
       properties:
@@ -886,13 +1236,7 @@ components:
         type:
           type: string
         properties:
-          anyOf:
-            - $ref: "#/components/schemas/GlueProperties"
-            - $ref: "#/components/schemas/Hive2Properties"
-            - $ref: "#/components/schemas/Hive3Properties"
-            - $ref: "#/components/schemas/IcebergHadoopProperties"
-            - $ref: "#/components/schemas/IcebergJdbcProperties"
-            - $ref: "#/components/schemas/IcebergNessieProperties"
+          $ref: "#/components/schemas/MetastoreProperties"
         validatedAt:
           type: integer
           format: int64
@@ -1076,7 +1420,7 @@ components:
     ProviderInput:
       type: object
       properties:
-        name: 
+        name:
           type: string
         storageName:
           type: string
@@ -1092,3 +1436,47 @@ components:
             - failure
         message:
           type: string
+    CommonErrorResponse:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+  responses:
+    "400":
+      description: The request is malformed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonErrorResponse'
+    "401":
+      description: The request is unauthenticated. The bearer token is missing or incorrect
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonErrorResponse'
+    "403":
+      description: The request is forbidden from being fulfilled
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonErrorResponse'
+    "404":
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonErrorResponse'
+    "409":
+      description: The specified resource cannot be created because it already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonErrorResponse'
+    "500":
+      description: The request is not handled correctly due to a server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonErrorResponse'

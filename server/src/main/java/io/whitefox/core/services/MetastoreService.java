@@ -29,18 +29,32 @@ public class MetastoreService {
     return storageManager.getMetastore(name);
   }
 
-  private Metastore validate(CreateMetastore metastore) {
+  public Metastore validate(CreateMetastore metastore) {
     // always valid, real impl will throw an exception if not valid
-    return new Metastore(
-        metastore.name(),
-        metastore.comment(),
-        metastore.currentUser(),
-        metastore.type(),
-        metastore.properties(),
-        clock.millis(),
-        clock.millis(),
-        metastore.currentUser(),
-        clock.millis(),
-        metastore.currentUser());
+    if (metastore.skipValidation()) {
+      return new Metastore(
+          metastore.name(),
+          metastore.comment(),
+          metastore.currentUser(),
+          metastore.type(),
+          metastore.properties(),
+          Optional.empty(),
+          clock.millis(),
+          metastore.currentUser(),
+          clock.millis(),
+          metastore.currentUser());
+    } else {
+      return new Metastore(
+          metastore.name(),
+          metastore.comment(),
+          metastore.currentUser(),
+          metastore.type(),
+          metastore.properties(),
+          Optional.of(clock.millis()),
+          clock.millis(),
+          metastore.currentUser(),
+          clock.millis(),
+          metastore.currentUser());
+    }
   }
 }

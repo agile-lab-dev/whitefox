@@ -2,6 +2,7 @@ package io.whitefox.api.server;
 
 import io.quarkus.runtime.util.ExceptionUtil;
 import io.whitefox.api.deltasharing.model.CommonErrorResponse;
+import io.whitefox.persistence.DuplicateKeyException;
 import jakarta.ws.rs.core.Response;
 import java.util.Optional;
 import java.util.function.Function;
@@ -13,6 +14,12 @@ public interface ApiUtils {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity(new CommonErrorResponse()
               .errorCode("BAD REQUEST")
+              .message(ExceptionUtil.generateStackTrace(t)))
+          .build();
+    } else if (t instanceof DuplicateKeyException) {
+      return Response.status(Response.Status.CONFLICT)
+          .entity(new CommonErrorResponse()
+              .errorCode("CONFLICT")
               .message(ExceptionUtil.generateStackTrace(t)))
           .build();
     } else {

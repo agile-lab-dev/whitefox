@@ -24,23 +24,62 @@ public class Mappers {
         .schema(table.schema());
   }
 
+  public static io.whitefox.api.model.Metastore metastore2api(Metastore metastore) {
+    return new io.whitefox.api.model.Metastore()
+        .name(metastore.name())
+        .comment(metastore.comment().orElse(null))
+        .owner(metastore.owner().name())
+        .type(metastore.type().value)
+        .properties(metastoreProperties2api(metastore.properties()))
+        .validatedAt(metastore.validatedAt().orElse(null))
+        .createdAt(metastore.createdAt())
+        .createdBy(metastore.createdBy().name())
+        .updatedAt(metastore.updatedAt())
+        .updatedBy(metastore.updatedBy().name());
+  }
+
+  private static io.whitefox.api.model.MetastoreProperties metastoreProperties2api(
+      MetastoreProperties properties) {
+    if (properties instanceof MetastoreProperties.GlueMetastoreProperties) {
+      var glueMetastoreProperties = (MetastoreProperties.GlueMetastoreProperties) properties;
+      return new io.whitefox.api.model.MetastoreProperties()
+          .catalogId(glueMetastoreProperties.catalogId())
+          .credentials(simpleAwsCredentials2api(glueMetastoreProperties.credentials()));
+    }
+    throw new IllegalArgumentException("Unknown type of metastore properties: " + properties);
+  }
+
+  private static io.whitefox.api.model.SimpleAwsCredentials simpleAwsCredentials2api(
+      AwsCredentials credentials) {
+    if (credentials instanceof AwsCredentials.SimpleAwsCredentials) {
+      var simpleAwsCredentials = (AwsCredentials.SimpleAwsCredentials) credentials;
+      return new io.whitefox.api.model.SimpleAwsCredentials()
+          .awsAccessKeyId(simpleAwsCredentials.awsAccessKeyId())
+          .awsSecretAccessKey(simpleAwsCredentials.awsSecretAccessKey())
+          .region(simpleAwsCredentials.region());
+    }
+    throw new IllegalArgumentException("Unknown type of aws credentials: " + credentials);
+  }
+
   public static CreateMetastore api2createMetastore(
       io.whitefox.api.model.CreateMetastore createMetastore, Principal principal) {
 
-    return new CreateMetastore(
+    var res = new CreateMetastore(
         createMetastore.getName(),
         Optional.ofNullable(createMetastore.getComment()),
         apit2MetastoreType(createMetastore.getType()),
         api2CreateMetastoreProperties(createMetastore.getProperties(), createMetastore.getType()),
-        principal);
+        principal,
+        createMetastore.getSkipValidation());
+    return res;
   }
 
-  public static CreateMetastoreProperties api2CreateMetastoreProperties(
-      io.whitefox.api.model.CreateMetastoreProperties createMetastore,
+  public static MetastoreProperties api2CreateMetastoreProperties(
+      io.whitefox.api.model.MetastoreProperties createMetastore,
       io.whitefox.api.model.CreateMetastore.TypeEnum type) {
     switch (type) {
       case GLUE:
-        return new CreateMetastoreProperties.GlueCreateMetastoreProperties(
+        return new MetastoreProperties.GlueMetastoreProperties(
             createMetastore.getCatalogId(), api2awsCredentials(createMetastore.getCredentials()));
       default:
         throw new IllegalArgumentException("Unknown metastore type " + type.value());
