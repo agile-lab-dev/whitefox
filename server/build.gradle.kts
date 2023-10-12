@@ -151,7 +151,7 @@ tasks.jacocoTestReport {
 
 
     doFirst {
-        logger.debug("Excluding generated classes: $classesToExclude")
+        logger.lifecycle("Excluding generated classes: $classesToExclude")
     }
 
     doLast {
