@@ -1,5 +1,6 @@
 package io.whitefox.core;
 
+import io.whitefox.annotations.SkipCoverageGenerated;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,6 +53,7 @@ public final class CreateMetastore {
   }
 
   @Override
+  @SkipCoverageGenerated
   public String toString() {
     return "CreateMetastore{" + "name='"
         + name + '\'' + ", comment="
@@ -63,6 +65,7 @@ public final class CreateMetastore {
   }
 
   @Override
+  @SkipCoverageGenerated
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
@@ -76,6 +79,7 @@ public final class CreateMetastore {
   }
 
   @Override
+  @SkipCoverageGenerated
   public int hashCode() {
     return Objects.hash(name, comment, type, properties, currentUser, skipValidation);
   }

@@ -1,5 +1,6 @@
 package io.whitefox.core;
 
+import io.whitefox.annotations.SkipCoverageGenerated;
 import java.util.Objects;
 
 public final class Principal {
@@ -14,6 +15,7 @@ public final class Principal {
   }
 
   @Override
+  @SkipCoverageGenerated
   public boolean equals(Object obj) {
     if (obj == this) return true;
     if (obj == null || obj.getClass() != this.getClass()) return false;
@@ -22,11 +24,13 @@ public final class Principal {
   }
 
   @Override
+  @SkipCoverageGenerated
   public int hashCode() {
     return Objects.hash(name);
   }
 
   @Override
+  @SkipCoverageGenerated
   public String toString() {
     return "Principal[" + "name=" + name + ']';
   }

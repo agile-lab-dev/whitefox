@@ -1,5 +1,6 @@
 package io.whitefox.persistence.memory;
 
+import io.whitefox.annotations.SkipCoverageGenerated;
 import io.whitefox.api.deltasharing.encoders.InvalidPageTokenException;
 import io.whitefox.core.*;
 import io.whitefox.persistence.DuplicateKeyException;
@@ -125,6 +126,7 @@ public class InMemoryStorageManager implements StorageManager {
     }
 
     @Override
+    @SkipCoverageGenerated
     public boolean equals(Object obj) {
       if (obj == this) return true;
       if (obj == null || obj.getClass() != this.getClass()) return false;
@@ -133,11 +135,13 @@ public class InMemoryStorageManager implements StorageManager {
     }
 
     @Override
+    @SkipCoverageGenerated
     public int hashCode() {
       return Objects.hash(table, schema);
     }
 
     @Override
+    @SkipCoverageGenerated
     public String toString() {
       return "TableAndSchema[" + "table=" + table + ", " + "schema=" + schema + ']';
     }
