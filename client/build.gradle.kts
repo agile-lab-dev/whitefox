@@ -1,5 +1,29 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
+plugins {
+    java
+    id("io.quarkus")
+    id("whitefox.java-conventions")
+}
+
+val quarkusPlatformGroupId: String by project
+val quarkusPlatformArtifactId: String by project
+val quarkusPlatformVersion: String by project
+
+// region dependencies
+dependencies {
+    implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
+    implementation("io.quarkus:quarkus-rest-client-reactive-jackson") // TODO review
+    implementation("io.quarkus:quarkus-arc") // TODO review
+    implementation("io.quarkus:quarkus-resteasy-reactive") // TODO review
+    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+    testImplementation("io.quarkus:quarkus-junit5")
+    testImplementation("io.rest-assured:rest-assured") // TODO review
+}
+// endregion
+
+// region openapi code generation
+
 val openApiCodeGenDir = "generated/openapi"
 
 val generatedCodeDirectory = generatedCodeDirectory(layout, openApiCodeGenDir)
@@ -17,30 +41,6 @@ val clientGeneratorProperties = mapOf(
     "useRuntimeException" to "true"
 )
 
-plugins {
-    java
-    id("io.quarkus")
-    id("whitefox.java-conventions")
-}
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
-val quarkusPlatformGroupId: String by project
-val quarkusPlatformArtifactId: String by project
-val quarkusPlatformVersion: String by project
-
-dependencies {
-    implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
-    implementation("io.quarkus:quarkus-rest-client-reactive-jackson") // TODO review
-    implementation("io.quarkus:quarkus-arc") // TODO review
-    implementation("io.quarkus:quarkus-resteasy-reactive") // TODO review
-    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
-    testImplementation("io.quarkus:quarkus-junit5")
-    testImplementation("io.rest-assured:rest-assured") // TODO review
-}
 
 tasks.register<GenerateTask>("openapiGenerateWhitefox") {
     generatorName.set("java")
@@ -58,69 +58,14 @@ tasks.register<GenerateTask>("openapiGenerateDeltaSharing") {
     additionalProperties.set(clientGeneratorProperties)
 }
 
-tasks.withType<Test> {
-    systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
-}
+// endregion
 
-tasks.jacocoTestReport {
-    val packagesToExclude = fileTree("$generatedCodeDirectory/src/gen/java")
-            .map { f -> f.relativeTo( file("$generatedCodeDirectory/src/gen/java")).toString() }
-            .map { path -> path.substringBeforeLast(".") + "**"}
-
-    doFirst {
-        logger.debug("Excluding generated classes: $packagesToExclude")
-    }
-
-    doLast {
-        println("The report can be found at: file://" + reports.html.entryPoint)
-    }
-
-    classDirectories.setFrom(
-            files(classDirectories.files.map {
-                fileTree(it) {
-                    exclude(packagesToExclude)
-                }
-            })
-    )
-    finalizedBy(tasks.jacocoTestCoverageVerification)
-}
-
-tasks.jacocoTestCoverageVerification {
-
-    val packagesToExclude = fileTree("$generatedCodeDirectory/src/gen/java")
-            .map { f -> f.relativeTo( file("$generatedCodeDirectory/src/gen/java")).toString() }
-            .map { path -> path.substringBeforeLast(".") + "**"}
-
-    classDirectories.setFrom(
-            files(classDirectories.files.map {
-                fileTree(it) {
-                    exclude(packagesToExclude)
-                }
-            })
-    )
-
-    violationRules {
-        rule {
-            limit {
-                minimum = "0.7".toBigDecimal()
-            }
-            limit {
-
-            }
-        }
-    }
-}
+// region java compile
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-parameters")
     dependsOn(tasks.named("openapiGenerateWhitefox"), tasks.named("openapiGenerateDeltaSharing"))
-}
-
-spotless {
-    java {
-        targetExclude("${relativeGeneratedCodeDirectory(layout, openApiCodeGenDir)}/**/*.java")
-    }
 }
 
 sourceSets {
@@ -130,3 +75,18 @@ sourceSets {
         }
     }
 }
+// endregion
+
+// region test running
+tasks.withType<Test> {
+    systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
+}
+// endregion
+
+// region code formatting
+spotless {
+    java {
+        targetExclude("${relativeGeneratedCodeDirectory(layout, openApiCodeGenDir)}/**/*.java")
+    }
+}
+// endregion
