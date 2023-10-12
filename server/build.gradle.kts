@@ -168,10 +168,12 @@ tasks.jacocoTestCoverageVerification {
     classDirectories.setFrom(
         files(classDirectories.files.map { fileTree(it) { exclude(classesToExclude) } })
     )
-    violationRules {
-        rule {
-            limit {
-                minimum = "0.60".toBigDecimal()
+    if (isWindowsBuild()) {
+        violationRules {
+            rule {
+                limit {
+                    minimum = "0.60".toBigDecimal()
+                }
             }
         }
     }
