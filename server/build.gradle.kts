@@ -168,7 +168,7 @@ tasks.jacocoTestCoverageVerification {
     classDirectories.setFrom(
         files(classDirectories.files.map { fileTree(it) { exclude(classesToExclude) } })
     )
-    if (isWindowsBuild()) {
+    if (!isWindowsBuild()) {
         violationRules {
             rule {
                 limit {
