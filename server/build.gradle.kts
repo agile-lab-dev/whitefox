@@ -147,8 +147,8 @@ tasks.check {
 
 
 val classesToExclude = listOf(
-    "**" + File.pathSeparator + "generated" + File.pathSeparator + "**.class",
-    "**" + File.pathSeparator + "ignored" + File.pathSeparator + "**.class"
+    "**" + File.separator + "generated" + File.separator + "**.class",
+    "**" + File.separator + "ignored" + File.separator + "**.class"
 )
 tasks.jacocoTestReport {
     doFirst {
