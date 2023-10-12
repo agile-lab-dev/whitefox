@@ -1,7 +1,7 @@
 package io.whitefox.api.server;
 
 import io.quarkus.runtime.util.ExceptionUtil;
-import io.whitefox.api.deltasharing.model.CommonErrorResponse;
+import io.whitefox.api.deltasharing.model.generated.CommonErrorResponse;
 import io.whitefox.persistence.DuplicateKeyException;
 import jakarta.ws.rs.core.Response;
 import java.util.Optional;

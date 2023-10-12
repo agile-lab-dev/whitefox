@@ -24,8 +24,8 @@ public class Mappers {
         .schema(table.schema());
   }
 
-  public static io.whitefox.api.model.Metastore metastore2api(Metastore metastore) {
-    return new io.whitefox.api.model.Metastore()
+  public static io.whitefox.api.model.generated.Metastore metastore2api(Metastore metastore) {
+    return new io.whitefox.api.model.generated.Metastore()
         .name(metastore.name())
         .comment(metastore.comment().orElse(null))
         .owner(metastore.owner().name())
@@ -38,22 +38,22 @@ public class Mappers {
         .updatedBy(metastore.updatedBy().name());
   }
 
-  private static io.whitefox.api.model.MetastoreProperties metastoreProperties2api(
+  private static io.whitefox.api.model.generated.MetastoreProperties metastoreProperties2api(
       MetastoreProperties properties) {
     if (properties instanceof MetastoreProperties.GlueMetastoreProperties) {
       var glueMetastoreProperties = (MetastoreProperties.GlueMetastoreProperties) properties;
-      return new io.whitefox.api.model.MetastoreProperties()
+      return new io.whitefox.api.model.generated.MetastoreProperties()
           .catalogId(glueMetastoreProperties.catalogId())
           .credentials(simpleAwsCredentials2api(glueMetastoreProperties.credentials()));
     }
     throw new IllegalArgumentException("Unknown type of metastore properties: " + properties);
   }
 
-  private static io.whitefox.api.model.SimpleAwsCredentials simpleAwsCredentials2api(
+  private static io.whitefox.api.model.generated.SimpleAwsCredentials simpleAwsCredentials2api(
       AwsCredentials credentials) {
     if (credentials instanceof AwsCredentials.SimpleAwsCredentials) {
       var simpleAwsCredentials = (AwsCredentials.SimpleAwsCredentials) credentials;
-      return new io.whitefox.api.model.SimpleAwsCredentials()
+      return new io.whitefox.api.model.generated.SimpleAwsCredentials()
           .awsAccessKeyId(simpleAwsCredentials.awsAccessKeyId())
           .awsSecretAccessKey(simpleAwsCredentials.awsSecretAccessKey())
           .region(simpleAwsCredentials.region());
@@ -62,7 +62,7 @@ public class Mappers {
   }
 
   public static CreateMetastore api2createMetastore(
-      io.whitefox.api.model.CreateMetastore createMetastore, Principal principal) {
+      io.whitefox.api.model.generated.CreateMetastore createMetastore, Principal principal) {
 
     var res = new CreateMetastore(
         createMetastore.getName(),
@@ -75,8 +75,8 @@ public class Mappers {
   }
 
   public static MetastoreProperties api2CreateMetastoreProperties(
-      io.whitefox.api.model.MetastoreProperties createMetastore,
-      io.whitefox.api.model.CreateMetastore.TypeEnum type) {
+      io.whitefox.api.model.generated.MetastoreProperties createMetastore,
+      io.whitefox.api.model.generated.CreateMetastore.TypeEnum type) {
     switch (type) {
       case GLUE:
         return new MetastoreProperties.GlueMetastoreProperties(
@@ -87,7 +87,7 @@ public class Mappers {
   }
 
   public static AwsCredentials api2awsCredentials(
-      io.whitefox.api.model.SimpleAwsCredentials credentials) {
+      io.whitefox.api.model.generated.SimpleAwsCredentials credentials) {
     return new AwsCredentials.SimpleAwsCredentials(
         credentials.getAwsAccessKeyId(),
         credentials.getAwsSecretAccessKey(),
@@ -95,7 +95,7 @@ public class Mappers {
   }
 
   public static MetastoreType apit2MetastoreType(
-      io.whitefox.api.model.CreateMetastore.TypeEnum type) {
+      io.whitefox.api.model.generated.CreateMetastore.TypeEnum type) {
     switch (type) {
       case GLUE:
         return MetastoreType.GLUE;

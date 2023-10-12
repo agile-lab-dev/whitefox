@@ -1,11 +1,8 @@
 package io.whitefox.api.server;
 
-import io.whitefox.api.model.generated.CreateMetastore;
+import io.whitefox.api.deltasharing.Mappers;
 import io.whitefox.api.model.generated.UpdateMetastore;
 import io.whitefox.api.server.generated.MetastoresApi;
-import io.quarkus.security.identity.SecurityIdentity;
-import io.whitefox.api.deltasharing.Mappers;
-import io.whitefox.api.model.UpdateMetastore;
 import io.whitefox.core.Principal;
 import io.whitefox.core.services.MetastoreService;
 import jakarta.inject.Inject;
@@ -23,7 +20,7 @@ public class MetastoresApiImpl implements MetastoresApi, ApiUtils {
   }
 
   @Override
-  public Response createMetastore(io.whitefox.api.model.CreateMetastore createMetastore) {
+  public Response createMetastore(io.whitefox.api.model.generated.CreateMetastore createMetastore) {
     return wrapExceptions(
         () -> Response.status(Response.Status.CREATED)
             .entity(Mappers.metastore2api(metastoreService.createStorageManager(

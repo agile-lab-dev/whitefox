@@ -1,7 +1,7 @@
 package io.whitefox.api.server;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusMock;
@@ -9,9 +9,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.whitefox.OpenApiValidationFilter;
-import io.whitefox.api.model.CreateMetastore;
-import io.whitefox.api.model.MetastoreProperties;
-import io.whitefox.api.model.SimpleAwsCredentials;
+import io.whitefox.api.model.generated.CreateMetastore;
+import io.whitefox.api.model.generated.MetastoreProperties;
+import io.whitefox.api.model.generated.SimpleAwsCredentials;
 import io.whitefox.persistence.StorageManager;
 import io.whitefox.persistence.memory.InMemoryStorageManager;
 import jakarta.inject.Inject;
