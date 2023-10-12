@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.resolver.buildSrcSourceRootsFilePath
-
 // Define Java conventions for this organization.
 plugins {
     java
