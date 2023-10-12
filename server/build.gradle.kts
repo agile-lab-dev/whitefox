@@ -143,29 +143,29 @@ tasks.check {
     finalizedBy(tasks.jacocoTestReport)
 }
 
-val packagesToExclude = fileTree("$generatedCodeDirectory/src/gen/java")
+val classesToExclude = fileTree("$generatedCodeDirectory/src/gen/java")
     .map { f -> f.relativeTo(file("$generatedCodeDirectory/src/gen/java")).toString() }
-    .map { path -> path.substringBeforeLast(".") + "**" }
+    .map { path -> path.substringBeforeLast(".") + "*.class" }
 
 tasks.jacocoTestReport {
 
 
     doFirst {
-        logger.debug("Excluding generated classes: $packagesToExclude")
+        logger.debug("Excluding generated classes: $classesToExclude")
     }
 
     doLast {
         logger.lifecycle("The report can be found at: file://" + reports.html.entryPoint)
     }
     classDirectories.setFrom(
-        files(classDirectories.files.map { fileTree(it) { exclude(packagesToExclude) } })
+        files(classDirectories.files.map { fileTree(it) { exclude(classesToExclude) } })
     )
     finalizedBy(tasks.jacocoTestCoverageVerification)
 }
 
 tasks.jacocoTestCoverageVerification {
     classDirectories.setFrom(
-        files(classDirectories.files.map { fileTree(it) { exclude(packagesToExclude) } })
+        files(classDirectories.files.map { fileTree(it) { exclude(classesToExclude) } })
     )
     violationRules {
         rule {
