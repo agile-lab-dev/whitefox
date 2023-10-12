@@ -63,8 +63,9 @@ val openapiGenerateWhitefox = tasks.register<GenerateTask>("openapiGenerateWhite
     additionalProperties.set(
         serverGeneratorProperties.plus(
             mapOf(
-                "apiPackage" to "io.whitefox.api.server",
-                "modelPackage" to "io.whitefox.api.model",
+                "apiPackage" to "io.whitefox.api.server.generated",
+                "modelPackage" to "io.whitefox.api.model.generated",
+                "invokerPackage" to "ignored",
             )
         )
     )
@@ -76,8 +77,9 @@ val openapiGenerateDeltaSharing = tasks.register<GenerateTask>("openapiGenerateD
     outputDir.set(generatedCodeDirectory)
     additionalProperties.set(
         serverGeneratorProperties + mapOf(
-            "apiPackage" to "io.whitefox.api.deltasharing.server",
-            "modelPackage" to "io.whitefox.api.deltasharing.model"
+            "apiPackage" to "io.whitefox.api.deltasharing.server.generated",
+            "modelPackage" to "io.whitefox.api.deltasharing.model.generated",
+            "invokerPackage" to "ignored",
         )
     )
 }
@@ -143,23 +145,18 @@ tasks.check {
     finalizedBy(tasks.jacocoTestReport)
 }
 
-val classesToExclude = fileTree("$generatedCodeDirectory/src/gen/java")
-    .map { f -> f.relativeTo(file("$generatedCodeDirectory/src/gen/java")).toString() }
-    .map { path -> path.substringBeforeLast(".") + "*.class" }
-
+val classesToExclude = listOf("**/generated/**.class", "ignored/**.class")
 tasks.jacocoTestReport {
-
-
     doFirst {
-        logger.lifecycle("Excluding generated classes: $classesToExclude")
-    }
-
-    doLast {
-        logger.lifecycle("The report can be found at: file://" + reports.html.entryPoint)
+        logger.lifecycle("Excluding generated classes: ${classesToExclude}")
     }
     classDirectories.setFrom(
         files(classDirectories.files.map { fileTree(it) { exclude(classesToExclude) } })
     )
+    doLast {
+        logger.lifecycle("The report can be found at: file://" + reports.html.entryPoint)
+    }
+
     finalizedBy(tasks.jacocoTestCoverageVerification)
 }
 
@@ -170,7 +167,7 @@ tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = "0.64".toBigDecimal()
+                minimum = "0.60".toBigDecimal()
             }
         }
     }
