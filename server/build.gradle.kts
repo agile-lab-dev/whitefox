@@ -145,7 +145,11 @@ tasks.check {
     finalizedBy(tasks.jacocoTestReport)
 }
 
-val classesToExclude = listOf("**/generated/**.class", "**/ignored/**.class")
+
+val classesToExclude = listOf(
+    "**" + File.pathSeparator + "generated" + File.pathSeparator + "**.class",
+    "**" + File.pathSeparator + "ignored" + File.pathSeparator + "**.class"
+)
 tasks.jacocoTestReport {
     doFirst {
         logger.lifecycle("Excluding generated classes: ${classesToExclude}")
