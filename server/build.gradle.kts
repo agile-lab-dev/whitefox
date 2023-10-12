@@ -45,14 +45,17 @@ val openApiCodeGenDir = "generated/openapi"
 val serverGeneratorProperties = mapOf(
     "dateLibrary" to "java8",
     "disallowAdditionalPropertiesIfNotPresent" to "false",
-    "generateBuilders" to "true",
+    "generateBuilders" to "false",
     "generatePom" to "false",
     "interfaceOnly" to "true",
     "library" to "quarkus",
     "returnResponse" to "true",
     "supportAsync" to "false",
     "useJakartaEe" to "true",
-    "useSwaggerAnnotations" to "false"
+    "useSwaggerAnnotations" to "false",
+    "additionalModelTypeAnnotations" to "@io.whitefox.annotations.SkipCoverageGenerated;",
+    "additionalEnumTypeAnnotations" to "@io.whitefox.annotations.SkipCoverageGenerated;",
+    "additionalOneOfTypeAnnotations" to "@io.whitefox.annotations.SkipCoverageGenerated;"
 )
 
 val generatedCodeDirectory = generatedCodeDirectory(layout, openApiCodeGenDir)
