@@ -1,6 +1,13 @@
 package io.whitefox.api.deltasharing;
 
+import io.whitefox.api.deltasharing.model.DeltaTableMetadata;
+import io.whitefox.api.deltasharing.model.v1.generated.*;
+import io.whitefox.api.deltasharing.server.restdto.TableResponseMetadata;
 import io.whitefox.core.*;
+import io.whitefox.core.Schema;
+import io.whitefox.core.Share;
+import io.whitefox.core.Table;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -105,6 +112,20 @@ public class Mappers {
       default:
         throw new IllegalArgumentException("Unknown metastore type " + type.value());
     }
+  }
+
+  public static TableResponseMetadata toTableResponseMetadata(
+      DeltaTableMetadata deltaTableMetadata) {
+    return new TableResponseMetadata(
+        new ProtocolResponse()
+            .protocol(new ProtocolResponseProtocol().minReaderVersion(new BigDecimal(1))),
+        new MetadataResponse()
+            .metadata(new MetadataResponseMetadata()
+                .id(deltaTableMetadata.getMetadata().getId())
+                .format(new MetadataResponseMetadataFormat()
+                    .provider(deltaTableMetadata.getMetadata().getFormat().getProvider()))
+                .schemaString(deltaTableMetadata.getMetadata().getSchema().toJson())
+                .partitionColumns(deltaTableMetadata.getMetadata().getPartitionColumns())));
   }
 
   public static <A, B> List<B> mapList(List<A> list, Function<A, B> f) {

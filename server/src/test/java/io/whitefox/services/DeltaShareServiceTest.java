@@ -3,8 +3,6 @@ package io.whitefox.services;
 import static io.whitefox.api.server.DeltaUtils.tablePath;
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.delta.standalone.types.*;
-import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
 import io.whitefox.core.Table;
