@@ -66,7 +66,7 @@ public class DeltaSharedTable {
         .toEpochMilli());
   }
 
-  public class DeltaShareTableFormat {
+  public static class DeltaShareTableFormat {
     public static final String RESPONSE_FORMAT_PARQUET = "parquet";
     public static final String RESPONSE_FORMAT_DELTA = "delta";
   }
