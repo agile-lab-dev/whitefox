@@ -7,25 +7,27 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Mappers {
-  public static io.whitefox.api.deltasharing.model.generated.Share share2api(Share p) {
-    return new io.whitefox.api.deltasharing.model.generated.Share().id(p.id()).name(p.name());
+  public static io.whitefox.api.deltasharing.model.v1.generated.Share share2api(Share p) {
+    return new io.whitefox.api.deltasharing.model.v1.generated.Share()
+        .id(p.id())
+        .name(p.name());
   }
 
-  public static io.whitefox.api.deltasharing.model.generated.Schema schema2api(Schema schema) {
-    return new io.whitefox.api.deltasharing.model.generated.Schema()
+  public static io.whitefox.api.deltasharing.model.v1.generated.Schema schema2api(Schema schema) {
+    return new io.whitefox.api.deltasharing.model.v1.generated.Schema()
         .name(schema.name())
         .share(schema.share());
   }
 
-  public static io.whitefox.api.deltasharing.model.generated.Table table2api(Table table) {
-    return new io.whitefox.api.deltasharing.model.generated.Table()
+  public static io.whitefox.api.deltasharing.model.v1.generated.Table table2api(Table table) {
+    return new io.whitefox.api.deltasharing.model.v1.generated.Table()
         .name(table.name())
         .share(table.share())
         .schema(table.schema());
   }
 
-  public static io.whitefox.api.model.generated.Metastore metastore2api(Metastore metastore) {
-    return new io.whitefox.api.model.generated.Metastore()
+  public static io.whitefox.api.model.v1.generated.Metastore metastore2api(Metastore metastore) {
+    return new io.whitefox.api.model.v1.generated.Metastore()
         .name(metastore.name())
         .comment(metastore.comment().orElse(null))
         .owner(metastore.owner().name())
@@ -38,22 +40,22 @@ public class Mappers {
         .updatedBy(metastore.updatedBy().name());
   }
 
-  private static io.whitefox.api.model.generated.MetastoreProperties metastoreProperties2api(
+  private static io.whitefox.api.model.v1.generated.MetastoreProperties metastoreProperties2api(
       MetastoreProperties properties) {
     if (properties instanceof MetastoreProperties.GlueMetastoreProperties) {
       var glueMetastoreProperties = (MetastoreProperties.GlueMetastoreProperties) properties;
-      return new io.whitefox.api.model.generated.MetastoreProperties()
+      return new io.whitefox.api.model.v1.generated.MetastoreProperties()
           .catalogId(glueMetastoreProperties.catalogId())
           .credentials(simpleAwsCredentials2api(glueMetastoreProperties.credentials()));
     }
     throw new IllegalArgumentException("Unknown type of metastore properties: " + properties);
   }
 
-  private static io.whitefox.api.model.generated.SimpleAwsCredentials simpleAwsCredentials2api(
+  private static io.whitefox.api.model.v1.generated.SimpleAwsCredentials simpleAwsCredentials2api(
       AwsCredentials credentials) {
     if (credentials instanceof AwsCredentials.SimpleAwsCredentials) {
       var simpleAwsCredentials = (AwsCredentials.SimpleAwsCredentials) credentials;
-      return new io.whitefox.api.model.generated.SimpleAwsCredentials()
+      return new io.whitefox.api.model.v1.generated.SimpleAwsCredentials()
           .awsAccessKeyId(simpleAwsCredentials.awsAccessKeyId())
           .awsSecretAccessKey(simpleAwsCredentials.awsSecretAccessKey())
           .region(simpleAwsCredentials.region());
@@ -62,7 +64,7 @@ public class Mappers {
   }
 
   public static CreateMetastore api2createMetastore(
-      io.whitefox.api.model.generated.CreateMetastore createMetastore, Principal principal) {
+      io.whitefox.api.model.v1.generated.CreateMetastore createMetastore, Principal principal) {
     var type = api2MetastoreType(createMetastore.getType());
     var res = new CreateMetastore(
         createMetastore.getName(),
@@ -75,7 +77,7 @@ public class Mappers {
   }
 
   public static MetastoreProperties api2CreateMetastoreProperties(
-      io.whitefox.api.model.generated.MetastoreProperties createMetastore, MetastoreType type) {
+      io.whitefox.api.model.v1.generated.MetastoreProperties createMetastore, MetastoreType type) {
     switch (type) {
       case GLUE:
         return new MetastoreProperties.GlueMetastoreProperties(
@@ -88,7 +90,7 @@ public class Mappers {
   }
 
   public static AwsCredentials api2awsCredentials(
-      io.whitefox.api.model.generated.SimpleAwsCredentials credentials) {
+      io.whitefox.api.model.v1.generated.SimpleAwsCredentials credentials) {
     return new AwsCredentials.SimpleAwsCredentials(
         credentials.getAwsAccessKeyId(),
         credentials.getAwsSecretAccessKey(),
@@ -96,7 +98,7 @@ public class Mappers {
   }
 
   public static MetastoreType api2MetastoreType(
-      io.whitefox.api.model.generated.CreateMetastore.TypeEnum type) {
+      io.whitefox.api.model.v1.generated.CreateMetastore.TypeEnum type) {
     switch (type) {
       case GLUE:
         return MetastoreType.GLUE;

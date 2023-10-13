@@ -8,19 +8,19 @@ info:
     name: Agile Lab
     url: https://www.agilelab.it
 servers:
-  - url: 'http://localhost:8000/whitefox-api/v1'
+  - url: 'http://localhost:8083'
 tags:
-  - name: provider
-  - name: table
-  - name: metastore
-  - name: storage
-  - name: share
-  - name: schema
+  - name: providerV1
+  - name: tableV1
+  - name: metastoreV1
+  - name: storageV1
+  - name: shareV1
+  - name: schemaV1
 paths:
-  /providers:
+  /whitefox-api/v1/providers:
     post:
       tags:
-        - provider
+        - providerV1
       operationId: AddProvider
       description: Add a new provider
       requestBody:
@@ -51,7 +51,7 @@ paths:
       operationId: ListProviders
       description: List all providers
       tags:
-        - provider
+        - providerV1
       responses:
         "200":
           description: OK
@@ -76,12 +76,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /providers/{name}:
+  /whitefox-api/v1/providers/{name}:
     patch:
       description: Update an existing provider
       operationId: UpdateProvider
       tags:
-        - provider
+        - providerV1
       parameters:
         - name: name
           in: path
@@ -116,7 +116,7 @@ paths:
       operationId: DeleteProvider
       description: Delete a provider
       tags:
-        - provider
+        - providerV1
       parameters:
         - name: name
           in: path
@@ -147,7 +147,7 @@ paths:
       operationId: GetProvider
       description: Get a provider related info
       tags:
-        - provider
+        - providerV1
       parameters:
         - name: name
           in: path
@@ -173,12 +173,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /providers/{providerName}/tables:
+  /whitefox-api/v1/providers/{providerName}/tables:
     post:
       description: Create a new table for provider
       operationId: CreateTableInProvider
       tags:
-        - table
+        - tableV1
       parameters:
         - name: providerName
           in: path
@@ -211,7 +211,7 @@ paths:
           $ref: "#/components/responses/500"
     get:
       tags:
-        - table
+        - tableV1
       description: get the list of tables declared by this provider
       operationId: ListTablesInProvider
       parameters:
@@ -241,12 +241,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /providers/{providerName}/tables/{tableName}/validate:
+  /whitefox-api/v1/providers/{providerName}/tables/{tableName}/validate:
     post:
       description: Validate the table
       operationId: ValidateTable
       tags:
-        - table
+        - tableV1
       parameters:
         - name: providerName
           in: path
@@ -277,12 +277,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /providers/{providerName}/tables/{tableName}:
+  /whitefox-api/v1/providers/{providerName}/tables/{tableName}:
     patch:
       operationId: PatchTableInProvider
       description: Update a table in a Provider
       tags:
-        - table
+        - tableV1
       parameters:
         - name: providerName
           in: path
@@ -322,7 +322,7 @@ paths:
       operationId: DeleteTableInProvider
       description: Delete a table from a provider
       tags:
-        - table
+        - tableV1
       parameters:
         - name: providerName
           in: path
@@ -358,7 +358,7 @@ paths:
       description: get the description of a table in a provider
       operationId: DescribeTableInProvider
       tags:
-        - table
+        - tableV1
       parameters:
         - name: providerName
           in: path
@@ -389,12 +389,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /metastores:
+  /whitefox-api/v1/metastores:
     post:
       description: Create a new metastore
       operationId: CreateMetastore
       tags:
-        - metastore
+        - metastoreV1
       requestBody:
         content:
           application/json:
@@ -423,7 +423,7 @@ paths:
       description: list all metastores
       operationId: ListMetastores
       tags:
-        - metastore
+        - metastoreV1
       responses:
         "200":
           description: OK
@@ -448,12 +448,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /metastores/{name}:
+  /whitefox-api/v1/metastores/{name}:
     patch:
       description: update an existing metastore
       operationId: UpdateMetastore
       tags:
-        - metastore
+        - metastoreV1
       parameters:
         - name: name
           in: path
@@ -488,7 +488,7 @@ paths:
       operationId: DeleteMetastore
       description: delete a metastore
       tags:
-        - metastore
+        - metastoreV1
       parameters:
         - name: name
           in: path
@@ -519,7 +519,7 @@ paths:
       operationId: DescribeMetastore
       description: Get info about a given metastore
       tags:
-        - metastore
+        - metastoreV1
       parameters:
         - name: name
           in: path
@@ -545,12 +545,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /metastores/{name}/validate:
+  /whitefox-api/v1/metastores/{name}/validate:
     post:
       operationId: ValidateMetastore
       description: Validate a metastore
       tags:
-        - metastore
+        - metastoreV1
       parameters:
         - name: name
           in: path
@@ -576,12 +576,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /storage:
+  /whitefox-api/v1/storage:
     post:
       operationId: CreateStorage
       description: Add a new storage
       tags:
-        - storage
+        - storageV1
       requestBody:
         content:
           application/json:
@@ -610,7 +610,7 @@ paths:
       operationId: ListStorage
       description: List storage
       tags:
-        - storage
+        - storageV1
       responses:
         "200":
           description: OK
@@ -635,13 +635,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-
-  /storage/{name}:
+  /whitefox-api/v1/storage/{name}:
     patch:
       operationId: UpdateStorage
       description: Update an existing storage
       tags:
-        - storage
+        - storageV1
       parameters:
         - required: true
           name: name
@@ -676,7 +675,7 @@ paths:
       operationId: DeleteStorage
       description: Delete an existing storage
       tags:
-        - storage
+        - storageV1
       parameters:
         - name: name
           required: true
@@ -707,7 +706,7 @@ paths:
       operationId: DescribeStorage
       description: Describe storage
       tags:
-        - storage
+        - storageV1
       parameters:
         - name: name
           required: true
@@ -733,12 +732,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /storage/{name}/validate:
+  /whitefox-api/v1/storage/{name}/validate:
     post:
       operationId: ValidateStorage
       description: Validate an existing storage
       tags:
-        - storage
+        - storageV1
       parameters:
         - required: true
           name: name
@@ -764,12 +763,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /shares:
+  /whitefox-api/v1/shares:
     post:
       operationId: CreateShare
       description: Create a new share
       tags:
-        - share
+        - shareV1
       requestBody:
         content:
           application/json:
@@ -794,12 +793,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /shares/{share}:
+  /whitefox-api/v1/shares/{share}:
     delete:
       operationId: DeleteShare
       description: Delete a share
       tags:
-        - share
+        - shareV1
       parameters:
         - in: path
           name: share
@@ -826,7 +825,7 @@ paths:
       operationId: UpdateShare
       description: update an existing share
       tags:
-        - share
+        - shareV1
       parameters:
         - in: path
           name: share
@@ -858,12 +857,12 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /shares/{share}/recipients:
+  /whitefox-api/v1/shares/{share}/recipients:
     put:
       operationId: AddRecipientToShare
       description: add a recipient to share
       tags:
-        - share
+        - shareV1
       parameters:
         - in: path
           name: share
@@ -906,13 +905,13 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /shares/{share}/{schema}:
+  /whitefox-api/v1/shares/{share}/{schema}:
     post:
       operationId: CreateSchema
       description: create a schema in a share
       tags:
-        - share
-        - schema
+        - shareV1
+        - schemaV1
       parameters:
         - in: path
           name: share
@@ -949,8 +948,8 @@ paths:
       operationId: DeleteSchema
       description: delete a schema from a share
       tags:
-        - share
-        - schema
+        - shareV1
+        - schemaV1
       parameters:
         - in: path
           name: share
@@ -979,14 +978,14 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /shares/{share}/{schema}/tables:
+  /whitefox-api/v1/shares/{share}/{schema}/tables:
     post:
       operationId: AddTableToSchema
       description: add a table to a schema
       tags:
-        - share
-        - schema
-        - table
+        - shareV1
+        - schemaV1
+        - tableV1
       parameters:
         - in: path
           name: share
@@ -1028,9 +1027,9 @@ paths:
       operationId: ListTablesInSchema
       description: list tables within a schema
       tags:
-        - share
-        - schema
-        - table
+        - shareV1
+        - schemaV1
+        - tableV1
       parameters:
         - in: path
           name: share
@@ -1065,14 +1064,13 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-
-  /shares/{share}/{schema}/tables/{table}:
+  /whitefox-api/v1/shares/{share}/{schema}/tables/{table}:
     delete:
       operationId: DeleteTableFromSchema
       tags:
-        - share
-        - schema
-        - table
+        - shareV1
+        - schemaV1
+        - tableV1
       description: delete a table from a schema
       parameters:
         - in: path

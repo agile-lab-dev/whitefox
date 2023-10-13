@@ -4,11 +4,11 @@ import static io.whitefox.api.deltasharing.Mappers.mapList;
 
 import io.whitefox.api.deltasharing.Mappers;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
-import io.whitefox.api.deltasharing.model.generated.ListSchemasResponse;
-import io.whitefox.api.deltasharing.model.generated.ListShareResponse;
-import io.whitefox.api.deltasharing.model.generated.ListTablesResponse;
-import io.whitefox.api.deltasharing.model.generated.QueryRequest;
-import io.whitefox.api.deltasharing.server.generated.DeltaApiApi;
+import io.whitefox.api.deltasharing.model.v1.generated.ListSchemasResponse;
+import io.whitefox.api.deltasharing.model.v1.generated.ListShareResponse;
+import io.whitefox.api.deltasharing.model.v1.generated.ListTablesResponse;
+import io.whitefox.api.deltasharing.model.v1.generated.QueryRequest;
+import io.whitefox.api.deltasharing.server.v1.generated.DeltaApiApi;
 import io.whitefox.api.server.ApiUtils;
 import io.whitefox.core.services.ContentAndToken;
 import io.whitefox.core.services.DeltaSharesService;

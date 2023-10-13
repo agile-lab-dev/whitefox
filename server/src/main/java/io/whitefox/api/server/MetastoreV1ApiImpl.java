@@ -1,26 +1,25 @@
 package io.whitefox.api.server;
 
 import io.whitefox.api.deltasharing.Mappers;
-import io.whitefox.api.model.generated.UpdateMetastore;
-import io.whitefox.api.server.generated.MetastoresApi;
+import io.whitefox.api.model.v1.generated.UpdateMetastore;
+import io.whitefox.api.server.v1.generated.MetastoreV1Api;
 import io.whitefox.core.Principal;
 import io.whitefox.core.services.MetastoreService;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
-@Path("whitefox-api/v1/metastores")
-public class MetastoresApiImpl implements MetastoresApi, ApiUtils {
+public class MetastoreV1ApiImpl implements MetastoreV1Api, ApiUtils {
 
   private final MetastoreService metastoreService;
 
   @Inject
-  public MetastoresApiImpl(MetastoreService metastoreService) {
+  public MetastoreV1ApiImpl(MetastoreService metastoreService) {
     this.metastoreService = metastoreService;
   }
 
   @Override
-  public Response createMetastore(io.whitefox.api.model.generated.CreateMetastore createMetastore) {
+  public Response createMetastore(
+      io.whitefox.api.model.v1.generated.CreateMetastore createMetastore) {
     return wrapExceptions(
         () -> Response.status(Response.Status.CREATED)
             .entity(Mappers.metastore2api(metastoreService.createStorageManager(

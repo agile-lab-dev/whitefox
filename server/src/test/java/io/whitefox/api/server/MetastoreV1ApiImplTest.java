@@ -9,9 +9,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.whitefox.OpenApiValidationFilter;
-import io.whitefox.api.model.generated.CreateMetastore;
-import io.whitefox.api.model.generated.MetastoreProperties;
-import io.whitefox.api.model.generated.SimpleAwsCredentials;
+import io.whitefox.api.model.v1.generated.CreateMetastore;
+import io.whitefox.api.model.v1.generated.MetastoreProperties;
+import io.whitefox.api.model.v1.generated.SimpleAwsCredentials;
 import io.whitefox.persistence.StorageManager;
 import io.whitefox.persistence.memory.InMemoryStorageManager;
 import jakarta.inject.Inject;
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MetastoresApiImplTest {
+public class MetastoreV1ApiImplTest {
 
   @BeforeAll
   public static void setup() {

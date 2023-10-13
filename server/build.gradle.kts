@@ -53,6 +53,7 @@ val serverGeneratorProperties = mapOf(
     "supportAsync" to "false",
     "useJakartaEe" to "true",
     "useSwaggerAnnotations" to "false",
+    "invokerPackage" to "ignored",
     "additionalModelTypeAnnotations" to "@io.whitefox.annotations.SkipCoverageGenerated;",
     "additionalEnumTypeAnnotations" to "@io.whitefox.annotations.SkipCoverageGenerated;",
     "additionalOneOfTypeAnnotations" to "@io.whitefox.annotations.SkipCoverageGenerated;"
@@ -67,9 +68,9 @@ val openapiGenerateWhitefox = tasks.register<GenerateTask>("openapiGenerateWhite
     additionalProperties.set(
         serverGeneratorProperties.plus(
             mapOf(
-                "apiPackage" to "io.whitefox.api.server.generated",
-                "modelPackage" to "io.whitefox.api.model.generated",
-                "invokerPackage" to "ignored",
+                "apiPackage" to "io.whitefox.api.server.v1.generated",
+                "modelPackage" to "io.whitefox.api.model.v1.generated",
+                "useTags" to "true",
             )
         )
     )
@@ -81,9 +82,9 @@ val openapiGenerateDeltaSharing = tasks.register<GenerateTask>("openapiGenerateD
     outputDir.set(generatedCodeDirectory)
     additionalProperties.set(
         serverGeneratorProperties + mapOf(
-            "apiPackage" to "io.whitefox.api.deltasharing.server.generated",
-            "modelPackage" to "io.whitefox.api.deltasharing.model.generated",
-            "invokerPackage" to "ignored",
+            "apiPackage" to "io.whitefox.api.deltasharing.server.v1.generated",
+            "modelPackage" to "io.whitefox.api.deltasharing.model.v1.generated",
+            "useTags" to "false",
         )
     )
 }
@@ -186,7 +187,7 @@ tasks.jacocoTestCoverageVerification {
         violationRules {
             rule {
                 limit {
-                    minimum = BigDecimal.valueOf(0.71)
+                    minimum = BigDecimal.valueOf(0.74)
                 }
             }
         }
