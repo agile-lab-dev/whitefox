@@ -356,6 +356,12 @@ paths:
           description: 'Starting Timestamp'
           schema:
             type: string
+        - in: header
+          name: delta-sharing-capabilities
+          required: false
+          description: 'Delta Sharing Capabilities'
+          schema:
+            type: string
       responses:
         '400':
           $ref: "#/components/responses/400"

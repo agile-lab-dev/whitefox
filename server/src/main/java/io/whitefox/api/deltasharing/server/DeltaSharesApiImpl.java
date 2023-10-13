@@ -65,7 +65,11 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
 
   @Override
   public Response getTableMetadata(
-      String share, String schema, String table, String startingTimestamp) {
+      String share,
+      String schema,
+      String table,
+      String startingTimestamp,
+      String deltaSharingCapabilities) {
     return wrapExceptions(
         () -> optionalToNotFound(
             deltaSharesService.getTableMetadata(share, schema, table, startingTimestamp),
@@ -79,8 +83,8 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
                     .header(DELTA_TABLE_VERSION_HEADER, String.valueOf(v))
                     .header(
                         DELTA_SHARE_CAPABILITIES_HEADER,
-                        getResponseFormatHeader(Mappers.toHeaderCapabilitiesMap(
-                            context.request().headers().get(DELTA_SHARE_CAPABILITIES_HEADER))))
+                        getResponseFormatHeader(
+                            Mappers.toHeaderCapabilitiesMap(deltaSharingCapabilities)))
                     .build())),
         exceptionToResponse);
   }
