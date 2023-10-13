@@ -2,7 +2,6 @@ package io.whitefox.api.deltasharing.server;
 
 import static io.whitefox.api.deltasharing.Mappers.mapList;
 
-import io.vertx.ext.web.RoutingContext;
 import io.whitefox.api.deltasharing.Mappers;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.api.deltasharing.model.DeltaTableMetadata;
@@ -17,7 +16,6 @@ import io.whitefox.api.server.ApiUtils;
 import io.whitefox.core.services.ContentAndToken;
 import io.whitefox.core.services.DeltaSharesService;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Optional;
@@ -28,9 +26,6 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
   private final DeltaSharesService deltaSharesService;
   private final DeltaPageTokenEncoder tokenEncoder;
   private final Serializer<TableResponseMetadata> serializer;
-
-  @Context
-  private RoutingContext context;
 
   @Inject
   public DeltaSharesApiImpl(
