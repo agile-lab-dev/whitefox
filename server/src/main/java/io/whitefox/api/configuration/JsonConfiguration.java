@@ -6,7 +6,6 @@ import io.quarkus.arc.All;
 import io.quarkus.jackson.ObjectMapperCustomizer;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.Produces;
-
 import java.util.List;
 
 public class JsonConfiguration {
