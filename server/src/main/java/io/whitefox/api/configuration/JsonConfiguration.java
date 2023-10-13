@@ -4,14 +4,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.arc.All;
 import io.quarkus.jackson.ObjectMapperCustomizer;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Singleton;
 import jakarta.ws.rs.Produces;
+
 import java.util.List;
 
 public class JsonConfiguration {
 
   // Replaces the CDI producer for ObjectMapper built into Quarkus
-  @ApplicationScoped
+  @Singleton
   @Produces
   ObjectMapper objectMapper(@All List<ObjectMapperCustomizer> customizers) {
     ObjectMapper mapper = new ObjectMapper();
