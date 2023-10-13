@@ -2,6 +2,7 @@ package io.whitefox.api.deltasharing.server;
 
 import static io.whitefox.api.deltasharing.Mappers.mapList;
 
+import io.vertx.ext.web.RoutingContext;
 import io.whitefox.api.deltasharing.Mappers;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.api.deltasharing.model.DeltaTableMetadata;
@@ -16,6 +17,7 @@ import io.whitefox.api.server.ApiUtils;
 import io.whitefox.core.services.ContentAndToken;
 import io.whitefox.core.services.DeltaSharesService;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Optional;
@@ -23,10 +25,12 @@ import java.util.Optional;
 public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
 
   private final MediaType ndjsonMediaType = new MediaType("application", "x-ndjson");
-  private final String DELTA_TABLE_VERSION_HEADER = "Delta-Table-Version";
   private final DeltaSharesService deltaSharesService;
   private final DeltaPageTokenEncoder tokenEncoder;
   private final Serializer<TableResponseMetadata> serializer;
+
+  @Context
+  private RoutingContext context;
 
   @Inject
   public DeltaSharesApiImpl(
@@ -62,7 +66,6 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
   @Override
   public Response getTableMetadata(
       String share, String schema, String table, String startingTimestamp) {
-    // TODO set header(deltaSharingCapabilities, responseFormat)
     return wrapExceptions(
         () -> optionalToNotFound(
             deltaSharesService.getTableMetadata(share, schema, table, startingTimestamp),
@@ -74,6 +77,10 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
                         ndjsonMediaType)
                     .status(Response.Status.OK.getStatusCode())
                     .header(DELTA_TABLE_VERSION_HEADER, String.valueOf(v))
+                    .header(
+                        DELTA_SHARE_CAPABILITIES_HEADER,
+                        getResponseFormatHeader(Mappers.toHeaderCapabilitiesMap(
+                            context.request().headers().get(DELTA_SHARE_CAPABILITIES_HEADER))))
                     .build())),
         exceptionToResponse);
   }

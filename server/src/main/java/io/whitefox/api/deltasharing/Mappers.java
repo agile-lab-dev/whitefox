@@ -8,8 +8,7 @@ import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
 import io.whitefox.core.Table;
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -126,6 +125,17 @@ public class Mappers {
                     .provider(deltaTableMetadata.getMetadata().getFormat().getProvider()))
                 .schemaString(deltaTableMetadata.getMetadata().getSchema().toJson())
                 .partitionColumns(deltaTableMetadata.getMetadata().getPartitionColumns())));
+  }
+
+  public static Map<String, String> toHeaderCapabilitiesMap(String headerCapabilities) {
+    if (headerCapabilities == null) {
+      return Map.of();
+    }
+    return Arrays.stream(headerCapabilities.toLowerCase().split(";"))
+        .map(h -> h.split("="))
+        .filter(h -> h.length == 2)
+        .map(splits -> Map.entry(splits[0], splits[1]))
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   public static <A, B> List<B> mapList(List<A> list, Function<A, B> f) {
