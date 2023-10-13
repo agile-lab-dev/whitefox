@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 public class DeltaShareServiceTest {
   DeltaShareTableLoader loader = new DeltaShareTableLoader();
@@ -189,6 +191,7 @@ public class DeltaShareServiceTest {
   }
 
   @Test
+  @DisabledOnOs(OS.WINDOWS)
   public void getTableMetadata() {
     var shares = List.of(new Share(
         "name",

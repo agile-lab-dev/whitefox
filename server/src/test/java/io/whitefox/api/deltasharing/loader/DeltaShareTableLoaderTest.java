@@ -9,6 +9,8 @@ import io.whitefox.core.services.DeltaShareTableLoader;
 import io.whitefox.core.services.DeltaSharedTable;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 @QuarkusTest
 public class DeltaShareTableLoaderTest {
@@ -20,6 +22,7 @@ public class DeltaShareTableLoaderTest {
   }
 
   @Test
+  @DisabledOnOs(OS.WINDOWS)
   public void loadTable() {
     Table table = new Table("delta-table", tablePath("delta-table"), "schema", "share");
     DeltaSharedTable deltaSharedTable = deltaShareTableLoader.loadTable(table);

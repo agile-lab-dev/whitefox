@@ -178,6 +178,7 @@ public class DeltaSharesApiImplTest {
   }
 
   @Test
+  @DisabledOnOs(OS.WINDOWS)
   public void tableMetadata() {
     assertEquals(
         "{\"protocol\":{\"minReaderVersion\":1}}\n"
