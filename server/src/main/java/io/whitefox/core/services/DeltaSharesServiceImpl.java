@@ -4,13 +4,13 @@ import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
 import io.whitefox.core.Table;
 import io.whitefox.persistence.StorageManager;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-@Singleton
+@ApplicationScoped
 public class DeltaSharesServiceImpl implements DeltaSharesService {
 
   private final StorageManager storageManager;

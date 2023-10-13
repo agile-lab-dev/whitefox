@@ -3,11 +3,11 @@ package io.whitefox.core.services;
 import io.whitefox.core.CreateMetastore;
 import io.whitefox.core.Metastore;
 import io.whitefox.persistence.StorageManager;
-import jakarta.inject.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.time.Clock;
 import java.util.Optional;
 
-@Singleton
+@ApplicationScoped
 public class MetastoreService {
 
   private final StorageManager storageManager;

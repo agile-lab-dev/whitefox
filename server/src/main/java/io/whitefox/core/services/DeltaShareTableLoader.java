@@ -1,9 +1,9 @@
 package io.whitefox.core.services;
 
 import io.whitefox.core.Table;
-import jakarta.inject.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
 
-@Singleton
+@ApplicationScoped
 public class DeltaShareTableLoader implements TableLoader<DeltaSharedTable> {
 
   @Override

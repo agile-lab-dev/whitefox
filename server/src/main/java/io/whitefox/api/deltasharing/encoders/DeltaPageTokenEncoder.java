@@ -3,10 +3,10 @@ package io.whitefox.api.deltasharing.encoders;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import io.whitefox.core.services.ContentAndToken;
-import jakarta.inject.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Base64;
 
-@Singleton
+@ApplicationScoped
 public class DeltaPageTokenEncoder {
 
   public String encodePageToken(ContentAndToken.Token id) {
