@@ -4,11 +4,17 @@ import io.whitefox.annotations.SkipCoverageGenerated;
 import java.util.Objects;
 
 public interface MetastoreProperties {
+
   final class GlueMetastoreProperties implements MetastoreProperties {
     private final String catalogId;
     private final AwsCredentials credentials;
 
-    public GlueMetastoreProperties(String catalogId, AwsCredentials credentials) {
+    public GlueMetastoreProperties(
+        String catalogId, AwsCredentials credentials, MetastoreType type) {
+      if (type != MetastoreType.GLUE) {
+        throw new IllegalArgumentException(String.format(
+            "GlueMetastore properties are not compatible with metastore of type %o", type));
+      }
       this.catalogId = catalogId;
       this.credentials = credentials;
     }

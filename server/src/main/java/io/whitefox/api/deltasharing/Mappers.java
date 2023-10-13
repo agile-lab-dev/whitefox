@@ -63,26 +63,27 @@ public class Mappers {
 
   public static CreateMetastore api2createMetastore(
       io.whitefox.api.model.generated.CreateMetastore createMetastore, Principal principal) {
-
+    var type = api2MetastoreType(createMetastore.getType());
     var res = new CreateMetastore(
         createMetastore.getName(),
         Optional.ofNullable(createMetastore.getComment()),
-        apit2MetastoreType(createMetastore.getType()),
-        api2CreateMetastoreProperties(createMetastore.getProperties(), createMetastore.getType()),
+        type,
+        api2CreateMetastoreProperties(createMetastore.getProperties(), type),
         principal,
         createMetastore.getSkipValidation());
     return res;
   }
 
   public static MetastoreProperties api2CreateMetastoreProperties(
-      io.whitefox.api.model.generated.MetastoreProperties createMetastore,
-      io.whitefox.api.model.generated.CreateMetastore.TypeEnum type) {
+      io.whitefox.api.model.generated.MetastoreProperties createMetastore, MetastoreType type) {
     switch (type) {
       case GLUE:
         return new MetastoreProperties.GlueMetastoreProperties(
-            createMetastore.getCatalogId(), api2awsCredentials(createMetastore.getCredentials()));
+            createMetastore.getCatalogId(),
+            api2awsCredentials(createMetastore.getCredentials()),
+            type);
       default:
-        throw new IllegalArgumentException("Unknown metastore type " + type.value());
+        throw new IllegalArgumentException("Unknown metastore type " + type);
     }
   }
 
@@ -94,7 +95,7 @@ public class Mappers {
         credentials.getRegion());
   }
 
-  public static MetastoreType apit2MetastoreType(
+  public static MetastoreType api2MetastoreType(
       io.whitefox.api.model.generated.CreateMetastore.TypeEnum type) {
     switch (type) {
       case GLUE:
