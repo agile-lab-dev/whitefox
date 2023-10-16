@@ -32,7 +32,7 @@ fix it.
 Before every push you ~~can~~ should run locally `./gradlew devCheck` that will both reformat the code and run the 
 unit tests.
 
-You can run the serverless locally with the command: `gradlew server:quarkusDev`
+You can run the server locally with the command: `gradlew server:quarkusDev`
 
 ### Windows
 
