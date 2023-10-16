@@ -127,6 +127,14 @@ public class Mappers {
                 .partitionColumns(deltaTableMetadata.getMetadata().getPartitionColumns())));
   }
 
+  /**
+   * NOTE: this is ann undocumented feature of the reference impl of delta-sharing, it's not part of the
+   * protocol
+   * ----
+   * Return the [[io.whitefox.api.server.DeltaHeaders.DELTA_SHARE_CAPABILITIES_HEADER]] header
+   * that will be set in the response w/r/t the one received in the request.
+   * If the request did not contain any, we will return an empty one.
+   */
   public static Map<String, String> toHeaderCapabilitiesMap(String headerCapabilities) {
     if (headerCapabilities == null) {
       return Map.of();
