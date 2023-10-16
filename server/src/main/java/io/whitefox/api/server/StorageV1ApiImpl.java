@@ -21,7 +21,7 @@ public class StorageV1ApiImpl implements StorageV1Api, ApiUtils {
   public Response createStorage(io.whitefox.api.model.v1.generated.CreateStorage createStorage) {
     return wrapExceptions(
         () -> Response.status(Response.Status.CREATED)
-            .entity(Mappers.storage2api(storageService.createStorageManager(
+            .entity(Mappers.storage2api(storageService.createStorage(
                 Mappers.api2createStorage(createStorage, getRequestPrincipal()))))
             .build(),
         exceptionToResponse);

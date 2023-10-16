@@ -1,5 +1,6 @@
 package io.whitefox.core.storage;
 
+import io.whitefox.annotations.SkipCoverageGenerated;
 import io.whitefox.core.Principal;
 import java.util.Objects;
 import java.util.Optional;
@@ -80,6 +81,7 @@ public final class Storage {
   }
 
   @Override
+  @SkipCoverageGenerated
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
@@ -97,6 +99,7 @@ public final class Storage {
   }
 
   @Override
+  @SkipCoverageGenerated
   public int hashCode() {
     return Objects.hash(
         name, comment, owner, type, validatedAt, uri, createdAt, createdBy, updatedAt, updatedBy);

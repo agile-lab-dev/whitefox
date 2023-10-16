@@ -17,7 +17,7 @@ public class StorageService {
     this.clock = clock;
   }
 
-  public Storage createStorageManager(CreateStorage storage) {
+  public Storage createStorage(CreateStorage storage) {
     return storageManager.createStorage(validate(storage));
   }
 
