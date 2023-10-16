@@ -25,7 +25,7 @@ public class MetastoreServiceTest {
 
   @Test
   public void createMetastore() {
-    var metastore = service.createStorageManager(createMetastore);
+    var metastore = service.createMetastore(createMetastore);
     assertEquals(metastore.name(), createMetastore.name());
     assertEquals(metastore.owner().name(), createMetastore.currentUser().name());
     assertEquals(metastore.createdBy().name(), createMetastore.currentUser().name());

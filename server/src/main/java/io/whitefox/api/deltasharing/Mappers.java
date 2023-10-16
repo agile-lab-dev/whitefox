@@ -1,18 +1,18 @@
 package io.whitefox.api.deltasharing;
 
 import io.whitefox.api.deltasharing.model.DeltaTableMetadata;
-import io.whitefox.api.deltasharing.model.v1.generated.ProtocolResponse;
-import io.whitefox.api.deltasharing.model.v1.generated.ProtocolResponseProtocol;
 import io.whitefox.api.deltasharing.model.v1.generated.MetadataResponse;
 import io.whitefox.api.deltasharing.model.v1.generated.MetadataResponseMetadata;
-import io.whitefox.api.deltasharing.server.restdto.TableResponseMetadata;
 import io.whitefox.api.deltasharing.model.v1.generated.MetadataResponseMetadataFormat;
+import io.whitefox.api.deltasharing.model.v1.generated.ProtocolResponse;
+import io.whitefox.api.deltasharing.model.v1.generated.ProtocolResponseProtocol;
+import io.whitefox.api.deltasharing.server.restdto.TableResponseMetadata;
 import io.whitefox.core.*;
-import java.math.BigDecimal;
-import java.util.*;
 import io.whitefox.core.storage.CreateStorage;
 import io.whitefox.core.storage.Storage;
 import io.whitefox.core.storage.StorageType;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
