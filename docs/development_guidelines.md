@@ -61,7 +61,7 @@ Some golden rules that we use in this repo:
 - use constructor-based dependency injection when possible (i.e. do not annotate with `@Inject` any field) this 
   makes testing beans easy without a CDI framework (that makes unit test much faster)
 - the "core" code should [make illegal states unrepresentable](https://khalilstemmler.com/articles/typescript-domain-driven-design/make-illegal-states-unrepresentable/)
-- never use `null` use `Optional` to convey optionality, ignore IntelliJ "warning" when passing `Optional` to methods
+- never use `null`, use `Optional` to convey optionality, ignore IntelliJ "warning" when passing `Optional` to methods
 - throw exceptions and write beautiful error messages
 - use `@QuarkusTest` annotation only when you really need the server to be running, otherwise write a "simple" unit 
   test
