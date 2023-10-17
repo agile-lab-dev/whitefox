@@ -67,5 +67,4 @@ public interface ApiUtils extends DeltaHeaders {
   default Principal getRequestPrincipal() {
     return new Principal("Mr. Fox");
   }
-
 }
