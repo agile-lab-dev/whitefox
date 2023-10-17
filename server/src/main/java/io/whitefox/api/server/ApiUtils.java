@@ -2,6 +2,7 @@ package io.whitefox.api.server;
 
 import io.quarkus.runtime.util.ExceptionUtil;
 import io.whitefox.api.deltasharing.model.v1.generated.CommonErrorResponse;
+import io.whitefox.core.Principal;
 import io.whitefox.core.services.DeltaSharedTable;
 import io.whitefox.persistence.DuplicateKeyException;
 import jakarta.ws.rs.core.Response;
@@ -62,4 +63,9 @@ public interface ApiUtils extends DeltaHeaders {
         DELTA_SHARING_RESPONSE_FORMAT,
         DeltaSharedTable.DeltaShareTableFormat.RESPONSE_FORMAT_PARQUET);
   }
+
+  default Principal getRequestPrincipal() {
+    return new Principal("Mr. Fox");
+  }
+
 }

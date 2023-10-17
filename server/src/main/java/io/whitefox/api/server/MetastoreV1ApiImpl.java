@@ -28,10 +28,6 @@ public class MetastoreV1ApiImpl implements MetastoreV1Api, ApiUtils {
         exceptionToResponse);
   }
 
-  private Principal getRequestPrincipal() {
-    return new Principal("Mr. Fox");
-  }
-
   @Override
   public Response deleteMetastore(String name, String force) {
     Response res = Response.ok().build();

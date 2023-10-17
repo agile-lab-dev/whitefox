@@ -26,11 +26,6 @@ public class StorageV1ApiImpl implements StorageV1Api, ApiUtils {
             .build(),
         exceptionToResponse);
   }
-
-  private Principal getRequestPrincipal() {
-    return new Principal("Mr. Fox");
-  }
-
   @Override
   public Response deleteStorage(String name, String force) {
     return Response.ok().build();
