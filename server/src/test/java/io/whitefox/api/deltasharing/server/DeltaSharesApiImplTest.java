@@ -496,7 +496,7 @@ public class DeltaSharesApiImplTest {
     var responseBodyLines = given()
         .when()
         .filter(filter)
-        .body("{\"timestamp\": \"2023-10-03T09:15:25.899Z\"}")
+        .body("{\"timestamp\": \"2023-10-19T17:16:00Z\"}")
         .header(new Header("Content-Type", "application/json"))
         .post(
             "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/query",
