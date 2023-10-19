@@ -1,13 +1,12 @@
 package io.whitefox.api.deltasharing;
 
 import io.whitefox.api.deltasharing.model.DeltaTableMetadata;
-import io.whitefox.api.deltasharing.model.v1.generated.MetadataResponse;
-import io.whitefox.api.deltasharing.model.v1.generated.MetadataResponseMetadata;
-import io.whitefox.api.deltasharing.model.v1.generated.MetadataResponseMetadataFormat;
-import io.whitefox.api.deltasharing.model.v1.generated.ProtocolResponse;
-import io.whitefox.api.deltasharing.model.v1.generated.ProtocolResponseProtocol;
+import io.whitefox.api.deltasharing.model.v1.generated.*;
 import io.whitefox.api.deltasharing.server.TableResponseMetadata;
 import io.whitefox.core.*;
+import io.whitefox.core.Schema;
+import io.whitefox.core.Share;
+import io.whitefox.core.Table;
 import io.whitefox.core.storage.CreateStorage;
 import io.whitefox.core.storage.Storage;
 import io.whitefox.core.storage.StorageType;
@@ -17,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.jboss.resteasy.reactive.common.NotImplementedYet;
 
 public class Mappers {
   public static io.whitefox.api.deltasharing.model.v1.generated.Share share2api(Share p) {
@@ -207,7 +207,44 @@ public class Mappers {
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
+  public static ReadTableRequest api2ReadTableRequest(QueryRequest request) {
+    if (request.getEndingVersion() != null || request.getStartingVersion() != null)
+      throw new NotImplementedYet();
+    if (request.getVersion() != null && request.getTimestamp() == null) {
+      return new ReadTableRequest.ReadTableVersion(
+          request.getPredicateHints(),
+          Optional.ofNullable(request.getLimitHint()),
+          request.getVersion());
+    } else if (request.getVersion() == null && request.getTimestamp() != null) {
+      return new ReadTableRequest.ReadTableAsOfTimestamp(
+          request.getPredicateHints(),
+          Optional.ofNullable(request.getLimitHint()),
+          parse(request.getTimestamp()));
+    } else if (request.getVersion() == null && request.getTimestamp() == null) {
+      return new ReadTableRequest.ReadTableCurrentVersion(
+          request.getPredicateHints(), Optional.ofNullable(request.getLimitHint()));
+    } else {
+      throw new IllegalArgumentException("Cannot specify both version and timestamp");
+    }
+  }
+
+  public static String readTableResult2api(ReadTableResult readTableResult) {
+    throw new UnsupportedOperationException();
+  }
+
+  public static TableReferenceAndReadRequest api2TableReferenceAndReadRequest(
+      QueryRequest request, String share, String schema, String table) {
+    return new TableReferenceAndReadRequest(share, schema, table, api2ReadTableRequest(request));
+  }
+
   public static <A, B> List<B> mapList(List<A> list, Function<A, B> f) {
     return list.stream().map(f).collect(Collectors.toList());
+  }
+
+  private static final java.time.format.DateTimeFormatter formatter =
+      java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
+  private static long parse(String ts) {
+    return java.time.OffsetDateTime.parse(ts, formatter).toInstant().toEpochMilli();
   }
 }

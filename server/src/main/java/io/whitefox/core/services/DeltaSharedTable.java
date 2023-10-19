@@ -2,14 +2,15 @@ package io.whitefox.core.services;
 
 import io.delta.standalone.DeltaLog;
 import io.delta.standalone.Snapshot;
+import io.whitefox.core.*;
 import io.whitefox.core.Metadata;
-import io.whitefox.core.Table;
 import io.whitefox.core.TableSchema;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.apache.hadoop.conf.Configuration;
 
 public class DeltaSharedTable {
@@ -51,6 +52,43 @@ public class DeltaSharedTable {
 
   public Optional<Long> getTableVersion(Optional<String> startingTimestamp) {
     return getSnapshot(startingTimestamp).map(Snapshot::getVersion);
+  }
+
+  public ReadTableResultToBeSigned queryTable(ReadTableRequest readTableRequest) {
+    Snapshot snapshot;
+    if (readTableRequest instanceof ReadTableRequest.ReadTableCurrentVersion) {
+      snapshot = deltaLog.snapshot();
+    } else if (readTableRequest instanceof ReadTableRequest.ReadTableAsOfTimestamp) {
+      snapshot = deltaLog.getSnapshotForTimestampAsOf(
+          ((ReadTableRequest.ReadTableAsOfTimestamp) readTableRequest).timestamp());
+    } else if (readTableRequest instanceof ReadTableRequest.ReadTableVersion) {
+      snapshot = deltaLog.getSnapshotForVersionAsOf(
+          ((ReadTableRequest.ReadTableVersion) readTableRequest).version());
+    } else {
+      throw new IllegalArgumentException("Unknown ReadTableRequest type: " + readTableRequest);
+    }
+    return new ReadTableResultToBeSigned(
+        new Protocol(Optional.empty()), // TODO
+        new Metadata(
+            snapshot.getMetadata().getId(),
+            Metadata.Format.PARQUET,
+            new TableSchema(tableSchemaConverter.convertDeltaSchemaToWhitefox(
+                snapshot.getMetadata().getSchema())),
+            snapshot.getMetadata().getPartitionColumns()),
+        snapshot.getAllFiles().stream()
+            .map(f -> new TableFileToBeSigned(f.getPath(), f.getSize(), f.getPartitionValues()))
+            .collect(Collectors.toList()));
+    //            TODO why these have gone after rebase?
+    //
+    //            snapshot.getMetadata().getId(),
+    //            snapshot.getMetadata().getConfiguration(),
+    //            Optional.of(
+    //                snapshot.getAllFiles().stream().map(AddFile::getSize).reduce(0L, Long::sum)),
+    //            Optional.of((long) snapshot.getAllFiles().size())),
+    //        snapshot.getAllFiles().stream()
+    //            .map(f -> new TableFileToBeSigned(
+    //                f.getPath().toString(), f.getSize(), f.getPartitionValues()))
+    //            .collect(Collectors.toList()));
   }
 
   private Optional<Snapshot> getSnapshot(Optional<String> startingTimestamp) {

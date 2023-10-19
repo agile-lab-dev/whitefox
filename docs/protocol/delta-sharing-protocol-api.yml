@@ -702,6 +702,7 @@ components:
             can send limit=1000 to the server
         version:
           type: integer
+          format: int64
           description: |
             an optional version number. If set, will return files as of the
             specified version of the table. This is only supported on tables
