@@ -302,7 +302,7 @@ paths:
         - in: query
           name: startingTimestamp
           required: false
-          description: 'Starting Timestamp'
+          description: 'Starting Timestamp in ISO8601 format, in the UTC timezone'
           schema:
             type: string
       responses:
@@ -353,7 +353,7 @@ paths:
         - in: query
           name: startingTimestamp
           required: false
-          description: 'Starting Timestamp'
+          description: 'Starting Timestamp ISO8601 format, in the UTC timezone'
           schema:
             type: string
         - in: header
@@ -416,7 +416,7 @@ paths:
         - in: query
           name: startingTimestamp
           required: false
-          description: 'Starting Timestamp'
+          description: 'Starting Timestamp ISO8601 format, in the UTC timezone'
           schema:
             type: string
       requestBody:
@@ -494,7 +494,7 @@ paths:
         - in: query
           name: startingTimestamp
           required: false
-          description: 'The starting timestamp of the query, a string in the Timestamp Format, which will be converted to a version created greater or equal to this timestamp. '
+          description: 'The starting timestamp of the query, a string in the Timestamp Format, which will be converted to a version created greater or equal to this timestamp. ISO8601 format, in the UTC timezone'
           schema:
             type: string
         - in: query
@@ -512,7 +512,7 @@ paths:
         - in: query
           name: endingTimestamp
           required: false
-          description: 'The starting timestamp of the query, a string in the Timestamp Format, which will be converted to a version created greater or equal to this timestamp. '
+          description: 'The starting timestamp of the query, a string in the Timestamp Format, which will be converted to a version created greater or equal to this timestamp. ISO8601 format, in the UTC timezone'
           schema:
             type: string
         - in: query
@@ -710,7 +710,7 @@ components:
           example: 1005
         timestamp:
           type: string
-          example: yyyy-[m]m-[d]d hh:mm:ss[.f...]
+          example: 2022-01-01T00:00:00Z
           description: |
             an optional timestamp string in the Timestamp Format,. If set, will
             return files as of the table version corresponding to the specified
@@ -756,6 +756,53 @@ components:
         message:
           type: string
 
+    TableQueryResponseObject:
+      type: object
+      properties:
+        protocol:
+          $ref: '#/components/schemas/ProtocolResponse'
+        metadata:
+          $ref: '#/components/schemas/MetadataResponse'
+        others:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileObject'
+
+    FileObject:
+      type: object
+      properties:
+        file:
+          type: object
+          properties:
+            url:
+              type: string
+            id:
+              type: string
+            partitionValues:
+              type: object
+              additionalProperties:
+                type:
+                  string
+            size:
+              type: integer
+              format: int64
+            stats:
+              type: string
+            version:
+              type: integer
+              format: int64
+            timestamp:
+              type: integer
+              format: int64
+            expirationTimestamp:
+              type: integer
+              format: int64
+          required:
+            - url
+            - id
+            - partitionValues
+            - size
+
     ProtocolResponse:
       type: object
       properties:
@@ -765,6 +812,7 @@ components:
             minReaderVersion:
               type: number
 
+
     MetadataResponse:
       type: object
       properties:
@@ -772,6 +820,10 @@ components:
           type: object
           properties:
             id:
+              type: string
+            name:
+              type: string
+            description:
               type: string
             format:
               type: object
@@ -784,6 +836,25 @@ components:
               type: array
               items:
                 type: string
+            configuration:
+              type: object
+              additionalProperties:
+                type:
+                  string
+            version:
+              type: integer
+              format: int64
+            size:
+              type: integer
+              format: int64
+            numFiles:
+              type: integer
+              format: int64
+          required:
+            - id
+            - format
+            - schemaString
+            - partitionColumns
 
   responses:
     "400":

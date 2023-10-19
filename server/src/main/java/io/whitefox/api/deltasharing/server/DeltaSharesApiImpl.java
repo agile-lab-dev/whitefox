@@ -4,12 +4,12 @@ import static io.whitefox.api.deltasharing.Mappers.mapList;
 
 import io.whitefox.api.deltasharing.Mappers;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
-import io.whitefox.api.deltasharing.model.DeltaTableMetadata;
 import io.whitefox.api.deltasharing.model.v1.generated.ListSchemasResponse;
 import io.whitefox.api.deltasharing.model.v1.generated.ListShareResponse;
 import io.whitefox.api.deltasharing.model.v1.generated.ListTablesResponse;
 import io.whitefox.api.deltasharing.model.v1.generated.QueryRequest;
-import io.whitefox.api.deltasharing.serializers.Serializer;
+import io.whitefox.api.deltasharing.serializers.TableMetadataSerializer;
+import io.whitefox.api.deltasharing.serializers.TableQueryResponseSerializer;
 import io.whitefox.api.deltasharing.server.v1.generated.DeltaApiApi;
 import io.whitefox.api.server.ApiUtils;
 import io.whitefox.core.services.ContentAndToken;
@@ -24,16 +24,19 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
   private final MediaType ndjsonMediaType = new MediaType("application", "x-ndjson");
   private final DeltaSharesService deltaSharesService;
   private final DeltaPageTokenEncoder tokenEncoder;
-  private final Serializer<TableResponseMetadata> serializer;
+  private final TableMetadataSerializer tableResponseSerializer;
+  private final TableQueryResponseSerializer tableQueryResponseSerializer;
 
   @Inject
   public DeltaSharesApiImpl(
       DeltaSharesService deltaSharesService,
       DeltaPageTokenEncoder encoder,
-      Serializer<TableResponseMetadata> serializer) {
+      TableMetadataSerializer tableResponseSerializer,
+      TableQueryResponseSerializer tableQueryResponseSerializer) {
     this.deltaSharesService = deltaSharesService;
     this.tokenEncoder = encoder;
-    this.serializer = serializer;
+    this.tableResponseSerializer = tableResponseSerializer;
+    this.tableQueryResponseSerializer = tableQueryResponseSerializer;
   }
 
   @Override
@@ -70,8 +73,7 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
             m -> optionalToNotFound(
                 deltaSharesService.getTableVersion(share, schema, table, startingTimestamp),
                 v -> Response.ok(
-                        serializer.serialize(
-                            Mappers.toTableResponseMetadata(new DeltaTableMetadata(v, m))),
+                        tableResponseSerializer.serialize(Mappers.toTableResponseMetadata(m)),
                         ndjsonMediaType)
                     .status(Response.Status.OK.getStatusCode())
                     .header(DELTA_TABLE_VERSION_HEADER, String.valueOf(v))
@@ -185,9 +187,11 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
 
     return wrapExceptions(
         () -> optionalToNotFound(
-            deltaSharesService.queryTable(
-                share, schema, table, Mappers.api2ReadTableRequest(queryRequest)),
-            c -> Response.ok(Mappers.readTableResult2api(c)).build()),
+            deltaSharesService
+                .queryTable(share, schema, table, Mappers.api2ReadTableRequest(queryRequest))
+                .map(Mappers::readTableResult2api),
+            c -> Response.ok(tableQueryResponseSerializer.serialize(c), ndjsonMediaType)
+                .build()),
         exceptionToResponse);
   }
 

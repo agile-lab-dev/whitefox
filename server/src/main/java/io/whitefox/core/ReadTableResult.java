@@ -7,12 +7,12 @@ import java.util.Objects;
 public class ReadTableResult {
   private final Protocol protocol;
   private final Metadata metadata;
-  private final List<TableFile> other;
+  private final List<TableFile> files;
 
-  public ReadTableResult(Protocol protocol, Metadata metadata, List<TableFile> other) {
+  public ReadTableResult(Protocol protocol, Metadata metadata, List<TableFile> files) {
     this.protocol = protocol;
     this.metadata = metadata;
-    this.other = other;
+    this.files = files;
   }
 
   @Override
@@ -23,13 +23,13 @@ public class ReadTableResult {
     ReadTableResult that = (ReadTableResult) o;
     return Objects.equals(protocol, that.protocol)
         && Objects.equals(metadata, that.metadata)
-        && Objects.equals(other, that.other);
+        && Objects.equals(files, that.files);
   }
 
   @Override
   @SkipCoverageGenerated
   public int hashCode() {
-    return Objects.hash(protocol, metadata, other);
+    return Objects.hash(protocol, metadata, files);
   }
 
   @Override
@@ -37,8 +37,8 @@ public class ReadTableResult {
   public String toString() {
     return "QueryTableResult{" + "protocol="
         + protocol + ", metadata="
-        + metadata + ", other="
-        + other + '}';
+        + metadata + ", files="
+        + files + '}';
   }
 
   public Protocol protocol() {
@@ -49,7 +49,7 @@ public class ReadTableResult {
     return metadata;
   }
 
-  public List<TableFile> other() {
-    return other;
+  public List<TableFile> files() {
+    return files;
   }
 }
