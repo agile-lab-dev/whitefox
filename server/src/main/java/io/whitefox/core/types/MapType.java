@@ -1,5 +1,6 @@
 package io.whitefox.core.types;
 
+import io.whitefox.annotations.SkipCoverageGenerated;
 import java.util.Objects;
 
 public class MapType extends DataType {
@@ -35,6 +36,7 @@ public class MapType extends DataType {
   }
 
   @Override
+  @SkipCoverageGenerated
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -49,6 +51,7 @@ public class MapType extends DataType {
   }
 
   @Override
+  @SkipCoverageGenerated
   public int hashCode() {
     return Objects.hash(keyType, valueType, valueContainsNull);
   }
@@ -65,6 +68,7 @@ public class MapType extends DataType {
   }
 
   @Override
+  @SkipCoverageGenerated
   public String toString() {
     return String.format("map[%s, %s]", keyType, valueType);
   }

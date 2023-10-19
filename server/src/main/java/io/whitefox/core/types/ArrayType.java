@@ -1,5 +1,6 @@
 package io.whitefox.core.types;
 
+import io.whitefox.annotations.SkipCoverageGenerated;
 import java.util.Objects;
 
 public class ArrayType extends DataType {
@@ -26,6 +27,7 @@ public class ArrayType extends DataType {
   }
 
   @Override
+  @SkipCoverageGenerated
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -39,6 +41,7 @@ public class ArrayType extends DataType {
   }
 
   @Override
+  @SkipCoverageGenerated
   public int hashCode() {
     return Objects.hash(elementType, containsNull);
   }
@@ -51,6 +54,7 @@ public class ArrayType extends DataType {
   }
 
   @Override
+  @SkipCoverageGenerated
   public String toString() {
     return "array[" + elementType + "]";
   }

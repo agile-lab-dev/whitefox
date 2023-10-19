@@ -100,8 +100,7 @@ public final class StructType extends DataType {
   public String toJson() {
     String fieldsAsJson = fields.stream().map(e -> e.toJson()).collect(Collectors.joining(",\n"));
 
-    return String.format(
-        "{\n" + "  \"type\" : \"struct\",\n" + "  \"fields\" : [ %s ]\n" + "}", fieldsAsJson);
+    return String.format("{\"type\":\"struct\",\"fields\":[%s]}", fieldsAsJson);
   }
 
   @Override

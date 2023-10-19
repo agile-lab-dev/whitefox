@@ -1,5 +1,6 @@
 package io.whitefox.core.types;
 
+import io.whitefox.annotations.SkipCoverageGenerated;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -83,6 +84,7 @@ public class StructField {
   }
 
   @Override
+  @SkipCoverageGenerated
   public String toString() {
     return String.format(
         "StructField(name=%s,type=%s,nullable=%s,metadata=%s)",
@@ -95,15 +97,12 @@ public class StructField {
         .collect(Collectors.joining(",\n"));
 
     return String.format(
-        "{\n" + "  \"name\" : \"%s\",\n"
-            + "  \"type\" : %s,\n"
-            + "  \"nullable\" : %s, \n"
-            + "  \"metadata\" : { %s }\n"
-            + "}",
+        "{\"name\":\"%s\"," + "\"type\":%s," + "\"nullable\":%s," + "\"metadata\":{%s}" + "}",
         name, dataType.toJson(), nullable, metadataAsJson);
   }
 
   @Override
+  @SkipCoverageGenerated
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -119,6 +118,7 @@ public class StructField {
   }
 
   @Override
+  @SkipCoverageGenerated
   public int hashCode() {
     return Objects.hash(name, dataType, nullable, metadata);
   }

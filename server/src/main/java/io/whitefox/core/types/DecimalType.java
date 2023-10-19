@@ -1,5 +1,6 @@
 package io.whitefox.core.types;
 
+import io.whitefox.annotations.SkipCoverageGenerated;
 import java.util.Objects;
 
 public final class DecimalType extends DataType {
@@ -39,11 +40,13 @@ public final class DecimalType extends DataType {
   }
 
   @Override
+  @SkipCoverageGenerated
   public String toString() {
     return String.format("Decimal(%d, %d)", precision, scale);
   }
 
   @Override
+  @SkipCoverageGenerated
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -56,6 +59,7 @@ public final class DecimalType extends DataType {
   }
 
   @Override
+  @SkipCoverageGenerated
   public int hashCode() {
     return Objects.hash(precision, scale);
   }

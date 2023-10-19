@@ -1,5 +1,6 @@
 package io.whitefox.core.types;
 
+import io.whitefox.annotations.SkipCoverageGenerated;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -55,6 +56,7 @@ public abstract class BasePrimitiveType extends DataType {
   }
 
   @Override
+  @SkipCoverageGenerated
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -66,12 +68,14 @@ public abstract class BasePrimitiveType extends DataType {
     return primitiveTypeName.equals(that.primitiveTypeName);
   }
 
+  @SkipCoverageGenerated
   @Override
   public int hashCode() {
     return Objects.hash(primitiveTypeName);
   }
 
   @Override
+  @SkipCoverageGenerated
   public String toString() {
     return primitiveTypeName;
   }
