@@ -1,13 +1,12 @@
-package io.whitefox.services.fake;
+package io.whitefox.core.services;
 
 import io.whitefox.core.TableFile;
 import io.whitefox.core.TableFileToBeSigned;
-import io.whitefox.core.services.FileSigner;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Optional;
 
 @ApplicationScoped
-public class FakeSigner implements FileSigner {
+public class NoOpSigner implements FileSigner {
   @Override
   public TableFile sign(TableFileToBeSigned s) {
     return new TableFile(

@@ -9,9 +9,9 @@ import io.whitefox.core.Table;
 import io.whitefox.core.services.DeltaShareTableLoader;
 import io.whitefox.core.services.DeltaSharesService;
 import io.whitefox.core.services.DeltaSharesServiceImpl;
+import io.whitefox.core.services.NoOpSigner;
 import io.whitefox.persistence.StorageManager;
 import io.whitefox.persistence.memory.InMemoryStorageManager;
-import io.whitefox.services.fake.FakeSigner;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.condition.OS;
 public class DeltaShareServiceTest {
   DeltaShareTableLoader loader = new DeltaShareTableLoader();
   Integer defaultMaxResults = 10;
-  FakeSigner signer = new FakeSigner();
+  NoOpSigner signer = new NoOpSigner();
 
   @Test
   public void getUnknownShare() throws ExecutionException, InterruptedException {
