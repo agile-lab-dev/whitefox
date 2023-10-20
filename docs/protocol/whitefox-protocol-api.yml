@@ -1310,6 +1310,8 @@ components:
           format: int64
         updatedBy:
           type: string
+        owner:
+          type: string
     CreateShareInput:
       type: object
       properties:
