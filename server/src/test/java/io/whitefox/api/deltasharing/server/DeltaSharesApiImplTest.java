@@ -377,7 +377,6 @@ public class DeltaSharesApiImplTest {
 
   @Test
   @Disabled
-  @DisabledOnOs(OS.WINDOWS)
   public void queryTableByTs() throws IOException {
     var responseBodyLines = given()
         .when()
