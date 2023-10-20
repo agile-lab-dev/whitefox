@@ -1,7 +1,6 @@
 package io.whitefox.api.deltasharing;
 
 import io.whitefox.api.deltasharing.model.v1.generated.*;
-import io.whitefox.api.deltasharing.server.TableResponseMetadata;
 import io.whitefox.core.*;
 import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
@@ -172,10 +171,10 @@ public class Mappers {
     }
   }
 
-  public static TableResponseMetadata toTableResponseMetadata(Metadata m) {
-    return new TableResponseMetadata(
-        new ProtocolObject().protocol(new ProtocolObjectProtocol().minReaderVersion(1)),
-        metadata2Api(m));
+  public static TableMetadataResponseObject toTableResponseMetadata(Metadata m) {
+    return new TableMetadataResponseObject()
+        .protocol(new ProtocolObject().protocol(new ProtocolObjectProtocol().minReaderVersion(1)))
+        .metadata(metadata2Api(m));
   }
 
   private static MetadataObject metadata2Api(Metadata metadata) {
