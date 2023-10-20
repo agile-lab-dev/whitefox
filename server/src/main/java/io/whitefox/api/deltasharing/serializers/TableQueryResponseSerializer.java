@@ -25,7 +25,7 @@ public class TableQueryResponseSerializer implements Serializer<TableQueryRespon
       stringBuilder.append(objectWriter.writeValueAsString(data.getProtocol()));
       stringBuilder.append(LINE_FEED);
       stringBuilder.append(objectWriter.writeValueAsString(data.getMetadata()));
-      for (FileObject line : data.getOthers()) {
+      for (FileObject line : data.getFiles()) {
         stringBuilder.append(LINE_FEED);
         stringBuilder.append(objectWriter.writeValueAsString(line));
       }

@@ -79,7 +79,7 @@ public class DeltaSharedTable {
       throw new IllegalArgumentException("Unknown ReadTableRequest type: " + readTableRequest);
     }
     return new ReadTableResultToBeSigned(
-        new Protocol(Optional.of(1L)),
+        new Protocol(Optional.of(1)),
         metadataFromSnapshot(snapshot),
         snapshot.getAllFiles().stream()
             .map(f -> new TableFileToBeSigned(
@@ -87,7 +87,7 @@ public class DeltaSharedTable {
                 f.getSize(),
                 snapshot.getVersion(),
                 snapshot.getMetadata().getCreatedTime(),
-                "",
+                f.getStats(),
                 f.getPartitionValues()))
             .collect(Collectors.toList()));
   }

@@ -9,7 +9,6 @@ import io.whitefox.core.Table;
 import io.whitefox.core.storage.CreateStorage;
 import io.whitefox.core.storage.Storage;
 import io.whitefox.core.storage.StorageType;
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.List;
@@ -175,19 +174,17 @@ public class Mappers {
 
   public static TableResponseMetadata toTableResponseMetadata(Metadata m) {
     return new TableResponseMetadata(
-        new ProtocolResponse()
-            .protocol(new ProtocolResponseProtocol().minReaderVersion(new BigDecimal(1))),
+        new ProtocolObject().protocol(new ProtocolObjectProtocol().minReaderVersion(1)),
         metadata2Api(m));
   }
 
-  private static MetadataResponse metadata2Api(Metadata metadata) {
-    return new MetadataResponse()
-        .metadata(new MetadataResponseMetadata()
+  private static MetadataObject metadata2Api(Metadata metadata) {
+    return new MetadataObject()
+        .metadata(new MetadataObjectMetadata()
             .id(metadata.id())
             .name(metadata.name().orElse(null))
             .description(metadata.description().orElse(null))
-            .format(
-                new MetadataResponseMetadataFormat().provider(metadata.format().provider()))
+            .format(new FormatObject().provider(metadata.format().provider()))
             .schemaString(metadata.tableSchema().structType().toJson())
             .partitionColumns(metadata.partitionColumns())
             ._configuration(metadata.configuration())
@@ -239,7 +236,7 @@ public class Mappers {
     return new TableQueryResponseObject()
         .metadata(metadata2Api(readTableResult.metadata()))
         .protocol(protocol2Api(readTableResult.protocol()))
-        .others(
+        .files(
             readTableResult.files().stream().map(Mappers::file2Api).collect(Collectors.toList()));
   }
 
@@ -256,10 +253,10 @@ public class Mappers {
             .expirationTimestamp(f.expirationTimestamp()));
   }
 
-  private static ProtocolResponse protocol2Api(Protocol protocol) {
-    return new ProtocolResponse()
-        .protocol(new ProtocolResponseProtocol()
-            .minReaderVersion(BigDecimal.valueOf(protocol.minReaderVersion().orElse(1L))));
+  private static ProtocolObject protocol2Api(Protocol protocol) {
+    return new ProtocolObject()
+        .protocol(new ProtocolObjectProtocol()
+            .minReaderVersion(protocol.minReaderVersion().orElse(1)));
   }
 
   public static TableReferenceAndReadRequest api2TableReferenceAndReadRequest(

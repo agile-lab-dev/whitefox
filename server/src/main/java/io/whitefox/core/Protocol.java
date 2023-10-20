@@ -5,13 +5,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class Protocol {
-  private final Optional<Long> minReaderVersion;
+  private final Optional<Integer> minReaderVersion;
 
-  public Protocol(Optional<Long> minReaderVersion) {
+  public Protocol(Optional<Integer> minReaderVersion) {
     this.minReaderVersion = minReaderVersion;
   }
 
-  public Optional<Long> minReaderVersion() {
+  public Optional<Integer> minReaderVersion() {
     return minReaderVersion;
   }
 

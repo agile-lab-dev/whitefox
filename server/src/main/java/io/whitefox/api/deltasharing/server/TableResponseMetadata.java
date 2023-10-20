@@ -1,35 +1,35 @@
 package io.whitefox.api.deltasharing.server;
 
 import io.whitefox.annotations.SkipCoverageGenerated;
-import io.whitefox.api.deltasharing.model.v1.generated.MetadataResponse;
-import io.whitefox.api.deltasharing.model.v1.generated.ProtocolResponse;
+import io.whitefox.api.deltasharing.model.v1.generated.MetadataObject;
+import io.whitefox.api.deltasharing.model.v1.generated.ProtocolObject;
 import java.util.Objects;
 
 public class TableResponseMetadata {
 
-  private ProtocolResponse protocol;
-  private MetadataResponse metadata;
+  private ProtocolObject protocol;
+  private MetadataObject metadata;
 
-  public TableResponseMetadata(ProtocolResponse protocol, MetadataResponse metadata) {
+  public TableResponseMetadata(ProtocolObject protocol, MetadataObject metadata) {
     this.protocol = protocol;
     this.metadata = metadata;
   }
 
   public TableResponseMetadata() {}
 
-  public void setMetadata(MetadataResponse metadata) {
+  public void setMetadata(MetadataObject metadata) {
     this.metadata = metadata;
   }
 
-  public void setProtocol(ProtocolResponse protocol) {
+  public void setProtocol(ProtocolObject protocol) {
     this.protocol = protocol;
   }
 
-  public MetadataResponse getMetadata() {
+  public MetadataObject getMetadata() {
     return metadata;
   }
 
-  public ProtocolResponse getProtocol() {
+  public ProtocolObject getProtocol() {
     return protocol;
   }
 

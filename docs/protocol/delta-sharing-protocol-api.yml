@@ -756,18 +756,21 @@ components:
         message:
           type: string
 
+    # This is not used for the spec but comes handy for autogeneration
     TableQueryResponseObject:
       type: object
       properties:
         protocol:
-          $ref: '#/components/schemas/ProtocolResponse'
+          # it refers to ./delta-sharing-protocol.md#protocol
+          $ref: '#/components/schemas/ProtocolObject'
         metadata:
-          $ref: '#/components/schemas/MetadataResponse'
-        others:
+          # it refers to ./delta-sharing-protocol.md#metadata
+          $ref: '#/components/schemas/MetadataObject'
+        files:
           type: array
           items:
+            # it refers to ./delta-sharing-protocol.md#file
             $ref: '#/components/schemas/FileObject'
-
     FileObject:
       type: object
       properties:
@@ -802,18 +805,24 @@ components:
             - id
             - partitionValues
             - size
-
-    ProtocolResponse:
+    ProtocolObject:
       type: object
       properties:
         protocol:
           type: object
           properties:
             minReaderVersion:
-              type: number
+              type: integer
+              format: int32
+    FormatObject:
+      type: object
+      properties:
+        provider:
+          type: string
+      required:
+        - provider
 
-
-    MetadataResponse:
+    MetadataObject:
       type: object
       properties:
         metadata:
@@ -826,10 +835,7 @@ components:
             description:
               type: string
             format:
-              type: object
-              properties:
-                provider:
-                  type: string
+              $ref: '#/components/schemas/FormatObject'
             schemaString:
               type: string
             partitionColumns:

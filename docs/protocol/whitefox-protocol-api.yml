@@ -1434,43 +1434,6 @@ components:
             - failure
         message:
           type: string
-    TableFile:
-      type: object
-      properties:
-        version:
-          type: integer
-          format: int64
-        protocol:
-          type: string
-        metadata:
-          type: string
-        files:
-          type: array
-          items:
-            type: string
-        addFiles:
-          type: array
-          items:
-            type: string
-        cdfFiles:
-          type: array
-          items:
-            type: string
-        removeFiles:
-          type: array
-          items:
-            type: string
-        additionalMetadatas:
-          type: array
-          items:
-            type: string
-        lines:
-          type: array
-          items:
-            type: string
-        refreshToken:
-          type: string
-
     CommonErrorResponse:
       type: object
       properties:
