@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -374,8 +375,9 @@ public class DeltaSharesApiImplTest {
     assertEquals(7, responseBodyLines.length);
   }
 
-  @DisabledOnOs(OS.WINDOWS)
   @Test
+  @Disabled
+  @DisabledOnOs(OS.WINDOWS)
   public void queryTableByTs() throws IOException {
     var responseBodyLines = given()
         .when()

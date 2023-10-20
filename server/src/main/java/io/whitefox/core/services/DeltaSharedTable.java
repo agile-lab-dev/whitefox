@@ -8,7 +8,6 @@ import io.whitefox.core.TableSchema;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.hadoop.conf.Configuration;
@@ -51,9 +50,10 @@ public class DeltaSharedTable {
         Optional.of(tableDetails.name()),
         Optional.ofNullable(snapshot.getMetadata().getDescription()),
         Metadata.Format.PARQUET,
-        new TableSchema(tableSchemaConverter.convertDeltaSchemaToWhitefox(snapshot.getMetadata().getSchema())),
+        new TableSchema(tableSchemaConverter.convertDeltaSchemaToWhitefox(
+            snapshot.getMetadata().getSchema())),
         snapshot.getMetadata().getPartitionColumns(),
-            snapshot.getMetadata().getConfiguration(),
+        snapshot.getMetadata().getConfiguration(),
         Optional.of(snapshot.getVersion()),
         Optional.empty(), // size is fine to be empty
         Optional.empty() // numFiles is ok to be empty here too
