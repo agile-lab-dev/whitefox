@@ -49,15 +49,14 @@ public class DeltaSharedTable {
     return new Metadata(
         snapshot.getMetadata().getId(),
         Optional.of(tableDetails.name()),
-        Optional.empty(),
+        Optional.ofNullable(snapshot.getMetadata().getDescription()),
         Metadata.Format.PARQUET,
-        new TableSchema(tableSchemaConverter.convertDeltaSchemaToWhitefox(
-            snapshot.getMetadata().getSchema())),
+        new TableSchema(tableSchemaConverter.convertDeltaSchemaToWhitefox(snapshot.getMetadata().getSchema())),
         snapshot.getMetadata().getPartitionColumns(),
-        Map.of(),
+            snapshot.getMetadata().getConfiguration(),
         Optional.of(snapshot.getVersion()),
-        Optional.empty(), // TODO
-        Optional.empty() // TODO
+        Optional.empty(), // size is fine to be empty
+        Optional.empty() // numFiles is ok to be empty here too
         );
   }
 
