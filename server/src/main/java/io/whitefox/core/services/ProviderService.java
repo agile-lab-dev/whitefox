@@ -14,19 +14,29 @@ import java.util.Optional;
 public class ProviderService {
 
   private final StorageManager storageManager;
+
+  private final MetastoreService metastoreService;
+  private final StorageService storageService;
+
   private final Clock clock;
 
   @Inject
-  public ProviderService(StorageManager storageManager, Clock clock) {
+  public ProviderService(
+      StorageManager storageManager,
+      MetastoreService metastoreService,
+      StorageService storageService,
+      Clock clock) {
     this.storageManager = storageManager;
+    this.metastoreService = metastoreService;
+    this.storageService = storageService;
     this.clock = clock;
   }
 
   public Provider createProvider(CreateProvider createProvider) {
-    var metastore = createProvider.metastoreName().map(mName -> storageManager
+    var metastore = createProvider.metastoreName().map(mName -> metastoreService
         .getMetastore(mName)
         .orElseThrow(() -> new MetastoreNotFound(mName)));
-    var storage = storageManager
+    var storage = storageService
         .getStorage(createProvider.storageName())
         .orElseThrow(() -> new StorageNotFound(createProvider.storageName()));
     var provider = new Provider(
