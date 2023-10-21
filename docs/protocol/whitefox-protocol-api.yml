@@ -1108,10 +1108,6 @@ paths:
           $ref: "#/components/responses/500"
 components:
   schemas:
-    StorageCredentials:
-      anyOf:
-        - $ref: "#/components/schemas/SimpleAwsCredentials"
-        - $ref: "#/components/schemas/SimpleAzureCredentials"
     UpdateStorage:
       type: object
       properties:
@@ -1125,8 +1121,8 @@ components:
             - gcs
             - s3
             - abfs
-        credentials:
-          $ref: "#/components/schemas/StorageCredentials"
+        properties:
+          $ref: "#/components/schemas/StorageProperties"
         uri:
           type: string
           example: s3://my-nice-bucket/some/prefix
