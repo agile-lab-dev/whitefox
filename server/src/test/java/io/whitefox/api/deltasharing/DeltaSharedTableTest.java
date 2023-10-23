@@ -42,7 +42,8 @@ public class DeltaSharedTableTest {
 
   @Test
   void getTableVersionNonExistingTable() throws ExecutionException, InterruptedException {
-    var PTable = new SharedTable("delta-table", tablePath("delta-table-not-exists"), "default", "share1");
+    var PTable =
+        new SharedTable("delta-table", tablePath("delta-table-not-exists"), "default", "share1");
     var exception = assertThrows(IllegalArgumentException.class, () -> DeltaSharedTable.of(PTable));
     assertTrue(exception.getMessage().startsWith("Cannot find a delta table at file"));
   }

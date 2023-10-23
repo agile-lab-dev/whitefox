@@ -24,7 +24,8 @@ public class DeltaShareTableLoaderTest {
   @Test
   @DisabledOnOs(OS.WINDOWS)
   public void loadTable() {
-    SharedTable sharedTable = new SharedTable("delta-table", tablePath("delta-table"), "schema", "share");
+    SharedTable sharedTable =
+        new SharedTable("delta-table", tablePath("delta-table"), "schema", "share");
     DeltaSharedTable deltaSharedTable = deltaShareTableLoader.loadTable(sharedTable);
     assertTrue(deltaSharedTable.getTableVersion(Optional.empty()).isPresent());
     assertEquals(0, deltaSharedTable.getTableVersion(Optional.empty()).get());
@@ -32,7 +33,9 @@ public class DeltaShareTableLoaderTest {
 
   @Test
   public void loadUnknownTable() {
-    SharedTable sharedTable = new SharedTable("not-found", tablePath("not-found"), "schema", "share");
-    assertThrows(IllegalArgumentException.class, () -> deltaShareTableLoader.loadTable(sharedTable));
+    SharedTable sharedTable =
+        new SharedTable("not-found", tablePath("not-found"), "schema", "share");
+    assertThrows(
+        IllegalArgumentException.class, () -> deltaShareTableLoader.loadTable(sharedTable));
   }
 }

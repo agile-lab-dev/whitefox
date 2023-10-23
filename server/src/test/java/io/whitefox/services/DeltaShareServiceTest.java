@@ -116,7 +116,9 @@ public class DeltaShareServiceTest {
         Map.of(
             "default",
             new Schema(
-                "default", List.of(new SharedTable("table1", "location1", "default", "name")), "name"))));
+                "default",
+                List.of(new SharedTable("table1", "location1", "default", "name")),
+                "name"))));
     StorageManager storageManager = new InMemoryStorageManager(shares);
     DeltaSharesService deltaSharesService =
         new DeltaSharesServiceImpl(storageManager, 100, loader, signer);
@@ -138,10 +140,14 @@ public class DeltaShareServiceTest {
         Map.of(
             "default",
             new Schema(
-                "default", List.of(new SharedTable("table1", "location1", "default", "name")), "name"),
+                "default",
+                List.of(new SharedTable("table1", "location1", "default", "name")),
+                "name"),
             "other",
             new Schema(
-                "other", List.of(new SharedTable("table2", "location2", "default", "name")), "name"))));
+                "other",
+                List.of(new SharedTable("table2", "location2", "default", "name")),
+                "name"))));
     StorageManager storageManager = new InMemoryStorageManager(shares);
     DeltaSharesService deltaSharesService =
         new DeltaSharesServiceImpl(storageManager, 100, loader, signer);
@@ -227,7 +233,9 @@ public class DeltaShareServiceTest {
         Map.of(
             "default",
             new Schema(
-                "default", List.of(new SharedTable("table1", "location1", "default", "name")), "name"))));
+                "default",
+                List.of(new SharedTable("table1", "location1", "default", "name")),
+                "name"))));
     StorageManager storageManager = new InMemoryStorageManager(shares);
     DeltaSharesService deltaSharesService =
         new DeltaSharesServiceImpl(storageManager, 100, loader, signer);

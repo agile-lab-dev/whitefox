@@ -2,7 +2,6 @@ package io.whitefox.core;
 
 import io.whitefox.annotations.SkipCoverageGenerated;
 import io.whitefox.core.services.exceptions.TableAlreadyExists;
-
 import java.util.*;
 
 public class Provider {
@@ -37,15 +36,15 @@ public class Provider {
   }
 
   public Provider(
-          String name,
-          Storage storage,
-          Optional<Metastore> metastore,
-          Long createdAt,
-          Principal createdBy,
-          Long updatedAt,
-          Principal updatedBy,
-          Principal owner,
-          Map<String, InternalTable> tables) {
+      String name,
+      Storage storage,
+      Optional<Metastore> metastore,
+      Long createdAt,
+      Principal createdBy,
+      Long updatedAt,
+      Principal updatedBy,
+      Principal owner,
+      Map<String, InternalTable> tables) {
     this.name = name;
     this.storage = storage;
     this.metastore = metastore;

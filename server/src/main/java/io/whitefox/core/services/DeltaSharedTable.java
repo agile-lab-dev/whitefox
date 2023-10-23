@@ -25,7 +25,8 @@ public class DeltaSharedTable {
     this.tableDetails = sharedTable;
   }
 
-  public static DeltaSharedTable of(SharedTable sharedTable, TableSchemaConverter tableSchemaConverter) {
+  public static DeltaSharedTable of(
+      SharedTable sharedTable, TableSchemaConverter tableSchemaConverter) {
     var configuration = new Configuration();
     var dataPath = sharedTable.location();
     var dt = DeltaLog.forTable(configuration, dataPath);

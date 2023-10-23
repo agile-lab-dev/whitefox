@@ -26,8 +26,7 @@ public class SampleTables {
               new io.whitefox.core.Schema(
                   "default",
                   List.of(
-                      new SharedTable(
-                          "table1", "file://" + deltaTable1Path, "default", "name"),
+                      new SharedTable("table1", "file://" + deltaTable1Path, "default", "name"),
                       new SharedTable(
                           "table-with-history",
                           "file://" + deltaTableWithHistory1Path,

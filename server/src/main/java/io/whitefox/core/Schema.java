@@ -47,6 +47,7 @@ public final class Schema {
   @Override
   @SkipCoverageGenerated
   public String toString() {
-    return "Schema[" + "name=" + name + ", " + "tables=" + sharedTables + ", " + "share=" + share + ']';
+    return "Schema[" + "name=" + name + ", " + "tables=" + sharedTables + ", " + "share=" + share
+        + ']';
   }
 }

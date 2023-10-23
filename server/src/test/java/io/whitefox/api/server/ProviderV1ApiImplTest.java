@@ -19,7 +19,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Optional;
-
 import org.junit.jupiter.api.*;
 
 @QuarkusTest
@@ -137,45 +136,49 @@ public class ProviderV1ApiImplTest {
         .body("metastore.updatedAt", is(0));
   }
 
-  public static ValidatableResponse createProviderAction(String storageName, Optional<String> metastoreName, String providerName, ObjectMapper objectMapper) {
+  public static ValidatableResponse createProviderAction(
+      String storageName,
+      Optional<String> metastoreName,
+      String providerName,
+      ObjectMapper objectMapper) {
     return given()
-            .when()
-            .filter(filter)
-            .body(
-                    new ProviderInput()
-                            .storageName(storageName)
-                            .metastoreName(metastoreName.orElse(null))
-                            .name(providerName),
-                    new Jackson2Mapper((cls, charset) -> objectMapper))
-            .header(new Header("Content-Type", "application/json"))
-            .post("/whitefox-api/v1/providers")
-            .then()
-            .statusCode(200);
+        .when()
+        .filter(filter)
+        .body(
+            new ProviderInput()
+                .storageName(storageName)
+                .metastoreName(metastoreName.orElse(null))
+                .name(providerName),
+            new Jackson2Mapper((cls, charset) -> objectMapper))
+        .header(new Header("Content-Type", "application/json"))
+        .post("/whitefox-api/v1/providers")
+        .then()
+        .statusCode(200);
   }
 
-  public static ValidatableResponse createMetastoreAction(CreateMetastore metastore, ObjectMapper objectMapper) {
+  public static ValidatableResponse createMetastoreAction(
+      CreateMetastore metastore, ObjectMapper objectMapper) {
     return given()
-            .when()
-            .filter(filter)
-            .body(metastore, new Jackson2Mapper((cls, charset) -> objectMapper))
-            .header(new Header("Content-Type", "application/json"))
-            .post("/whitefox-api/v1/metastores")
-            .then()
-            .statusCode(201);
+        .when()
+        .filter(filter)
+        .body(metastore, new Jackson2Mapper((cls, charset) -> objectMapper))
+        .header(new Header("Content-Type", "application/json"))
+        .post("/whitefox-api/v1/metastores")
+        .then()
+        .statusCode(201);
   }
 
-  public static ValidatableResponse createStorageAction(CreateStorage storage, ObjectMapper objectMapper) {
+  public static ValidatableResponse createStorageAction(
+      CreateStorage storage, ObjectMapper objectMapper) {
     return given()
-            .when()
-            .filter(filter)
-            .body(storage, new Jackson2Mapper((cls, charset) -> objectMapper))
-            .header(new Header("Content-Type", "application/json"))
-            .post("/whitefox-api/v1/storage")
-            .then()
-            .statusCode(201);
+        .when()
+        .filter(filter)
+        .body(storage, new Jackson2Mapper((cls, charset) -> objectMapper))
+        .header(new Header("Content-Type", "application/json"))
+        .post("/whitefox-api/v1/storage")
+        .then()
+        .statusCode(201);
   }
-
-
 
   @Test
   @Order(1)

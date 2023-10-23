@@ -1,7 +1,6 @@
 package io.whitefox.core;
 
 import io.whitefox.annotations.SkipCoverageGenerated;
-
 import java.util.Objects;
 import java.util.Optional;
 

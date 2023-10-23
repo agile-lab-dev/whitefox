@@ -224,9 +224,9 @@ public class InMemoryStorageManager implements StorageManager {
 
   @Override
   public InternalTable createInternalTable(InternalTable internalTable) {
-      providers.put(
-              internalTable.provider().name(),
-              providers.get(internalTable.provider().name()).addTable(internalTable));
-      return internalTable;
+    providers.put(
+        internalTable.provider().name(),
+        providers.get(internalTable.provider().name()).addTable(internalTable));
+    return internalTable;
   }
 }
