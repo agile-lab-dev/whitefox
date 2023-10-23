@@ -2,6 +2,7 @@ package io.whitefox.core;
 
 import io.whitefox.annotations.SkipCoverageGenerated;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -96,6 +97,18 @@ public class InternalTable {
     }
 
     public interface InternalTableProperties {
+        Map<String, String> asMap();
+        static InternalTableProperties fromMap(Map<String, String> map) {
+            String type = map.get("type");
+            switch (type) {
+                case IcebergTableProperties.type:
+                    return new IcebergTableProperties(map.get("databaseName"), map.get("tableName"));
+                case DeltaTableProperties.type:
+                    return new DeltaTableProperties(map.get("location"));
+                default:
+                    throw new IllegalArgumentException("Unknown type: " + type);
+            }
+        }
     }
 
     public static class IcebergTableProperties implements InternalTableProperties {
@@ -140,6 +153,14 @@ public class InternalTable {
         public String tableName() {
             return tableName;
         }
+
+        @Override
+        public Map<String, String> asMap() {
+            return Map.of(
+                    "type", type,
+                    "databaseName", databaseName,
+                    "tableName", tableName);
+        }
     }
 
     public static class DeltaTableProperties implements InternalTableProperties {
@@ -176,6 +197,13 @@ public class InternalTable {
             return "DeltaTableProperties{" +
                     "location='" + location + '\'' +
                     '}';
+        }
+
+        @Override
+        public Map<String, String> asMap() {
+            return Map.of(
+                    "type", type,
+                    "location", location);
         }
     }
 }

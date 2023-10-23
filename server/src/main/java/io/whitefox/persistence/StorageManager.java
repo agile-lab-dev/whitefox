@@ -10,7 +10,7 @@ public interface StorageManager {
 
   ResultAndTotalSize<List<Share>> getShares(int offset, int maxResultSize);
 
-  Optional<SharedTable> getTable(String share, String schema, String table);
+  Optional<SharedTable> getSharedTable(String share, String schema, String table);
 
   Optional<ResultAndTotalSize<List<Schema>>> listSchemas(
       String share, int offset, int maxResultSize);

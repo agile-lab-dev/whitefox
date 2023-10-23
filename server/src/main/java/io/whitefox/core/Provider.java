@@ -3,9 +3,7 @@ package io.whitefox.core;
 import io.whitefox.annotations.SkipCoverageGenerated;
 import io.whitefox.core.services.exceptions.TableAlreadyExists;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class Provider {
   private final String name;
@@ -63,7 +61,8 @@ public class Provider {
     if (tables.containsKey(table.name())) {
       throw new TableAlreadyExists("Table " + table.name() + " already exists");
     }
-    var newMap = Map.copyOf(tables);
+    var newMap = new HashMap<String, InternalTable>();
+    newMap.putAll(tables);
     newMap.put(table.name(), table);
     return new Provider(
         name,
@@ -74,7 +73,7 @@ public class Provider {
         updatedAt,
         updatedBy,
         owner,
-        newMap);
+        Collections.unmodifiableMap(newMap));
   }
 
   public String name() {
@@ -107,6 +106,10 @@ public class Provider {
 
   public Principal owner() {
     return owner;
+  }
+
+  public Map<String, InternalTable> tables() {
+    return tables;
   }
 
   @Override

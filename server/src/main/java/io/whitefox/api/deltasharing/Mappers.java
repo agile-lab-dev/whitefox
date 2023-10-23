@@ -1,11 +1,14 @@
 package io.whitefox.api.deltasharing;
 
 import io.whitefox.api.deltasharing.model.v1.generated.*;
+import io.whitefox.api.model.v1.generated.CreateTableInput;
 import io.whitefox.api.model.v1.generated.ProviderInput;
+import io.whitefox.api.model.v1.generated.TableInfo;
 import io.whitefox.core.*;
 import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
 import io.whitefox.core.SharedTable;
+import io.whitefox.core.actions.CreateInternalTable;
 import io.whitefox.core.actions.CreateMetastore;
 import io.whitefox.core.actions.CreateProvider;
 import io.whitefox.core.actions.CreateStorage;
@@ -314,5 +317,27 @@ public class Mappers {
         .updatedAt(provider.updatedAt())
         .updatedBy(provider.updatedBy().name())
         .owner(provider.owner().name());
+  }
+
+  public static TableInfo internalTable2api(InternalTable internalTable) {
+    return new TableInfo()
+            .providerName(internalTable.provider().name())
+            .name(internalTable.name())
+            .comment(internalTable.comment().orElse(null))
+            .properties(internalTable.properties().asMap())
+            .validatedAt(internalTable.validatedAt().orElse(null))
+            .createdAt(internalTable.createdAt())
+            .createdBy(internalTable.createdBy().name())
+            .updatedAt(internalTable.updatedAt())
+            .updatedBy(internalTable.updatedBy().name());
+  }
+
+  public static CreateInternalTable api2createInternalTable(CreateTableInput createTableInput) {
+    return new CreateInternalTable(
+            createTableInput.getName(),
+            Optional.ofNullable(createTableInput.getComment()),
+            createTableInput.getSkipValidation(),
+            InternalTable.InternalTableProperties.fromMap(createTableInput.getProperties())
+    );
   }
 }

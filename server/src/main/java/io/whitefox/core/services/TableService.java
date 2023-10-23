@@ -3,6 +3,7 @@ package io.whitefox.core.services;
 import io.whitefox.core.InternalTable;
 import io.whitefox.core.Principal;
 import io.whitefox.core.Provider;
+import io.whitefox.core.Storage;
 import io.whitefox.core.actions.CreateInternalTable;
 import io.whitefox.core.services.exceptions.ProviderNotFound;
 import io.whitefox.persistence.StorageManager;
@@ -25,7 +26,7 @@ public class TableService {
         this.providerService = providerService;
     }
 
-    InternalTable createInternalTable(String provider,
+    public InternalTable createInternalTable(String provider,
                                       Principal currentUser,
                                       CreateInternalTable createTable) {
         var providerObj = providerService.getProvider(provider);
@@ -33,6 +34,10 @@ public class TableService {
                 .orElseThrow(() -> new ProviderNotFound("Provider " + provider + " not found"));
     }
 
+    public Optional<InternalTable> getInternalTable(String provider, String name) {
+        var providerObj = storageManager.getProvider(provider).orElseThrow(() -> new ProviderNotFound("Provider " + provider + " not found"));
+        return Optional.ofNullable(providerObj.tables().get(name));
+    }
 
     private InternalTable validate(CreateInternalTable createTable,
                                    Principal currentUser,

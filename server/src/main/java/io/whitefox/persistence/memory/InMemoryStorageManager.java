@@ -4,9 +4,9 @@ import io.whitefox.annotations.SkipCoverageGenerated;
 import io.whitefox.api.deltasharing.encoders.InvalidPageTokenException;
 import io.whitefox.core.*;
 import io.whitefox.core.Storage;
-import io.whitefox.core.actions.CreateInternalTable;
-import io.whitefox.core.services.exceptions.ProviderNotFound;
-import io.whitefox.persistence.DuplicateKeyException;
+import io.whitefox.core.services.exceptions.MetastoreAlreadyExists;
+import io.whitefox.core.services.exceptions.ProviderAlreadyExists;
+import io.whitefox.core.services.exceptions.StorageAlreadyExists;
 import io.whitefox.persistence.StorageManager;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -55,7 +55,7 @@ public class InMemoryStorageManager implements StorageManager {
   }
 
   @Override
-  public Optional<SharedTable> getTable(String share, String schema, String table) {
+  public Optional<SharedTable> getSharedTable(String share, String schema, String table) {
 
     return Optional.ofNullable(shares.get(share))
         .flatMap(shareObj -> Optional.ofNullable(shareObj.schemas().get(schema)))
@@ -181,7 +181,7 @@ public class InMemoryStorageManager implements StorageManager {
   @Override
   public Metastore createMetastore(Metastore metastore) {
     if (metastores.get(metastore.name()) != null) {
-      throw new DuplicateKeyException(
+      throw new MetastoreAlreadyExists(
           "Metastore with name " + metastore.name() + " already exists");
     } else {
       metastores.put(metastore.name(), metastore);
@@ -196,7 +196,7 @@ public class InMemoryStorageManager implements StorageManager {
 
   public Storage createStorage(Storage storage) {
     if (storages.get(storage.name()) != null) {
-      throw new DuplicateKeyException("Storage with name " + storage.name() + " already exists");
+      throw new StorageAlreadyExists("Storage with name " + storage.name() + " already exists");
     } else {
       storages.put(storage.name(), storage);
       return storage;
@@ -210,7 +210,7 @@ public class InMemoryStorageManager implements StorageManager {
   @Override
   public Provider createProvider(Provider provider) {
     if (providers.get(provider.name()) != null) {
-      throw new DuplicateKeyException("Provider with name " + provider.name() + " already exists");
+      throw new ProviderAlreadyExists("Provider with name " + provider.name() + " already exists");
     } else {
       providers.put(provider.name(), provider);
       return provider;
