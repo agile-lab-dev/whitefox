@@ -53,6 +53,12 @@ public class TableService {
           currentUser,
           provider);
     }
+    if (createTable.properties() instanceof InternalTable.IcebergTableProperties
+        && provider.metastore().isEmpty()) {
+      throw new IllegalArgumentException(String.format(
+          "Cannot create iceberg table %s without a metastore for provider %s",
+          createTable.name(), provider.name()));
+    }
     return new InternalTable(
         createTable.name(),
         createTable.comment(),
