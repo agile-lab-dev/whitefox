@@ -5,13 +5,13 @@ import io.whitefox.api.model.v1.generated.ProviderInput;
 import io.whitefox.core.*;
 import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
-import io.whitefox.core.Table;
+import io.whitefox.core.SharedTable;
 import io.whitefox.core.actions.CreateMetastore;
 import io.whitefox.core.actions.CreateProvider;
-import io.whitefox.core.storage.CreateStorage;
-import io.whitefox.core.storage.Storage;
-import io.whitefox.core.storage.StorageProperties;
-import io.whitefox.core.storage.StorageType;
+import io.whitefox.core.actions.CreateStorage;
+import io.whitefox.core.Storage;
+import io.whitefox.core.StorageProperties;
+import io.whitefox.core.StorageType;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -34,11 +34,11 @@ public class Mappers {
         .share(schema.share());
   }
 
-  public static io.whitefox.api.deltasharing.model.v1.generated.Table table2api(Table table) {
+  public static io.whitefox.api.deltasharing.model.v1.generated.Table table2api(SharedTable sharedTable) {
     return new io.whitefox.api.deltasharing.model.v1.generated.Table()
-        .name(table.name())
-        .share(table.share())
-        .schema(table.schema());
+        .name(sharedTable.name())
+        .share(sharedTable.share())
+        .schema(sharedTable.schema());
   }
 
   public static io.whitefox.api.model.v1.generated.Storage storage2api(Storage storage) {

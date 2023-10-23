@@ -3,7 +3,9 @@ package io.whitefox.persistence.memory;
 import io.whitefox.annotations.SkipCoverageGenerated;
 import io.whitefox.api.deltasharing.encoders.InvalidPageTokenException;
 import io.whitefox.core.*;
-import io.whitefox.core.storage.Storage;
+import io.whitefox.core.Storage;
+import io.whitefox.core.actions.CreateInternalTable;
+import io.whitefox.core.services.exceptions.ProviderNotFound;
 import io.whitefox.persistence.DuplicateKeyException;
 import io.whitefox.persistence.StorageManager;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -21,9 +23,7 @@ import java.util.stream.Collectors;
 public class InMemoryStorageManager implements StorageManager {
   private final ConcurrentMap<String, Share> shares;
   private final ConcurrentMap<String, Metastore> metastores;
-
   private final ConcurrentMap<String, Storage> storages;
-
   private final ConcurrentMap<String, Provider> providers;
 
   @Inject
@@ -55,7 +55,7 @@ public class InMemoryStorageManager implements StorageManager {
   }
 
   @Override
-  public Optional<Table> getTable(String share, String schema, String table) {
+  public Optional<SharedTable> getTable(String share, String schema, String table) {
 
     return Optional.ofNullable(shares.get(share))
         .flatMap(shareObj -> Optional.ofNullable(shareObj.schemas().get(schema)))
@@ -96,7 +96,7 @@ public class InMemoryStorageManager implements StorageManager {
   }
 
   @Override
-  public Optional<ResultAndTotalSize<List<Table>>> listTables(
+  public Optional<ResultAndTotalSize<List<SharedTable>>> listTables(
       String share, String schema, int offset, int maxResultSize) {
     return Optional.ofNullable(shares.get(share))
         .flatMap(shareObj -> Optional.ofNullable(shareObj.schemas().get(schema)))
@@ -114,16 +114,16 @@ public class InMemoryStorageManager implements StorageManager {
         });
   }
 
-  private static final class TableAndSchema {
-    private final Table table;
+  private static final class SharedTableAndSchema {
+    private final SharedTable table;
     private final Schema schema;
 
-    private TableAndSchema(Table table, Schema schema) {
-      this.table = table;
+    private SharedTableAndSchema(SharedTable sharedTable, Schema schema) {
+      this.table = sharedTable;
       this.schema = schema;
     }
 
-    public Table table() {
+    public SharedTable table() {
       return table;
     }
 
@@ -136,7 +136,7 @@ public class InMemoryStorageManager implements StorageManager {
     public boolean equals(Object obj) {
       if (obj == this) return true;
       if (obj == null || obj.getClass() != this.getClass()) return false;
-      var that = (TableAndSchema) obj;
+      var that = (SharedTableAndSchema) obj;
       return Objects.equals(this.table, that.table) && Objects.equals(this.schema, that.schema);
     }
 
@@ -149,17 +149,17 @@ public class InMemoryStorageManager implements StorageManager {
     @Override
     @SkipCoverageGenerated
     public String toString() {
-      return "TableAndSchema[" + "table=" + table + ", " + "schema=" + schema + ']';
+      return "SharedTableAndSchema[" + "table=" + table + ", " + "schema=" + schema + ']';
     }
   }
 
   @Override
-  public Optional<ResultAndTotalSize<List<Table>>> listTablesOfShare(
+  public Optional<ResultAndTotalSize<List<SharedTable>>> listTablesOfShare(
       String share, int offset, int maxResultSize) {
     return Optional.ofNullable(shares.get(share)).flatMap(shareObj -> {
       var schemaMap = shareObj.schemas();
       var tableList = schemaMap.values().stream()
-          .flatMap(x -> x.tables().stream().map(t -> new TableAndSchema(t, x)))
+          .flatMap(x -> x.tables().stream().map(t -> new SharedTableAndSchema(t, x)))
           .collect(Collectors.toList());
 
       var totalSize = tableList.size();
@@ -220,5 +220,13 @@ public class InMemoryStorageManager implements StorageManager {
   @Override
   public Optional<Provider> getProvider(String name) {
     return Optional.ofNullable(providers.get(name));
+  }
+
+  @Override
+  public InternalTable createInternalTable(InternalTable internalTable) {
+      providers.put(
+              internalTable.provider().name(),
+              providers.get(internalTable.provider().name()).addTable(internalTable));
+      return internalTable;
   }
 }

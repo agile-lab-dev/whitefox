@@ -88,7 +88,7 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
   }
 
   @Override
-  public Optional<ContentAndToken<List<Table>>> listTables(
+  public Optional<ContentAndToken<List<SharedTable>>> listTables(
       String share,
       String schema,
       Optional<ContentAndToken.Token> nextPageToken,
@@ -108,7 +108,7 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
   }
 
   @Override
-  public Optional<ContentAndToken<List<Table>>> listTablesOfShare(
+  public Optional<ContentAndToken<List<SharedTable>>> listTablesOfShare(
       String share, Optional<ContentAndToken.Token> nextPageToken, Optional<Integer> maxResults) {
     Integer finalMaxResults = maxResults.orElse(defaultMaxResults);
     Integer start = nextPageToken.map(ContentAndToken.Token::value).orElse(0);
