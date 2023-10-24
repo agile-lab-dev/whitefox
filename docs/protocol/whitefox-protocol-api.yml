@@ -882,7 +882,7 @@ paths:
                     type: string
       responses:
         "200":
-          description: Ok
+          description: recipients added
           content:
             application/json:
               schema:
