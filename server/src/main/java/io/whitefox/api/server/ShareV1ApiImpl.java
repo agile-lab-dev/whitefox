@@ -30,7 +30,15 @@ public class ShareV1ApiImpl implements ShareV1Api, ApiUtils {
 
   @Override
   public Response addTableToSchema(String share, String schema, TableReference tableReference) {
-    return Response.status(501).build();
+    return wrapExceptions(
+        () -> Response.ok(WhitefoxMappers.share2api(shareService.addTableToSchema(
+                share,
+                schema,
+                tableReference.getProviderName(),
+                tableReference.getName(),
+                getRequestPrincipal())))
+            .build(),
+        exceptionToResponse);
   }
 
   @Override

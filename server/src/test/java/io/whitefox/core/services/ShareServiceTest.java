@@ -26,7 +26,8 @@ class ShareServiceTest {
   @Test
   void createShare() {
     var storage = new InMemoryStorageManager();
-    var target = new ShareService(storage, testClock);
+    var providerService = newProviderService(storage, testClock);
+    var target = new ShareService(storage, providerService, testClock);
     var result = target.createShare(emptyCreateShare(), testPrincipal);
     assertEquals(
         new Share(
@@ -46,7 +47,7 @@ class ShareServiceTest {
   @Test
   void failToCreateShare() {
     var storage = new InMemoryStorageManager();
-    var target = new ShareService(storage, testClock);
+    var target = new ShareService(storage, newProviderService(storage, testClock), testClock);
     target.createShare(emptyCreateShare(), testPrincipal);
     assertThrows(
         ShareAlreadyExists.class, () -> target.createShare(emptyCreateShare(), testPrincipal));
@@ -55,7 +56,7 @@ class ShareServiceTest {
   @Test
   void addRecipientsToShare() {
     var storage = new InMemoryStorageManager();
-    var target = new ShareService(storage, testClock);
+    var target = new ShareService(storage, newProviderService(storage, testClock), testClock);
     target.createShare(emptyCreateShare(), testPrincipal);
     target.addRecipientsToShare(
         "share1", List.of("Antonio", "Marco", "Aleksandar"), Principal::new, testPrincipal);
@@ -78,7 +79,7 @@ class ShareServiceTest {
   @Test
   void addSameRecipientTwice() {
     var storage = new InMemoryStorageManager();
-    var target = new ShareService(storage, testClock);
+    var target = new ShareService(storage, newProviderService(storage, testClock), testClock);
     target.createShare(emptyCreateShare(), testPrincipal);
     target.addRecipientsToShare(
         "share1", List.of("Antonio", "Marco", "Aleksandar"), Principal::new, testPrincipal);
@@ -101,7 +102,7 @@ class ShareServiceTest {
   @Test
   public void addRecipientToUnknownShare() {
     var storage = new InMemoryStorageManager();
-    var target = new ShareService(storage, testClock);
+    var target = new ShareService(storage, newProviderService(storage, testClock), testClock);
     assertThrows(
         ShareNotFound.class,
         () -> target.addRecipientsToShare(
@@ -111,7 +112,7 @@ class ShareServiceTest {
   @Test
   public void getUnknownShare() throws ExecutionException, InterruptedException {
     var storage = new InMemoryStorageManager();
-    var target = new ShareService(storage, testClock);
+    var target = new ShareService(storage, newProviderService(storage, testClock), testClock);
     assertEquals(Optional.empty(), target.getShare("unknown"));
   }
 
@@ -119,7 +120,8 @@ class ShareServiceTest {
   public void getShare() throws ExecutionException, InterruptedException {
     var shares = List.of(createShare("name", "key", Collections.emptyMap()));
     StorageManager storageManager = new InMemoryStorageManager(shares);
-    var target = new ShareService(storageManager, testClock);
+    var target =
+        new ShareService(storageManager, newProviderService(storageManager, testClock), testClock);
     var share = target.getShare("name");
     assertTrue(share.isPresent());
     assertEquals("name", share.get().name());
@@ -129,7 +131,7 @@ class ShareServiceTest {
   @Test
   public void createSchema() {
     var storage = new InMemoryStorageManager();
-    var target = new ShareService(storage, testClock);
+    var target = new ShareService(storage, newProviderService(storage, testClock), testClock);
     target.createShare(emptyCreateShare(), testPrincipal);
     var result = target.createSchema("share1", "schema1", testPrincipal);
     assertEquals(
@@ -150,7 +152,7 @@ class ShareServiceTest {
   @Test
   public void failToCreateSameSchema() {
     var storage = new InMemoryStorageManager();
-    var target = new ShareService(storage, testClock);
+    var target = new ShareService(storage, newProviderService(storage, testClock), testClock);
     target.createShare(emptyCreateShare(), testPrincipal);
     target.createSchema("share1", "schema1", testPrincipal);
     assertThrows(
@@ -160,7 +162,7 @@ class ShareServiceTest {
   @Test
   public void createSecondSchema() {
     var storage = new InMemoryStorageManager();
-    var target = new ShareService(storage, testClock);
+    var target = new ShareService(storage, newProviderService(storage, testClock), testClock);
     target.createShare(emptyCreateShare(), testPrincipal);
     target.createSchema("share1", "schema1", testPrincipal);
     var result = target.createSchema("share1", "schema2", testPrincipal);
@@ -190,5 +192,13 @@ class ShareServiceTest {
   private CreateShare emptyCreateShare() {
     return new CreateShare(
         "share1", Optional.empty(), Collections.emptyList(), Collections.emptyList());
+  }
+
+  private ProviderService newProviderService(StorageManager storage, Clock testClock) {
+    return new ProviderService(
+        storage,
+        new MetastoreService(storage, testClock),
+        new StorageService(storage, testClock),
+        testClock);
   }
 }

@@ -241,4 +241,17 @@ public class InMemoryStorageManager implements StorageManager {
     shares.put(newShare.name(), newShare);
     return shares.get(newShare.name());
   }
+
+  @Override
+  public Share addTableToSchema(
+      Share shareObj,
+      Schema schemaObj,
+      Provider providerObj,
+      InternalTable table,
+      Principal currentUser,
+      long millis) {
+    var newSchema = schemaObj.addTable(table);
+    var newShare = shareObj.upsertSchema(newSchema, currentUser, millis);
+    return updateShare(newShare);
+  }
 }

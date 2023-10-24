@@ -187,7 +187,7 @@ public class ShareV1ApiImplTest {
   ValidatableResponse addRecipientsToShare(String share, List<String> recipients) {
     return given()
         .when()
-        //            .filter(wfFilter) // I need to disable the filter because it gets confused and
+        // .filter(wfFilter) // I need to disable the filter because it gets confused and
         // does not find the operation
         .body(
             new AddRecipientToShareRequest().principals(recipients),

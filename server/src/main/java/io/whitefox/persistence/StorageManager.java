@@ -38,4 +38,12 @@ public interface StorageManager {
   Share createShare(Share share);
 
   Share updateShare(Share newShare);
+
+  Share addTableToSchema(
+      Share shareObj,
+      Schema schemaObj,
+      Provider providerObj,
+      InternalTable table,
+      Principal currentUser,
+      long millis);
 }

@@ -1,17 +1,16 @@
 package io.whitefox.core;
 
 import io.whitefox.annotations.SkipCoverageGenerated;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public final class Schema {
   private final String name;
-  private final List<SharedTable> sharedTables;
+  private final Set<SharedTable> sharedTables;
   private final String share;
 
-  public Schema(String name, List<SharedTable> sharedTables, String share) {
+  public Schema(String name, Collection<SharedTable> sharedTables, String share) {
     this.name = name;
-    this.sharedTables = sharedTables;
+    this.sharedTables = Set.copyOf(sharedTables);
     this.share = share;
   }
 
@@ -19,7 +18,7 @@ public final class Schema {
     return name;
   }
 
-  public List<SharedTable> tables() {
+  public Set<SharedTable> tables() {
     return sharedTables;
   }
 
@@ -49,5 +48,11 @@ public final class Schema {
   public String toString() {
     return "Schema[" + "name=" + name + ", " + "tables=" + sharedTables + ", " + "share=" + share
         + ']';
+  }
+
+  public Schema addTable(InternalTable table) {
+    var newSharedTables = new HashSet<>(sharedTables);
+    newSharedTables.add(new SharedTable(table.name(), name, share, table));
+    return new Schema(name, newSharedTables, share);
   }
 }
