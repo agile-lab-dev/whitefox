@@ -45,16 +45,17 @@ public class TableServiceTest {
             Optional.empty(),
             false,
             new InternalTable.DeltaTableProperties("s3://bucket/delta-table")));
-    assertEquals(result.name(), "deltaTable");
-    assertEquals(result.comment(), Optional.empty());
-    assertEquals(
-        result.properties(), new InternalTable.DeltaTableProperties("s3://bucket/delta-table"));
-    assertEquals(result.validatedAt(), Optional.of(9L));
-    assertEquals(result.createdAt(), 9L);
-    assertEquals(result.createdBy(), principal);
-    assertEquals(result.updatedAt(), 9L);
-    assertEquals(result.updatedBy(), principal);
-    assertEquals(result.provider(), providerService.getProvider("provider1").get());
+    var expected = new InternalTable(
+        "deltaTable",
+        Optional.empty(),
+        new InternalTable.DeltaTableProperties("s3://bucket/delta-table"),
+        Optional.of(9L),
+        9L,
+        principal,
+        9L,
+        principal,
+        providerService.getProvider("provider1").get());
+    assertEquals(expected, result);
   }
 
   @Test
@@ -114,15 +115,17 @@ public class TableServiceTest {
             Optional.empty(),
             false,
             new InternalTable.IcebergTableProperties("dbName", "tn")));
-    assertEquals(result.name(), "icebergTable");
-    assertEquals(result.comment(), Optional.empty());
-    assertEquals(result.properties(), new InternalTable.IcebergTableProperties("dbName", "tn"));
-    assertEquals(result.validatedAt(), Optional.of(9L));
-    assertEquals(result.createdAt(), 9L);
-    assertEquals(result.createdBy(), principal);
-    assertEquals(result.updatedAt(), 9L);
-    assertEquals(result.updatedBy(), principal);
-    assertEquals(result.provider(), providerService.getProvider("provider1").get());
+    var expected = new InternalTable(
+        "icebergTable",
+        Optional.empty(),
+        new InternalTable.IcebergTableProperties("dbName", "tn"),
+        Optional.of(9L),
+        9L,
+        principal,
+        9L,
+        principal,
+        providerService.getProvider("provider1").get());
+    assertEquals(expected, result);
   }
 
   @Test
@@ -204,15 +207,17 @@ public class TableServiceTest {
             false,
             new InternalTable.IcebergTableProperties("dbName", "tn")));
     var result = target.getInternalTable("provider1", "icebergTable").get();
-    assertEquals(result.name(), "icebergTable");
-    assertEquals(result.comment(), Optional.empty());
-    assertEquals(result.properties(), new InternalTable.IcebergTableProperties("dbName", "tn"));
-    assertEquals(result.validatedAt(), Optional.of(9L));
-    assertEquals(result.createdAt(), 9L);
-    assertEquals(result.createdBy(), principal);
-    assertEquals(result.updatedAt(), 9L);
-    assertEquals(result.updatedBy(), principal);
-    assertEquals(result.provider(), providerService.getProvider("provider1").get());
+    var expected = new InternalTable(
+        "icebergTable",
+        Optional.empty(),
+        new InternalTable.IcebergTableProperties("dbName", "tn"),
+        Optional.of(9L),
+        9L,
+        principal,
+        9L,
+        principal,
+        providerService.getProvider("provider1").get());
+    assertEquals(expected, result);
   }
 
   @Test
