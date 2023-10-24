@@ -6,19 +6,20 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
-import io.whitefox.OpenApiValidationFilter;
+import io.whitefox.api.deltasharing.OpenApiValidatorUtils;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
+import io.whitefox.api.deltasharing.model.FileObjectWithoutPresignedUrl;
 import io.whitefox.api.deltasharing.model.v1.generated.*;
 import io.whitefox.core.services.ContentAndToken;
 import io.whitefox.persistence.StorageManager;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 @QuarkusTest
-public class DeltaSharesApiImplTest {
+public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   @BeforeAll
   public static void setup() {
     QuarkusMock.installMockForType(storageManager, StorageManager.class);
@@ -44,15 +45,6 @@ public class DeltaSharesApiImplTest {
     this.encoder = encoder;
     this.objectMapper = objectMapper;
   }
-
-  private static final String specLocation = Paths.get(".")
-      .toAbsolutePath()
-      .getParent()
-      .getParent()
-      .resolve("protocol/delta-sharing-protocol-api.yml")
-      .toAbsolutePath()
-      .toString();
-  private static final OpenApiValidationFilter filter = new OpenApiValidationFilter(specLocation);
 
   @Test
   public void getUnknownShare() {
@@ -325,14 +317,17 @@ public class DeltaSharesApiImplTest {
         .skip(2)
         .map(line -> {
           try {
-            return objectMapper.reader().readValue(line, FileObject.class);
+            return objectMapper
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .reader()
+                .readValue(line, FileObjectWithoutPresignedUrl.class);
           } catch (IOException e) {
             throw new RuntimeException(e);
           }
         })
         .collect(Collectors.toSet());
-    assertEquals(files, deltaTable1Files);
     assertEquals(7, responseBodyLines.length);
+    assertEquals(deltaTable1FilesWithoutPresignedUrl, files); // TOD
   }
 
   @DisabledOnOs(OS.WINDOWS)
@@ -365,14 +360,17 @@ public class DeltaSharesApiImplTest {
         .skip(2)
         .map(line -> {
           try {
-            return objectMapper.reader().readValue(line, FileObject.class);
+            return objectMapper
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .reader()
+                .readValue(line, FileObjectWithoutPresignedUrl.class);
           } catch (IOException e) {
             throw new RuntimeException(e);
           }
         })
         .collect(Collectors.toSet());
-    assertEquals(deltaTable1Files, files);
     assertEquals(7, responseBodyLines.length);
+    assertEquals(deltaTable1FilesWithoutPresignedUrl, files);
   }
 
   @Test

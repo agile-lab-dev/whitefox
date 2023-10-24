@@ -12,7 +12,7 @@ val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 
 // region dependencies
-
+val hadoopVersion = "3.3.6"
 dependencies {
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     // QUARKUS
@@ -26,7 +26,7 @@ dependencies {
 
     // DELTA
     implementation("io.delta:delta-standalone_2.13:0.6.0")
-    implementation("org.apache.hadoop:hadoop-common:3.3.6")
+    implementation(String.format("org.apache.hadoop:hadoop-common:%s", hadoopVersion))
 
     // TEST
     testImplementation("io.quarkus:quarkus-junit5")
@@ -34,6 +34,12 @@ dependencies {
     testImplementation("io.rest-assured:json-path")
     testImplementation("org.openapi4j:openapi-operation-validator:1.0.7")
     testImplementation("org.openapi4j:openapi-operation-restassured:1.0.7")
+
+    //AWS
+    implementation("com.amazonaws:aws-java-sdk-bom:1.12.429")
+    implementation("com.amazonaws:aws-java-sdk-s3:1.12.470")
+    implementation(String.format("org.apache.hadoop:hadoop-aws:%s", hadoopVersion))
+
 }
 
 // endregion
