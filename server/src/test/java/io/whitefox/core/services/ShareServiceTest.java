@@ -157,6 +157,32 @@ class ShareServiceTest {
         SchemaAlreadyExists.class, () -> target.createSchema("share1", "schema1", testPrincipal));
   }
 
+  @Test
+  public void createSecondSchema() {
+    var storage = new InMemoryStorageManager();
+    var target = new ShareService(storage, testClock);
+    target.createShare(emptyCreateShare(), testPrincipal);
+    target.createSchema("share1", "schema1", testPrincipal);
+    var result = target.createSchema("share1", "schema2", testPrincipal);
+    assertEquals(
+        new Share(
+            "share1",
+            "share1",
+            Map.of(
+                "schema1",
+                new Schema("schema1", Collections.emptyList(), "share1"),
+                "schema2",
+                new Schema("schema2", Collections.emptyList(), "share1")),
+            Optional.empty(),
+            Set.of(),
+            7,
+            testPrincipal,
+            7,
+            testPrincipal,
+            testPrincipal),
+        result);
+  }
+
   private Share createShare(String name, String key, Map<String, Schema> schemas) {
     return new Share(name, key, schemas, testPrincipal, 0L);
   }
