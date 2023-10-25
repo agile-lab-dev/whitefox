@@ -1,8 +1,6 @@
 package io.whitefox.core.services;
 
-import io.whitefox.core.Principal;
-import io.whitefox.core.Schema;
-import io.whitefox.core.Share;
+import io.whitefox.core.*;
 import io.whitefox.core.actions.CreateShare;
 import io.whitefox.core.services.exceptions.*;
 import io.whitefox.persistence.StorageManager;
@@ -81,23 +79,25 @@ public class ShareService {
   }
 
   public Share addTableToSchema(
-      String share, String schema, String providerName, String tableName, Principal currentUser) {
+      ShareName share,
+      SchemaName schema,
+      SharedTableName sharedTableName,
+      ProviderName providerName,
+      InternalTableName internalTableName,
+      Principal currentUser) {
     var shareObj = storageManager
-        .getShare(share)
+        .getShare(share.name())
         .orElseThrow(() -> new ShareNotFound("Share " + share + "not found"));
-    var schemaObj = Optional.ofNullable(shareObj.schemas().get(schema))
+    var schemaObj = Optional.ofNullable(shareObj.schemas().get(schema.name()))
         .orElseThrow(() -> new SchemaNotFound("Schema " + schema + " not found in share " + share));
     var providerObj = providerService
-        .getProvider(providerName)
+        .getProvider(providerName.name())
         .orElseThrow(() -> new ProviderNotFound("Provider " + providerName + " not found"));
-    var tableObj = Optional.ofNullable(providerObj.tables().get(tableName))
-        .orElseThrow(() ->
-            new TableNotFound("Table " + tableName + " not found in provider " + providerName));
-    if (!providerObj.tables().containsKey(tableName)) {
-      throw new TableNotFound("Table " + tableName + " not found in provider " + providerName);
-    }
+    var tableObj = Optional.ofNullable(providerObj.tables().get(internalTableName.name()))
+        .orElseThrow(() -> new TableNotFound(
+            "Table " + internalTableName + " not found in provider " + providerName));
     // now that we know the request makes sense...
     return storageManager.addTableToSchema(
-        shareObj, schemaObj, providerObj, tableObj, currentUser, clock.millis());
+        shareObj, schemaObj, providerObj, tableObj, sharedTableName, currentUser, clock.millis());
   }
 }

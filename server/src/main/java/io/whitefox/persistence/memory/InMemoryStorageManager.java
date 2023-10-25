@@ -248,9 +248,10 @@ public class InMemoryStorageManager implements StorageManager {
       Schema schemaObj,
       Provider providerObj,
       InternalTable table,
+      SharedTableName sharedTableName,
       Principal currentUser,
       long millis) {
-    var newSchema = schemaObj.addTable(table);
+    var newSchema = schemaObj.addTable(table, sharedTableName);
     var newShare = shareObj.upsertSchema(newSchema, currentUser, millis);
     return updateShare(newShare);
   }

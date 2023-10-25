@@ -1,9 +1,10 @@
 package io.whitefox.api.server;
 
 import io.whitefox.api.model.v1.generated.AddRecipientToShareRequest;
+import io.whitefox.api.model.v1.generated.AddTableToSchemaRequest;
 import io.whitefox.api.model.v1.generated.CreateShareInput;
-import io.whitefox.api.model.v1.generated.TableReference;
 import io.whitefox.api.server.v1.generated.ShareV1Api;
+import io.whitefox.core.*;
 import io.whitefox.core.services.ShareService;
 import jakarta.ws.rs.core.Response;
 
@@ -29,13 +30,16 @@ public class ShareV1ApiImpl implements ShareV1Api, ApiUtils {
   }
 
   @Override
-  public Response addTableToSchema(String share, String schema, TableReference tableReference) {
+  public Response addTableToSchema(
+      String share, String schema, AddTableToSchemaRequest addTableToSchemaRequest) {
     return wrapExceptions(
-        () -> Response.ok(WhitefoxMappers.share2api(shareService.addTableToSchema(
-                share,
-                schema,
-                tableReference.getProviderName(),
-                tableReference.getName(),
+        () -> Response.status(Response.Status.CREATED)
+            .entity(WhitefoxMappers.share2api(shareService.addTableToSchema(
+                new ShareName(share),
+                new SchemaName(schema),
+                new SharedTableName(addTableToSchemaRequest.getName()),
+                new ProviderName(addTableToSchemaRequest.getReference().getProviderName()),
+                new InternalTableName(addTableToSchemaRequest.getReference().getName()),
                 getRequestPrincipal())))
             .build(),
         exceptionToResponse);

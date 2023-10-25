@@ -44,6 +44,7 @@ public interface StorageManager {
       Schema schemaObj,
       Provider providerObj,
       InternalTable table,
+      SharedTableName sharedTableName,
       Principal currentUser,
       long millis);
 }
