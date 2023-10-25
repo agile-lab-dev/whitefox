@@ -33,7 +33,7 @@ public class DeltaSharedTable {
   public static DeltaSharedTable of(
       SharedTable sharedTable, TableSchemaConverter tableSchemaConverter) {
     var configuration = new Configuration();
-    if (sharedTable.internalTable().properties() instanceof InternalTable.InternalTableProperties) {
+    if (sharedTable.internalTable().properties() instanceof InternalTable.DeltaTableProperties) {
       InternalTable.DeltaTableProperties deltaProps =
           (InternalTable.DeltaTableProperties) sharedTable.internalTable().properties();
       var dataPath = deltaProps.location();
