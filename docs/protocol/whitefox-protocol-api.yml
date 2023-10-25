@@ -1001,7 +1001,7 @@ paths:
               properties:
                 name:
                   type: string
-                  description: public name of the table can be different from the internal name used in `reference`
+                  description: public name of the table; can be different from the internal name used in `reference`
                 reference:
                   $ref: "#/components/schemas/TableReference"
       responses:
