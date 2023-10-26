@@ -25,7 +25,7 @@ dependencies {
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
 
     // DELTA
-    implementation("io.delta:delta-standalone_2.13:0.6.0")
+    implementation("io.delta:delta-standalone_2.13:3.0.0")
     implementation("org.apache.hadoop:hadoop-common:3.3.6")
 
     // TEST
