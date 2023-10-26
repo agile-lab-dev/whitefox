@@ -17,6 +17,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: execute npm run build and tar the result
         run:  |
+              cp -r docs/protocol docsite/static/protocol
               ./gradlew docsite:npm_run_build --no-daemon
               chmod -c -R +rX "docsite/build" | while read line; do
                 echo "::warning title=Invalid file permissions automatically fixed::$line"
