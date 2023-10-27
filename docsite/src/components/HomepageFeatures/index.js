@@ -5,7 +5,7 @@ import styles from './styles.module.css';
 const FeatureList = [
   {
     title: 'Delta or Iceberg? You choose!',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    Img: require('@site/static/img/fox1.png').default,
     description: (
       <>
         Whitefox is a protocol and a server that enables easy data sharing
@@ -15,7 +15,7 @@ const FeatureList = [
   },
   {
     title: 'Completely compatible with Delta Sharing',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    Img: require('@site/static/img/fox2.png').default,
     description: (
       <>
         Whitefox was build from the ground up to be compatible with Delta Sharing protocol.
@@ -26,7 +26,7 @@ const FeatureList = [
   },
   {
     title: 'Cloud native',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Img: require('@site/static/img/fox3.png').default,
     description: (
       <>
         Whitefox is a cloud native application, it can be deployed on Kubernetes
@@ -37,11 +37,11 @@ const FeatureList = [
   },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({Img, title, description}) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <img src={Img} alt="Logo" height="300px" width="300px"/>
       </div>
       <div className="text--center padding-horiz--md">
         <h3>{title}</h3>
