@@ -2,7 +2,7 @@ name: Publish GH pages
 on:
   push:
     branches:
-      - 96-create-doc-micro-site
+      - main
 jobs:
   docsiteBuild:
     runs-on: ubuntu-latest
@@ -15,7 +15,7 @@ jobs:
           java-version: 11
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-      - name: execute npm run build and tar the result
+      - name: Execute npm run build
         run:  |
               cp -r protocol docsite/static/protocol
               ./gradlew docsite:npm_run_build --no-daemon
@@ -23,7 +23,7 @@ jobs:
                 echo "::warning title=Invalid file permissions automatically fixed::$line"
               done
         shell: bash
-      - name: Upload artifact
+      - name: Upload gh-pages artifact
         uses: actions/upload-pages-artifact@v2
         with:
           path: docsite/build
