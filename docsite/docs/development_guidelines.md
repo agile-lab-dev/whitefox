@@ -48,9 +48,9 @@ We use spotless to format and check the style of Java code. Spotless can be run 
 
 ## Protocol
 
- Whitefox protocol and original delta-sharing are kept under [`docs/protocol`](protocol). We use openapi 
+ Whitefox protocol and original delta-sharing are kept under [`protocol`](protocols). We use openapi 
  specification to generate code for server and client. Furthermore, the protocol itself is validated using [spectral]
- (https://stoplight.io/open-source/spectral), you can find spectral configuration at [`.spectral.yaml`](../.spectral.yaml).
+ (https://stoplight.io/open-source/spectral), you can find spectral configuration at `.spectral.yaml`.
  
 
 # Software Engineering guidelines
