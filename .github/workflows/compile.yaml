@@ -37,8 +37,9 @@ jobs:
           cache: 'gradle'
           distribution: temurin
           java-version: 11
+      - name: Publish docker image
+        env:
           QUARKUS_CONTAINER_IMAGE_USERNAME: ${{ github.actor }}
           QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish docker image
         run: |
           ./gradlew imagePush
