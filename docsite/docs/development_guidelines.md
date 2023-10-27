@@ -97,12 +97,12 @@ To build/test documentation locally you can/should use dear old Gradle. You don'
 to "serve" the documentation server locally you can simply issue:
 
 ```
-./gradlew docsite:npm_run_start
+./gradlew docsite:docStart
 ```
 
-this will start a server on port 3000 on localhost where you can preview the result. The problem is that eve if you kill
-the gradle terminal (with ctrl+c) the node process will keep running. You will need to kill it with a `kill -9`. See related
-issue on the [gradle node plugin repo](https://github.com/node-gradle/gradle-node-plugin/issues/65).
+this will start a server on port 3000 on localhost where you can preview the result. The problem is that even if you kill
+the gradle terminal (with ctrl+c) the node process will keep running. You will need to kill it with 
+`./gradlew docsite:killAllDocusaurus`
 
 The *only* thing that will differ on the published site is that the `protocol` is copied to `docsite/static/protocol` 
 in order to have a "working" swagger UI. If you want to reproduce the same locally and have a working swagger UI at 

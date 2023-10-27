@@ -18,7 +18,7 @@ jobs:
       - name: execute npm run build and tar the result
         run:  |
               cp -r protocol docsite/static/protocol
-              ./gradlew docsite:npm_run_build --no-daemon
+              ./gradlew docsite:docBuild --no-daemon
               chmod -c -R +rX "docsite/build" | while read line; do
                 echo "::warning title=Invalid file permissions automatically fixed::$line"
               done

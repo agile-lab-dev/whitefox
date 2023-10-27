@@ -1,3 +1,15 @@
+import com.github.gradle.node.npm.task.NpmTask
+
+abstract class KillAllDocusaurus : DefaultTask() {
+    @TaskAction
+    fun destroy() {
+        ProcessHandle
+            .allProcesses()
+            .filter { p -> p.info().commandLine().orElse("").contains("docusaurus start") }
+            .forEach(ProcessHandle::destroy)
+    }
+}
+
 plugins {
     id("com.github.node-gradle.node") version("7.0.1")
 }
@@ -12,3 +24,11 @@ node {
     // It will be unpacked in the workDir
     version = "20.9.0"
 }
+
+tasks.register<NpmTask>("docStart") {
+    args = listOf("run", "start","--")
+}
+tasks.register<NpmTask>("docBuild") {
+    args = listOf("run", "build")
+}
+tasks.register<KillAllDocusaurus>("killAllDocusaurus")
