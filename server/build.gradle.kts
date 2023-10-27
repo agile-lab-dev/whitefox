@@ -215,7 +215,6 @@ tasks.quarkusBuild {
     System.setProperty("quarkus.docker.dockerfile-native-path", "$rootDir/server/src/main/docker/Dockerfile.jvm")
     System.setProperty("quarkus.native.container-runtime", "docker")
     System.setProperty("quarkus.container-image.name", project.name)
-    System.setProperty("quarkus.container-image.build", "true")
     System.setProperty("quarkus.native.additional-build-args", "-H:-CheckToolchain,--enable-preview")
 }
 
