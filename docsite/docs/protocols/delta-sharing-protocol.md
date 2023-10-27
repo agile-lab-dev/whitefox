@@ -1,47 +1,8 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+---
+toc_min_heading_level: 2
+toc_max_heading_level: 5
+---
 # Delta Sharing Protocol
-
-- [Delta Sharing Protocol](#delta-sharing-protocol)
-- [Overview](#overview)
-- [Delta Sharing Specification](#delta-sharing-specification)
-  - [Concepts](#concepts)
-  - [REST APIs](#rest-apis)
-    - [List Shares](#list-shares)
-    - [Get Share](#get-share)
-    - [List Schemas in a Share](#list-schemas-in-a-share)
-    - [List Tables in a Schema](#list-tables-in-a-schema)
-    - [List all Tables in a Share](#list-all-tables-in-a-share)
-    - [Query Table Version](#query-table-version)
-    - [Query Table Metadata](#query-table-metadata)
-    - [Read Data from a Table](#read-data-from-a-table)
-      - [Request Body](#request-body)
-    - [Read Change Data Feed from a Table](#read-change-data-feed-from-a-table)
-    - [Timestamp Format](#timestamp-format)
-  - [API Response Format](#api-response-format)
-    - [JSON Wrapper Object In Each Line](#json-wrapper-object-in-each-line)
-    - [Protocol](#protocol)
-    - [Metadata](#metadata)
-    - [File](#file)
-    - [Data Change Files](#data-change-files)
-      - [Add File](#add-file)
-      - [CDF File](#cdf-file)
-      - [Remove File](#remove-file)
-    - [Format](#format)
-    - [Schema Object](#schema-object)
-      - [Struct Type](#struct-type)
-      - [Struct Field](#struct-field)
-      - [Primitive Types](#primitive-types)
-      - [Array Type](#array-type)
-      - [Map Type](#map-type)
-      - [Example](#example)
-    - [Partition Value Serialization](#partition-value-serialization)
-    - [Per-file Statistics](#per-file-statistics)
-  - [SQL Expressions for Filtering](#sql-expressions-for-filtering)
-  - [JSON predicates for Filtering](#json-predicates-for-filtering)
-- [Profile File Format](#profile-file-format)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Overview
 
@@ -72,7 +33,7 @@ This is the API to list shares accessible to a recipient.
 HTTP Request | Value
 -|-
 Method | `GET`
-Header | `Authorization: Bearer {token}`
+Header | `Authorization: Bearer [token]`
 URL | `{prefix}/shares`
 Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br/><br/>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
 
@@ -268,7 +229,7 @@ This is the API to get the metadata of a share.
 HTTP Request | Value
 -- | --
 Method | `GET`
-Header | `Authorization: Bearer {token}`
+Header | `Authorization: Bearer [token]`
 URL | `{prefix}/shares/{share}`
 URL Parameters | **{share}**: The share name to query. It's case-insensitive.
 
@@ -482,7 +443,7 @@ This is the API to list schemas in a share.
 HTTP Request | Value
 -|-
 Method | `GET`
-Header | `Authorization: Bearer {token}`
+Header | `Authorization: Bearer [token]`
 URL | `{prefix}/shares/{share}/schemas`
 URL Parameters | **{share}**: The share name to query. It's case-insensitive.
 Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br/><br/>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
@@ -705,7 +666,7 @@ This is the API to list tables in a schema.
 HTTP Request | Value
 -|-
 Method | `GET`
-Header | `Authorization: Bearer {token}`
+Header | `Authorization: Bearer [token]`
 URL | `{prefix}/shares/{share}/schemas/{schema}/tables`
 URL Parameters | **{share}**: The share name to query. It's case-insensitive.<br/>**{schema}**: The schema name to query. It's case-insensitive.
 Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br/><br/>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
@@ -944,7 +905,7 @@ This is the API to list all the tables under all schemas in a share.
 HTTP Request | Value
 -|-
 Method | `GET`
-Header | `Authorization: Bearer {token}`
+Header | `Authorization: Bearer [token]`
 URL | `{prefix}/shares/{share}/all-tables`
 URL Parameters | **{share}**: The share name to query. It's case-insensitive.
 Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br/><br/>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
@@ -1194,7 +1155,7 @@ Note: This method is migrating from HEAD to GET, and with a `/version` suffix. P
 </tr>
 <tr>
 <td>HEADER</td>
-<td colspan="2">`Authorization: Bearer {token}`</td>
+<td colspan="2">`Authorization: Bearer [token]`</td>
 </tr>
 <tr>
 <td>URL</td>
@@ -1421,7 +1382,7 @@ This is the API for clients to query the table schema and other metadata.
 HTTP Request | Value
 -|-
 Method | `GET`
-Header | `Authorization: Bearer {token}`
+Header | `Authorization: Bearer [token]`
 URL | `{prefix}/shares/{share}/schemas/{schema}/tables/{table}/metadata`
 URL Parameters | **{share}**: The share name to query. It's case-insensitive.<br/>**{schema}**: The schema name to query. It's case-insensitive.<br/>**{table}**: The table name to query. It's case-insensitive.
 
@@ -1665,7 +1626,7 @@ This is the API for clients to read data from a table.
 <td>Headers</td>
 <td>
 
-`Authorization: Bearer {token}`
+`Authorization: Bearer [token]`
 
 Optional: `Content-Type: application/json; charset=utf-8`
 
@@ -2033,7 +1994,7 @@ The change data feed represents row-level changes between versions of a Delta ta
 <td>Header</td>
 <td>
 
-`Authorization: Bearer {token}`
+`Authorization: Bearer [token]`
 
 </td>
 </tr>

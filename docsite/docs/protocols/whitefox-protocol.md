@@ -1,4 +1,4 @@
-# API
+# Whitefox protocol
 
 To qualify all the APIs as:
 - **supported**

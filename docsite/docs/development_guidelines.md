@@ -104,7 +104,7 @@ this will start a server on port 3000 on localhost where you can preview the res
 the gradle terminal (with ctrl+c) the node process will keep running. You will need to kill it with a `kill -9`. See related
 issue on the [gradle node plugin repo](https://github.com/node-gradle/gradle-node-plugin/issues/65).
 
-The *only* thing that will differ on the published site is that the `docs/protocol` is copied to `docsite/static/protocol` 
+The *only* thing that will differ on the published site is that the `protocol` is copied to `docsite/static/protocol` 
 in order to have a "working" swagger UI. If you want to reproduce the same locally and have a working swagger UI at 
 `https://localhost:3000/whitefox/openapi_whitefox` and `https://localhost:3000/whitefox/openapi_delta-sharing.html` you can
-create a symlink as follows: `ln -sfn $PWD/docs/protocol $PWD/docsite/static/protocol`
+create a symlink as follows: `ln -sfn $PWD/protocol $PWD/docsite/static/protocol`
