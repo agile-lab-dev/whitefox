@@ -210,7 +210,14 @@ spotless {
 
 tasks.quarkusBuild {
     System.setProperty("quarkus.container-image.group", project.group.toString())
-    System.setProperty("quarkus.container-image.additional-tags", "latest")
+    System.setProperty("quarkus.container-image.tag", "latest")
+    System.setProperty("quarkus.container-image.build", "true")
+    System.setProperty("quarkus.docker.dockerfile-jvm-path", "$rootDir/server/src/main/docker/Dockerfile.jvm")
+    System.setProperty("quarkus.docker.dockerfile-native-path", "$rootDir/server/src/main/docker/Dockerfile.jvm")
+    System.setProperty("quarkus.native.container-build", "true")
+    System.setProperty("quarkus.native.container-runtime", "docker")
+    System.setProperty("quarkus.container-image.name", project.name)
+    System.setProperty("quarkus.container-image.registry", "ghcr.io")
     System.setProperty("quarkus.native.additional-build-args", "-H:-CheckToolchain,--enable-preview")
 }
 

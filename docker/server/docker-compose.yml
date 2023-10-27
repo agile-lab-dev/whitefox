@@ -1,0 +1,5 @@
+services:
+  whitefox-server:
+    image: ghcr.io/io.whitefox/server:latest
+    ports:
+      - 8080:8080

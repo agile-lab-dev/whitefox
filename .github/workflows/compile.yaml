@@ -28,3 +28,17 @@ jobs:
               fi
               ./gradlew build testNative --no-daemon
         shell: bash
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v3
+        with:
+          cache: 'gradle'
+          distribution: temurin
+          java-version: 11
+          QUARKUS_CONTAINER_IMAGE_USERNAME: ${{ github.actor }}
+          QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish docker image
+        run: |
+          ./gradlew imagePush
