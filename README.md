@@ -17,7 +17,7 @@ This repository contains:
 
 # Protocols
 
-Whitefox protocol is rendered [here](https://agile-lab-dev.github.io/whitefox/openapi_whitefox)
+Whitefox protocol is rendered [here](https://agile-lab-dev.github.io/whitefox/openapi_whitefox.html)
 
 The original delta-sharing protocol is rendered [here](https://agile-lab-dev.github.io/whitefox/openapi_delta-sharing.html)
 

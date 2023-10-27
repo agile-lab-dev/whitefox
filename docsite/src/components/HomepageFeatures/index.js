@@ -4,32 +4,34 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
+    title: 'Delta or Iceberg? You choose!',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Whitefox is a protocol and a server that enables easy data sharing
+        on top of table formats.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Completely compatible with Delta Sharing',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Whitefox was build from the ground up to be compatible with Delta Sharing protocol.
+        New features are added on top of Delta Sharing protocol, so you can use
+        Whitefox as a Delta Sharing server and still be compatible with Delta Sharing clients.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Cloud native',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Whitefox is a cloud native application, it can be deployed on Kubernetes
+        or any other container orchestration system. It's a production ready replacement
+        of Delta Sharing server.
       </>
     ),
   },

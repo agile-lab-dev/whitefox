@@ -85,4 +85,26 @@ has no business logic, it performs only "mappings" between the internal core mod
 classes) to the external world made of json payloads and http response/requests.
 
 On the other hand `DeltaSharesServiceImpl` is business logic, it knows nothing about http, therefore it does not 
-depend on any auto-generated code from the openapi spec.  
+depend on any auto-generated code from the openapi spec.
+
+## Documentation
+
+Project documentation is built as a [docusaurus](https://docusaurus.io) microsite.
+
+The doc is published during github actions only from `main` branch, the workflow is configured in `build_doc.yaml`.
+
+To build/test documentation locally you can/should use dear old Gradle. You don't need node or npm installed locally,
+to "serve" the documentation server locally you can simply issue:
+
+```
+./gradlew docsite:npm_run_start
+```
+
+this will start a server on port 3000 on localhost where you can preview the result. The problem is that eve if you kill
+the gradle terminal (with ctrl+c) the node process will keep running. You will need to kill it with a `kill -9`. See related
+issue on the [gradle node plugin repo](https://github.com/node-gradle/gradle-node-plugin/issues/65).
+
+The *only* thing that will differ on the published site is that the `docs/protocol` is copied to `docsite/static/protocol` 
+in order to have a "working" swagger UI. If you want to reproduce the same locally and have a working swagger UI at 
+`https://localhost:3000/whitefox/openapi_whitefox` and `https://localhost:3000/whitefox/openapi_delta-sharing.html` you can
+create a symlink as follows: `ln -sfn $PWD/docs/protocol $PWD/docsite/static/protocol`
