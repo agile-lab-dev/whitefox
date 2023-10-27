@@ -33,6 +33,6 @@ jobs:
       - name: Build and push docker image
         if: runner.os == 'Linux'
         run: |
-            docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }}
+            docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
             docker image ls
             docker image push -a
