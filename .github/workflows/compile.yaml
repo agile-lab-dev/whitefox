@@ -13,8 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v3
       - uses: docker/build-push-action@v4
+      - uses: actions/setup-java@v3
         with:
           cache: 'gradle'
           distribution: temurin
