@@ -32,8 +32,7 @@ jobs:
         uses: docker/setup-qemu-action@v2
       - name: Build and push docker image
         if: runner.os == 'Linux'
-        env:
-          QUARKUS_CONTAINER_IMAGE_USERNAME: ${{ github.actor }}
-          QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            ./gradlew imagePush -Dquarkus.container-image.username=${{ github.actor }} -Dquarkus.container-image.password=${{ secrets.GITHUB_TOKEN }}
+            docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }}
+            docker image ls
+            docker image push -a
