@@ -46,6 +46,7 @@ const config = {
           editUrl:
             'https://github.com/agile-lab-dev/whitefox/tree/main/docsite/',
         },
+        blog: false,
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -62,7 +63,7 @@ const config = {
         title: 'Whitefox documentation',
         logo: {
           alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          src: 'img/logo.png',
         },
         items: [
           {
