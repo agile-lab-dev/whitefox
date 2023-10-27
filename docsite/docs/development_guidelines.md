@@ -97,7 +97,7 @@ To build/test documentation locally you can/should use dear old Gradle. You don'
 to "serve" the documentation server locally you can simply issue:
 
 ```
-./gradlew docsite:docStart
+./gradlew docsite:npm_run_start
 ```
 
 this will start a server on port 3000 on localhost where you can preview the result. The problem is that even if you kill

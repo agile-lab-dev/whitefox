@@ -25,10 +25,4 @@ node {
     version = "20.9.0"
 }
 
-tasks.register<NpmTask>("docStart") {
-    args = listOf("run", "start","--")
-}
-tasks.register<NpmTask>("docBuild") {
-    args = listOf("run", "build")
-}
 tasks.register<KillAllDocusaurus>("killAllDocusaurus")
