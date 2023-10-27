@@ -2,6 +2,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 # Delta Sharing Protocol
 
+- [Delta Sharing Protocol](#delta-sharing-protocol)
 - [Overview](#overview)
 - [Delta Sharing Specification](#delta-sharing-specification)
   - [Concepts](#concepts)
@@ -16,12 +17,16 @@
     - [Read Data from a Table](#read-data-from-a-table)
       - [Request Body](#request-body)
     - [Read Change Data Feed from a Table](#read-change-data-feed-from-a-table)
+    - [Timestamp Format](#timestamp-format)
   - [API Response Format](#api-response-format)
     - [JSON Wrapper Object In Each Line](#json-wrapper-object-in-each-line)
     - [Protocol](#protocol)
     - [Metadata](#metadata)
     - [File](#file)
     - [Data Change Files](#data-change-files)
+      - [Add File](#add-file)
+      - [CDF File](#cdf-file)
+      - [Remove File](#remove-file)
     - [Format](#format)
     - [Schema Object](#schema-object)
       - [Struct Type](#struct-type)
@@ -69,7 +74,7 @@ HTTP Request | Value
 Method | `GET`
 Header | `Authorization: Bearer {token}`
 URL | `{prefix}/shares`
-Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br><br>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
+Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br/><br/>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
 
 <details open>
 <summary><b>200: The shares were successfully returned.</b></summary>
@@ -480,7 +485,7 @@ Method | `GET`
 Header | `Authorization: Bearer {token}`
 URL | `{prefix}/shares/{share}/schemas`
 URL Parameters | **{share}**: The share name to query. It's case-insensitive.
-Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br><br>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
+Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br/><br/>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
 
 <details open>
 <summary><b>200: The schemas were successfully returned.</b></summary>
@@ -702,8 +707,8 @@ HTTP Request | Value
 Method | `GET`
 Header | `Authorization: Bearer {token}`
 URL | `{prefix}/shares/{share}/schemas/{schema}/tables`
-URL Parameters | **{share}**: The share name to query. It's case-insensitive.<br>**{schema}**: The schema name to query. It's case-insensitive.
-Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br><br>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
+URL Parameters | **{share}**: The share name to query. It's case-insensitive.<br/>**{schema}**: The schema name to query. It's case-insensitive.
+Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br/><br/>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
 
 <details open>
 <summary><b>200: The tables were successfully returned.</b></summary>
@@ -942,7 +947,7 @@ Method | `GET`
 Header | `Authorization: Bearer {token}`
 URL | `{prefix}/shares/{share}/all-tables`
 URL Parameters | **{share}**: The share name to query. It's case-insensitive.
-Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br><br>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
+Query Parameters | **maxResults** (type: Int32, optional): The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, the response will provide a `nextPageToken` that can be used to get the next page of results in subsequent list requests. The server may return fewer than `maxResults` items even if there are more available. The client should check `nextPageToken` in the response to determine if there are more available. Must be non-negative. 0 will return no results but `nextPageToken` may be populated.<br/><br/>**pageToken** (type: String, optional): Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results. `nextPageToken` will not be returned in a response if there are no more results available.
 
 <details open>
 <summary><b>200: The tables were successfully returned.</b></summary>
@@ -1189,9 +1194,7 @@ Note: This method is migrating from HEAD to GET, and with a `/version` suffix. P
 </tr>
 <tr>
 <td>HEADER</td>
-<td colspan="2">
-
-`Authorization: Bearer {token}`</td>
+<td colspan="2">`Authorization: Bearer {token}`</td>
 </tr>
 <tr>
 <td>URL</td>
@@ -1208,7 +1211,7 @@ Note: This method is migrating from HEAD to GET, and with a `/version` suffix. P
 <td>URL parameters</td>
 <td colspan="2">
 
-**{share}**: The share name to query. It's case-insensitive.<br>**{schema}**: The schema name to query. It's case-insensitive.<br>**{table}**: The table name to query. It's case-insensitive.
+**{share}**: The share name to query. It's case-insensitive.<br/>**{schema}**: The schema name to query. It's case-insensitive.<br/>**{table}**: The table name to query. It's case-insensitive.
 </td>
 </tr>
 <tr>
@@ -1243,13 +1246,7 @@ Note: This method is migrating from HEAD to GET, and with a `/version` suffix. P
 </tr>
 <tr>
 <td>Body</td>
-<td>
-
-`Empty`
-
-</td>
-
-</td>
+<td>`Empty`</td>
 </tr>
 </table>
 </details>
@@ -1426,7 +1423,7 @@ HTTP Request | Value
 Method | `GET`
 Header | `Authorization: Bearer {token}`
 URL | `{prefix}/shares/{share}/schemas/{schema}/tables/{table}/metadata`
-URL Parameters | **{share}**: The share name to query. It's case-insensitive.<br>**{schema}**: The schema name to query. It's case-insensitive.<br>**{table}**: The table name to query. It's case-insensitive.
+URL Parameters | **{share}**: The share name to query. It's case-insensitive.<br/>**{schema}**: The schema name to query. It's case-insensitive.<br/>**{table}**: The table name to query. It's case-insensitive.
 
 <details open>
 <summary><b>200: The table metadata was successfully returned.</b></summary>
@@ -2052,20 +2049,20 @@ The change data feed represents row-level changes between versions of a Delta ta
 <td>URL Parameters</td>
 <td>
 
-**{share}**: The share name to query. It's case-insensitive.<br>
-**{schema}**: The schema name to query. It's case-insensitive.<br>
+**{share}**: The share name to query. It's case-insensitive.<br/>
+**{schema}**: The schema name to query. It's case-insensitive.<br/>
 **{table}**: The table name to query. It's case-insensitive.
 </td>
 </tr>
 <tr>
 <td>Query Parameters</td>
 <td>
-
- **startingVersion** (type: Long, optional): The starting version of the query, inclusive. <br>
- **startingTimestamp** (type: String, optional): The starting timestamp of the query, a string in the [Timestamp Format](#timestamp-format), which will be converted to a version created greater or equal to this timestamp. <br>
- **endingVersion** (type: Long, optional): The ending version of the query, inclusive. <br>
- **endingTimestamp** (type: String, optional): The ending timestamp of the query, a string in the [Timestamp Format](#timestamp-format), which will be converted to a version created earlier than or at the timestamp. <br>
- **includeHistoricalMetadata** (type: Boolean, optional): If set to true, return the historical metadata if seen in the delta log. This is for the streaming client to check if the table schema is still read compatible.</td>
+ **startingVersion** (type: Long, optional): The starting version of the query, inclusive. <br/>
+ **startingTimestamp** (type: String, optional): The starting timestamp of the query, a string in the [Timestamp Format](#timestamp-format), which will be converted to a version created greater or equal to this timestamp. <br/>
+ **endingVersion** (type: Long, optional): The ending version of the query, inclusive. <br/>
+ **endingTimestamp** (type: String, optional): The ending timestamp of the query, a string in the [Timestamp Format](#timestamp-format), which will be converted to a version created earlier than or at the timestamp. <br/>
+ **includeHistoricalMetadata** (type: Boolean, optional): If set to true, return the historical metadata if seen in the delta log. This is for the streaming client to check if the table schema is still read compatible.
+</td>
 </tr>
 </table>
 
@@ -2379,7 +2376,7 @@ name | String | User-provided identifier for this table | Optional
 description | String | User-provided description for this table | Optional
 format | [Format](#format) Object | Specification of the encoding for the files stored in the table. | Required
 schemaString | String | Schema of the table. This is a serialized JSON string which can be deserialized to a [Schema](#schema-object) Object. | Required
-partitionColumns | Array<String> | An array containing the names of columns by which the data should be partitioned. When a table doesn’t have partition columns, this will be an **empty** array. | Required
+partitionColumns | Array[String] | An array containing the names of columns by which the data should be partitioned. When a table doesn’t have partition columns, this will be an **empty** array. | Required
 configuration | Map[String, String] | A map containing configuration options for the table
 version | Long | The table version the metadata corresponds to, returned when querying table data with a version or timestamp parameter, or cdf query with includeHistoricalMetadata set to true. | Optional
 size | Long | The size of the table in bytes, will be returned if available in the delta log. | Optional 
