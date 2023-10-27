@@ -29,7 +29,7 @@ jobs:
               ./gradlew build testNative --no-daemon
         shell: bash
       - name: Build and push docker image
-        if: "$RUNNER_OS" == "Linux"
+        if: runner.os == 'Linux'
         env:
           QUARKUS_CONTAINER_IMAGE_USERNAME: ${{ github.actor }}
           QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
