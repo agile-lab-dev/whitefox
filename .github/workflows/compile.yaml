@@ -27,12 +27,15 @@ jobs:
               fi
               ./gradlew build testNative --no-daemon
         shell: bash
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
       - name: Build and push docker image
-        if: runner.os == 'Linux'
+        if: runner.os == 'macOS'
         env:
           QUARKUS_CONTAINER_IMAGE_USERNAME: ${{ github.actor }}
           QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        uses: docker-practice/actions-setup-docker@master
         run: |
             ./gradlew imagePush
 
