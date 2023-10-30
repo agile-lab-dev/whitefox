@@ -25,11 +25,11 @@ jobs:
               if [ "$RUNNER_OS" == "Windows" ]; then
                 export HADOOP_HOME="$(pwd)/.github/workflows/hadoop3-win-binaries"
               fi
-              if ["$RUNNER_OS" == "Linux"]; then
-                ./gradlew build testNative --no-daemon -Dquarkus.container-image.build
-              else
-                ./gradlew build testNative --no-daemon
-              fi
+              ./gradlew build testNative --no-daemon
+        shell: bash
+      - name: Build container image
+        if: runner.os == 'Linux'
+        run: ./gradlew build --no-daemon -Dquarkus.container-image.build=true
         shell: bash
       - name: Set up QEMU
         if: runner.os == 'Linux'
@@ -47,4 +47,4 @@ jobs:
         if: runner.os == 'Linux'
         run: |
             docker image ls
-            docker image push -a io.whitefox/server
+            docker image push -a ghcr.io/io.whitefox/server
