@@ -44,4 +44,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push existing image to registry
         if: runner.os == 'Linux'
-        run: docker image push -a ghcr.io/io.whitefox/server
+        run: docker image push -a ghcr.io/agile-lab-dev/io.whitefox.server
