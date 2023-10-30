@@ -216,11 +216,3 @@ tasks.quarkusBuild {
 }
 
 // endregion
-val versionDetails: groovy.lang.Closure<com.palantir.gradle.gitversion.VersionDetails> by extra
-val details = versionDetails()
-println("details.lastTag: " + details.lastTag)
-println("details.commitDistance: " + details.commitDistance)
-println("details.gitHash: " + details.gitHash)
-println("details.gitHashFull: " + details.gitHashFull) // full 40-character Git commit hash
-println("details.branchName: " + details.branchName) // is null if the repository in detached HEAD mode
-println("details.isCleanTag: " + details.isCleanTag)

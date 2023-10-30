@@ -35,6 +35,7 @@ jobs:
               fi
               ./gradlew server:build --no-daemon -Dquarkus.container-image.build=true
               ./gradlew server:printVersion --no-daemon
+              git rev-parse HEAD
         shell: bash
       - name: Login to ghcr
         if: runner.os == 'Linux'
