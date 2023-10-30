@@ -30,7 +30,7 @@ jobs:
       - name: Build container image
         if: runner.os == 'Linux'
         run: |
-              if [[ "${{github.base_ref}}" == "master" || "${{github.ref}}" == "refs/heads/master" ]]; then
+              if [[ "${{github.ref}}" == "refs/heads/main" ]]; then
                 export QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS="latest"
               fi
               ./gradlew server:build --no-daemon -Dquarkus.container-image.build=true
