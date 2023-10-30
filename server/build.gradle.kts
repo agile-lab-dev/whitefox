@@ -209,7 +209,8 @@ spotless {
 // region container image
 
 tasks.quarkusBuild {
-    System.setProperty("quarkus.container-image.group", "ghcr.io/agile-lab-dev")
+    System.setProperty("quarkus.container-image.registry", "ghcr.io")
+    System.setProperty("quarkus.container-image.group", "agile-lab-dev")
     System.setProperty("quarkus.container-image.name", project.group.toString() + "." + project.name)
     System.setProperty("quarkus.native.additional-build-args", "-H:-CheckToolchain,--enable-preview")
 }
