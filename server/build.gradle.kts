@@ -209,13 +209,8 @@ spotless {
 // region container image
 
 tasks.quarkusBuild {
-    System.setProperty("quarkus.container-image.group", "ghcr.io/" + project.group.toString())
-    // System.setProperty("quarkus.container-image.tag", "latest")
-    // System.setProperty("quarkus.docker.dockerfile-jvm-path", "$rootDir/server/src/main/docker/Dockerfile.jvm")
-    // System.setProperty("quarkus.docker.dockerfile-native-path", "$rootDir/server/src/main/docker/Dockerfile.jvm")
-    // System.setProperty("quarkus.native.container-runtime", "docker")
-    System.setProperty("quarkus.container-image.name", project.name)
-    System.setProperty("quarkus.container-image.additional-tags", "latest") // doubtful about this, since we probably want to do it only on master
+    System.setProperty("quarkus.container-image.group", "ghcr.io/agile-lab-dev")
+    System.setProperty("quarkus.container-image.name", project.group.toString() + "." + project.name)
     System.setProperty("quarkus.native.additional-build-args", "-H:-CheckToolchain,--enable-preview")
 }
 
