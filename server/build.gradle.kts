@@ -130,6 +130,7 @@ tasks.withType<Test> {
     testLogging {
         exceptionFormat = TestExceptionFormat.FULL
     }
+    environment = env.allVariables
 }
 
 val deltaTestClasses =

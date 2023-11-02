@@ -23,12 +23,8 @@ import org.junit.jupiter.api.Test;
  * These integration tests serve to validate the interaction with a dedicated test S3 bucket and Delta tables.
  * As part of the test environment, we have configured both the S3 bucket and Delta tables with
  * sample data.
- * To run the integration tests you need to:
- * 1. Obtain the required Whitefox AWS credentials:
- * - WHITEFOX_TEST_AWS_REGION
- * - WHITEFOX_TEST_AWS_ACCESS_KEY_ID
- * - WHITEFOX_TEST_AWS_SECRET_KEY
- * 2. Set these environment variables in your local environment.
+ * To run the integration tests you need to obtain the required AWS credentials. They are usually provided as
+ * a .env file that should be never committed to the repository.
  */
 @QuarkusTest
 @Tag("IntegrationTest")
