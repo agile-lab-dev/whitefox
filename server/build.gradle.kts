@@ -36,8 +36,8 @@ dependencies {
     testImplementation("org.openapi4j:openapi-operation-restassured:1.0.7")
 
     //AWS
-    implementation("com.amazonaws:aws-java-sdk-bom:1.12.429")
-    implementation("com.amazonaws:aws-java-sdk-s3:1.12.470")
+    compileOnly("com.amazonaws:aws-java-sdk-bom:1.12.429")
+    compileOnly("com.amazonaws:aws-java-sdk-s3:1.12.470")
     implementation(String.format("org.apache.hadoop:hadoop-aws:%s", hadoopVersion))
 
 }
