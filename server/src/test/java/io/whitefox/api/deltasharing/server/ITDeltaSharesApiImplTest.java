@@ -85,7 +85,7 @@ public class ITDeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void queryTableCurrentVersion() throws IOException {
     var responseBodyLines = given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .body("{}")
         .header(new Header("Content-Type", "application/json"))
         .post(
@@ -128,7 +128,7 @@ public class ITDeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void queryTableByVersion() throws IOException {
     var responseBodyLines = given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .body("{\"version\": 0}")
         .header(new Header("Content-Type", "application/json"))
         .post(

@@ -51,7 +51,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
     given()
         .pathParam("share", "unknownKey")
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get("delta-api/v1/shares/{share}")
         .then()
         .statusCode(Response.Status.NOT_FOUND.getStatusCode());
@@ -63,7 +63,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
         .queryParam("maxResults", 50)
         .queryParam("pageToken", encoder.encodePageToken(new ContentAndToken.Token(0)))
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get("delta-api/v1/shares")
         .then()
         .statusCode(200)
@@ -77,7 +77,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void listSharesNoParams() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get("delta-api/v1/shares")
         .then()
         .statusCode(200)
@@ -91,7 +91,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void listNotFoundSchemas() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get("delta-api/v1/shares/{share}/schemas", "name1")
         .then()
         .statusCode(404)
@@ -103,7 +103,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void listSchemas() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get("delta-api/v1/shares/{share}/schemas", "name")
         .then()
         .statusCode(200)
@@ -116,7 +116,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void listNotExistingTablesInShare() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get("delta-api/v1/shares/{share}/schemas/{schema}/tables", "name2", "default")
         .then()
         .statusCode(404)
@@ -128,7 +128,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void listNotExistingTablesInSchema() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get("delta-api/v1/shares/{share}/schemas/{schema}/tables", "name", "default2")
         .then()
         .statusCode(404)
@@ -140,7 +140,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void listTables() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get("delta-api/v1/shares/{share}/schemas/{schema}/tables", "name", "default")
         .then()
         .statusCode(200)
@@ -155,7 +155,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void tableMetadataNotFound() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get(
             "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/metadata",
             "name",
@@ -170,7 +170,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void tableMetadata() throws IOException {
     var responseBodyLines = given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get(
             "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/metadata",
             "name",
@@ -203,7 +203,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void listAllTables() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get("delta-api/v1/shares/{share}/all-tables", "name")
         .then()
         .statusCode(200)
@@ -218,7 +218,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void listAllOfMissingShare() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get("delta-api/v1/shares/{share}/all-tables", "name2")
         .then()
         .statusCode(404);
@@ -229,7 +229,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void getTableVersion() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get(
             "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
             "name",
@@ -245,7 +245,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void getTableVersionMissingTable() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .get(
             "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
             "name",
@@ -260,7 +260,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void getTableVersionNotFoundTimestamp() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .queryParam("startingTimestamp", "2024-10-20T10:15:30+01:00")
         .get(
             "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
@@ -276,7 +276,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void getTableVersionBadTimestamp() {
     given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .queryParam("startingTimestamp", "acbsadqwafsdas")
         .get(
             "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
@@ -292,7 +292,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void queryTableCurrentVersion() throws IOException {
     var responseBodyLines = given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .body("{}")
         .header(new Header("Content-Type", "application/json"))
         .post(
@@ -335,7 +335,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void queryTableByVersion() throws IOException {
     var responseBodyLines = given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .body("{\"version\": 0}")
         .header(new Header("Content-Type", "application/json"))
         .post(
@@ -378,7 +378,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   public void queryTableByTs() throws IOException {
     var responseBodyLines = given()
         .when()
-        .filter(filter)
+        .filter(deltaFilter)
         .body("{\"timestamp\": \"2023-10-19T17:16:00Z\"}")
         .header(new Header("Content-Type", "application/json"))
         .post(
