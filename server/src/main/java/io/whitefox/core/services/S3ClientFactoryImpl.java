@@ -9,7 +9,7 @@ import io.whitefox.core.AwsCredentials;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class S3PresignerFactoryImpl implements S3ClientFactory {
+public class S3ClientFactoryImpl implements S3ClientFactory {
 
   public AmazonS3 newS3Client(AwsCredentials.SimpleAwsCredentials awsCredentials) {
     return AmazonS3Client.builder()

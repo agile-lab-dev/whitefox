@@ -20,7 +20,7 @@ import org.junit.jupiter.api.condition.OS;
 public class DeltaShareServiceTest {
   DeltaShareTableLoader loader = new DeltaShareTableLoader();
   Integer defaultMaxResults = 10;
-  FileSignerFactory fileSignerFactory = new FileSignerFactoryImpl(new S3PresignerFactoryImpl());
+  FileSignerFactory fileSignerFactory = new FileSignerFactoryImpl(new S3ClientFactoryImpl());
 
   private static final Principal testPrincipal = new Principal("Mr. Fox");
 

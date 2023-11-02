@@ -229,7 +229,7 @@ public class ShareServiceTest {
             storage,
             100,
             new DeltaShareTableLoader(),
-            new FileSignerFactoryImpl(new S3PresignerFactoryImpl()))
+            new FileSignerFactoryImpl(new S3ClientFactoryImpl()))
         .listTablesOfShare("share1", Optional.empty(), Optional.empty())
         .get()
         .getContent();
