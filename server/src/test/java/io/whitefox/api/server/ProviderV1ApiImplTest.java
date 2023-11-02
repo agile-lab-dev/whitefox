@@ -21,6 +21,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.*;
 
 @QuarkusTest
+@Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ProviderV1ApiImplTest implements OpenApiValidatorUtils {
 

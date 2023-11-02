@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import org.junit.jupiter.api.*;
 
 @QuarkusTest
+@Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class StorageV1ApiImplTest implements OpenApiValidatorUtils {
 

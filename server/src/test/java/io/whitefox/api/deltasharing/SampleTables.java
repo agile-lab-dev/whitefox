@@ -22,7 +22,7 @@ public class SampleTables {
     return s3DeltaTable("delta-table", s3TestConfig);
   }
 
-  public static final InternalTable s3DeltaTableWithHistory1(S3TestConfig s3TestConfig) {
+  public static InternalTable s3DeltaTableWithHistory1(S3TestConfig s3TestConfig) {
     return s3DeltaTable("delta-table-with-history", s3TestConfig);
   }
 
@@ -34,21 +34,22 @@ public class SampleTables {
 
   public static final InternalTable deltaTableWithHistory1 = deltaTable("delta-table-with-history");
 
-  public static final StorageManager storageManager =
-      new InMemoryStorageManager(List.of(new io.whitefox.core.Share(
-          "name",
-          "key",
-          Map.of(
-              "default",
-              new io.whitefox.core.Schema(
-                  "default",
-                  List.of(
-                      new SharedTable("table1", "default", "name", deltaTable1),
-                      new SharedTable(
-                          "table-with-history", "default", "name", deltaTableWithHistory1)),
-                  "name")),
-          testPrincipal,
-          0L)));
+  public static StorageManager createStorageManager() {
+    return new InMemoryStorageManager(List.of(new io.whitefox.core.Share(
+        "name",
+        "key",
+        Map.of(
+            "default",
+            new io.whitefox.core.Schema(
+                "default",
+                List.of(
+                    new SharedTable("table1", "default", "name", deltaTable1),
+                    new SharedTable(
+                        "table-with-history", "default", "name", deltaTableWithHistory1)),
+                "name")),
+        testPrincipal,
+        0L)));
+  }
 
   public static final MetadataObject deltaTable1Metadata = new MetadataObject()
       .metadata(new MetadataObjectMetadata()

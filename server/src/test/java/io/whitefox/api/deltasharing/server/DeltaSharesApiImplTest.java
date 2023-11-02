@@ -12,6 +12,7 @@ import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
 import io.whitefox.api.deltasharing.OpenApiValidatorUtils;
+import io.whitefox.api.deltasharing.SampleTables;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.api.deltasharing.model.FileObjectWithoutPresignedUrl;
 import io.whitefox.api.deltasharing.model.v1.generated.*;
@@ -26,12 +27,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 @QuarkusTest
+@Tag("integration")
 public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
+  private static final StorageManager storageManager = SampleTables.createStorageManager();
+
   @BeforeAll
   public static void setup() {
     QuarkusMock.installMockForType(storageManager, StorageManager.class);

@@ -36,8 +36,8 @@ dependencies {
     testImplementation("org.openapi4j:openapi-operation-restassured:1.0.7")
 
     //AWS
-    compileOnly("com.amazonaws:aws-java-sdk-bom:1.12.429")
-    compileOnly("com.amazonaws:aws-java-sdk-s3:1.12.470")
+    compileOnly("com.amazonaws:aws-java-sdk-bom:1.12.367")
+    compileOnly("com.amazonaws:aws-java-sdk-s3:1.12.367")
     implementation(String.format("org.apache.hadoop:hadoop-aws:%s", hadoopVersion))
 
 }
@@ -117,9 +117,6 @@ sourceSets {
 
 // region test running
 
-tasks.check {
-    dependsOn(deltaTest)
-}
 tasks.register("devCheck") {
     dependsOn(tasks.spotlessApply)
     finalizedBy(tasks.check)
@@ -133,27 +130,8 @@ tasks.withType<Test> {
     environment = env.allVariables
 }
 
-val deltaTestClasses =
-    listOf("io.whitefox.api.deltasharing.DeltaSharedTableTest.*", "io.whitefox.services.DeltaLogServiceTest.*")
-
 tasks.test {
-    description = "Runs all other test classes by not forking the jvm."
-    filter {
-        deltaTestClasses.forEach { s ->
-            excludeTestsMatching(s)
-        }
-    }
-    forkEvery = 0
-}
-val deltaTest = tasks.register<Test>("deltaTest") {
-    description = "Runs delta test classes by forking the jvm."
-    group = "verification"
-    filter {
-        deltaTestClasses.forEach { s ->
-            includeTestsMatching(s)
-        }
-    }
-    forkEvery = 0
+    description = "Runs Unit Tests"
 }
 
 // endregion

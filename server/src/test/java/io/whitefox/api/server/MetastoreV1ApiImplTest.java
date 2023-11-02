@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import org.junit.jupiter.api.*;
 
 @QuarkusTest
+@Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MetastoreV1ApiImplTest implements OpenApiValidatorUtils {
 

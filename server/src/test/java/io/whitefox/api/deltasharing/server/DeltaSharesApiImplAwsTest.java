@@ -11,6 +11,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
 import io.whitefox.api.deltasharing.OpenApiValidatorUtils;
 import io.whitefox.api.deltasharing.S3TestConfig;
+import io.whitefox.api.deltasharing.SampleTables;
 import io.whitefox.api.deltasharing.model.FileObjectWithoutPresignedUrl;
 import io.whitefox.api.deltasharing.model.v1.generated.*;
 import io.whitefox.core.*;
@@ -27,22 +28,19 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 /**
- * /**
  * Integration Tests: S3 Bucket and Delta Tables.
  *
  * These integration tests serve to validate the interaction with a dedicated test S3 bucket and Delta tables.
  * As part of the test environment, we have configured both the S3 bucket and Delta tables with
  * sample data.
- * To run the integration tests you need to:
- * 1. Obtain the required Whitefox AWS credentials:
- * - WHITEFOX_TEST_AWS_REGION
- * - WHITEFOX_TEST_AWS_ACCESS_KEY_ID
- * - WHITEFOX_TEST_AWS_SECRET_KEY
- * 2. Set these environment variables in your local environment.
+ * To run the integration tests you need to obtain the required AWS credentials. They are usually provided as
+ * a .env file that should be never committed to the repository.
  */
 @QuarkusTest
-@Tag("IntegrationTest")
-public class ITDeltaSharesApiImplTest implements OpenApiValidatorUtils {
+@Tag("aws")
+public class DeltaSharesApiImplAwsTest implements OpenApiValidatorUtils {
+
+  private static final StorageManager storageManager = SampleTables.createStorageManager();
 
   @BeforeAll
   public static void setup() {
@@ -54,7 +52,7 @@ public class ITDeltaSharesApiImplTest implements OpenApiValidatorUtils {
   private final S3TestConfig s3TestConfig;
 
   @Inject
-  public ITDeltaSharesApiImplTest(ObjectMapper objectMapper, S3TestConfig s3TestConfig) {
+  public DeltaSharesApiImplAwsTest(ObjectMapper objectMapper, S3TestConfig s3TestConfig) {
     this.objectMapper = objectMapper;
     this.s3TestConfig = s3TestConfig;
   }

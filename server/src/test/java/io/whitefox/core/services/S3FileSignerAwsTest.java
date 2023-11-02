@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
- * /**
  * Integration Tests: S3 Bucket and Delta Tables.
  *
  * These integration tests serve to validate the interaction with a dedicated test S3 bucket and Delta tables.
@@ -27,15 +26,15 @@ import org.junit.jupiter.api.Test;
  * a .env file that should be never committed to the repository.
  */
 @QuarkusTest
-@Tag("IntegrationTest")
-public class S3FileSignerTest {
+@Tag("aws")
+public class S3FileSignerAwsTest {
 
   private final FileSignerFactory fileSignerFactory;
 
   private final S3TestConfig s3TestConfig;
 
   @Inject
-  public S3FileSignerTest(FileSignerFactory fileSignerFactory, S3TestConfig s3TestConfig) {
+  public S3FileSignerAwsTest(FileSignerFactory fileSignerFactory, S3TestConfig s3TestConfig) {
     this.fileSignerFactory = fileSignerFactory;
     this.s3TestConfig = s3TestConfig;
   }
