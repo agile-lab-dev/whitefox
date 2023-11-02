@@ -26,3 +26,5 @@ node {
 }
 
 tasks.register<KillAllDocusaurus>("killAllDocusaurus")
+
+tasks.findByName("npm_run_start")?.finalizedBy("killAllDocusaurus")
