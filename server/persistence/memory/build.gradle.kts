@@ -13,7 +13,6 @@ val quarkusPlatformVersion: String by project
 dependencies {
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     // QUARKUS
-    compileOnly("jakarta.inject:jakarta.inject-api")
     compileOnly("jakarta.enterprise:jakarta.enterprise.cdi-api")
     compileOnly("jakarta.ws.rs:jakarta.ws.rs-api")
     compileOnly("org.eclipse.microprofile.config:microprofile-config-api")
