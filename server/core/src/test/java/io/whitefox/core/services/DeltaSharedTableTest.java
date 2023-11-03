@@ -5,7 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.wildfly.common.Assert.assertTrue;
 
+import io.whitefox.core.Protocol;
+import io.whitefox.core.ReadTableRequest;
 import io.whitefox.core.SharedTable;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Test;
@@ -61,4 +65,25 @@ public class DeltaSharedTableTest {
     var version = DTable.getTableVersion(TestDateUtils.parseTimestamp("2024-10-20T10:15:30+01:00"));
     assertEquals(Optional.empty(), version);
   }
+<<<<<<< HEAD
+=======
+
+  @Test
+  void getTableVersionWithMalformedTimestamp() throws ExecutionException, InterruptedException {
+    var PTable = new SharedTable("delta-table", "default", "share1", deltaTable("delta-table"));
+    var DTable = DeltaSharedTable.of(PTable);
+    assertThrows(
+        DateTimeParseException.class,
+        () -> DTable.getTableVersion(Optional.of("221rfewdsad10:15:30+01:00")));
+  }
+
+  @Test
+  void queryTable() throws ExecutionException, InterruptedException {
+    var PTable = new SharedTable("partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
+    var DTable = DeltaSharedTable.of(PTable);
+    var request = new ReadTableRequest.ReadTableCurrentVersion(List.of("date = '2021-08-09'"), Optional.empty());
+    var response = DTable.queryTable(request);
+    assertTrue(2 == 2);
+  }
+>>>>>>> 82552ab (wip-first draft of JsonPredicates and a test partitioned table)
 }

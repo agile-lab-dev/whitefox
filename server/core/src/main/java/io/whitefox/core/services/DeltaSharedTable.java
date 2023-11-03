@@ -2,8 +2,12 @@ package io.whitefox.core.services;
 
 import io.delta.standalone.DeltaLog;
 import io.delta.standalone.Snapshot;
+import io.delta.standalone.actions.AddFile;
 import io.whitefox.core.*;
 import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -74,6 +78,14 @@ public class DeltaSharedTable implements InternalSharedTable {
 
   public Optional<Long> getTableVersion(Optional<Timestamp> startingTimestamp) {
     return getSnapshot(startingTimestamp).map(Snapshot::getVersion);
+  }
+
+  public boolean filterFilesBasedOnPredicates(List<String> predicates, AddFile f) {
+    var partitionValues = f.getPartitionValues();
+    predicates.forEach(p -> {
+
+    });
+    return true;
   }
 
   public ReadTableResultToBeSigned queryTable(ReadTableRequest readTableRequest) {
