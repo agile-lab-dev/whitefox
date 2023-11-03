@@ -13,20 +13,23 @@ val quarkusPlatformVersion: String by project
 // region dependencies
 
 dependencies {
-    implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
+    // INTERNAL
     implementation(project(":server:core"))
     implementation(project(":server:persistence:memory"))
+    
     // QUARKUS
+    implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
+    implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-container-image-docker")
     implementation("io.quarkus:quarkus-resteasy-reactive")
     implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
-    implementation("io.quarkus:quarkus-arc")
+    implementation("io.quarkus:quarkus-smallrye-health")
+    implementation("io.quarkus:quarkus-micrometer-registry-prometheus")
     implementation("org.openapitools:jackson-databind-nullable:0.2.6")
     implementation("org.eclipse.microprofile.openapi:microprofile-openapi-api:3.1.1")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
 
     // TEST
-
     testImplementation(testFixtures(project(":server:core")))
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
