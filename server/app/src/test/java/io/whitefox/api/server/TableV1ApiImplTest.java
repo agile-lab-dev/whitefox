@@ -10,7 +10,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.response.ValidatableResponse;
-import io.whitefox.api.deltasharing.OpenApiValidatorUtils;
+import io.whitefox.api.OpenApiValidatorUtils;
 import io.whitefox.api.model.v1.generated.CreateTableInput;
 import io.whitefox.core.InternalTable;
 import io.whitefox.persistence.StorageManager;

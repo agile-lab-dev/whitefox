@@ -11,7 +11,7 @@ import io.restassured.http.Header;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.response.ValidatableResponse;
 import io.whitefox.MutableClock;
-import io.whitefox.OpenApiValidationFilter;
+import io.whitefox.api.OpenApiValidationFilter;
 import io.whitefox.api.model.v1.generated.AddRecipientToShareRequest;
 import io.whitefox.api.model.v1.generated.AddTableToSchemaRequest;
 import io.whitefox.api.model.v1.generated.CreateShareInput;

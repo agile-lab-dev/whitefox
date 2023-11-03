@@ -75,7 +75,7 @@ jacoco {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test, integrationTest) // tests are required to run before generating the report
-    executionData(fileTree(layout.buildDirectory).include("/jacoco/*.exec"))
+    executionData(fileTree(layout.buildDirectory).include("/jacoco/*.exec").exclude("/jacoco/testNative.exec"))
     doFirst {
         logger.lifecycle("Excluding generated classes: ${classesToExclude}")
     }
@@ -95,7 +95,7 @@ val classesToExclude = listOf(
 )
 
 tasks.jacocoTestCoverageVerification {
-    executionData(fileTree(layout.buildDirectory).include("/jacoco/*.exec"))
+    executionData(fileTree(layout.buildDirectory).include("/jacoco/*.exec").exclude("/jacoco/testNative.exec"))
     classDirectories.setFrom(
         files(classDirectories.files.map { fileTree(it) { exclude(classesToExclude) } })
     )

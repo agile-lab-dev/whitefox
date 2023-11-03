@@ -1,4 +1,4 @@
-package io.whitefox.api.configuration;
+package io.whitefox.core.configuration;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.Produces;

@@ -1,4 +1,4 @@
-package io.whitefox.api.configuration;
+package io.whitefox.core.configuration;
 
 import java.util.Collection;
 import java.util.List;

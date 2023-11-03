@@ -4,7 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.whitefox.api.deltasharing.OpenApiValidatorUtils;
+import io.whitefox.api.OpenApiValidatorUtils;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.core.services.ContentAndToken;
 import jakarta.ws.rs.core.Response;

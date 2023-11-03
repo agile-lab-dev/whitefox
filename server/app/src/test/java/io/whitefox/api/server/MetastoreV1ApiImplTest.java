@@ -8,7 +8,7 @@ import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
 import io.restassured.internal.mapping.Jackson2Mapper;
-import io.whitefox.api.deltasharing.OpenApiValidatorUtils;
+import io.whitefox.api.OpenApiValidatorUtils;
 import io.whitefox.api.model.v1.generated.CreateMetastore;
 import io.whitefox.api.model.v1.generated.MetastoreProperties;
 import io.whitefox.api.model.v1.generated.SimpleAwsCredentials;

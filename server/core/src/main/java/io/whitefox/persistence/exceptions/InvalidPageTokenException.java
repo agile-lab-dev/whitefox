@@ -1,4 +1,4 @@
-package io.whitefox.api.deltasharing.encoders;
+package io.whitefox.persistence.exceptions;
 
 public class InvalidPageTokenException extends RuntimeException {
   public InvalidPageTokenException(Throwable cause) {

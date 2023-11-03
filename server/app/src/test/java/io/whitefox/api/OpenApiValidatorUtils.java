@@ -1,6 +1,5 @@
-package io.whitefox.api.deltasharing;
+package io.whitefox.api;
 
-import io.whitefox.OpenApiValidationFilter;
 import java.nio.file.Paths;
 
 public interface OpenApiValidatorUtils {

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
-import io.whitefox.api.deltasharing.OpenApiValidatorUtils;
+import io.whitefox.api.OpenApiValidatorUtils;
 import io.whitefox.api.deltasharing.SampleTables;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.api.deltasharing.model.FileObjectWithoutPresignedUrl;

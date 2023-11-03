@@ -1,4 +1,4 @@
-package io.whitefox;
+package io.whitefox.api;
 
 import io.restassured.filter.Filter;
 import io.restassured.filter.FilterContext;

@@ -1,4 +1,4 @@
-package io.whitefox.api.deltasharing;
+package io.whitefox.core.services;
 
 import static io.whitefox.DeltaTestUtils.deltaTable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.wildfly.common.Assert.assertTrue;
 
 import io.whitefox.core.SharedTable;
-import io.whitefox.core.services.DeltaSharedTable;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;

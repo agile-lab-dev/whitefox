@@ -1,13 +1,13 @@
 package io.whitefox.persistence.memory;
 
 import io.whitefox.annotations.SkipCoverageGenerated;
-import io.whitefox.api.deltasharing.encoders.InvalidPageTokenException;
 import io.whitefox.core.*;
 import io.whitefox.core.Storage;
 import io.whitefox.core.services.exceptions.MetastoreAlreadyExists;
 import io.whitefox.core.services.exceptions.ProviderAlreadyExists;
 import io.whitefox.core.services.exceptions.StorageAlreadyExists;
 import io.whitefox.persistence.StorageManager;
+import io.whitefox.persistence.exceptions.InvalidPageTokenException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.Collections;
