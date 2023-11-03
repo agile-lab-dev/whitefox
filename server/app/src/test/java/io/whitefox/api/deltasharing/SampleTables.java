@@ -1,7 +1,8 @@
 package io.whitefox.api.deltasharing;
 
-import static io.whitefox.api.server.DeltaTestUtils.*;
+import static io.whitefox.DeltaTestUtils.*;
 
+import io.whitefox.S3TestConfig;
 import io.whitefox.api.deltasharing.model.FileObjectFileWithoutPresignedUrl;
 import io.whitefox.api.deltasharing.model.FileObjectWithoutPresignedUrl;
 import io.whitefox.api.deltasharing.model.v1.generated.*;

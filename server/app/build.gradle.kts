@@ -111,73 +111,22 @@ sourceSets {
 
 // region test running
 
-tasks.register("devCheck") {
-    dependsOn(tasks.spotlessApply)
-    finalizedBy(tasks.check)
-    description = "Useful command when iterating locally to apply spotless formatting then running all the checks"
-}
 tasks.withType<Test> {
-    systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
-    testLogging {
-        exceptionFormat = TestExceptionFormat.FULL
-    }
     environment = env.allVariables
-}
-
-tasks.test {
-    description = "Runs Unit Tests"
-    useJUnitPlatform {
-        excludeTags("integration","aws")
-    }
-}
-
-val integrationTest = tasks.register<Test>("integrationTest") {
-    description = "Runs Integration Tests"
-    useJUnitPlatform {
-        includeTags("integration", "aws")
-    }
 }
 
 // endregion
 
 // region code coverage
 
-tasks.check {
-    finalizedBy(tasks.jacocoTestReport)
-    dependsOn(tasks.test, integrationTest)
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test, integrationTest) // tests are required to run before generating the report
-    executionData(fileTree(layout.buildDirectory).include("/jacoco/*.exec").exclude("/jacoco/testNative.exec"))
-    doFirst {
-        logger.lifecycle("Excluding generated classes: ${classesToExclude}")
-    }
-    classDirectories.setFrom(
-        files(classDirectories.files.map { fileTree(it) { exclude(classesToExclude) } })
-    )
-    doLast {
-        logger.lifecycle("The report can be found at: file://" + reports.html.entryPoint)
-    }
-
-    finalizedBy(tasks.jacocoTestCoverageVerification)
-}
-
-val classesToExclude = listOf(
-    "**" + File.separator + "generated" + File.separator + "**.class",
-    "**" + File.separator + "ignored" + File.separator + "**.class"
-)
+val integrationTest = tasks.getByName("integrationTest")
 
 tasks.jacocoTestCoverageVerification {
-    executionData(fileTree(layout.buildDirectory).include("/jacoco/*.exec").exclude("/jacoco/testNative.exec"))
-    classDirectories.setFrom(
-        files(classDirectories.files.map { fileTree(it) { exclude(classesToExclude) } })
-    )
     if (!isWindowsBuild()) {
         violationRules {
             rule {
                 limit {
-                    minimum = BigDecimal.valueOf(0.81)
+                    minimum = BigDecimal.valueOf(0.76)
                 }
             }
         }

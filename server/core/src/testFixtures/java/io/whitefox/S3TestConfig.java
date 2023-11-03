@@ -1,4 +1,4 @@
-package io.whitefox.api.deltasharing;
+package io.whitefox;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;

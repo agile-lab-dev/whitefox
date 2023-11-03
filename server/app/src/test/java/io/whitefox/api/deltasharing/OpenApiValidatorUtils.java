@@ -9,6 +9,7 @@ public interface OpenApiValidatorUtils {
       .toAbsolutePath()
       .getParent()
       .getParent()
+      .getParent()
       .resolve("protocol/delta-sharing-protocol-api.yml")
       .toAbsolutePath()
       .toString();
@@ -17,6 +18,7 @@ public interface OpenApiValidatorUtils {
 
   String whitefoxSpecLocation = Paths.get(".")
       .toAbsolutePath()
+      .getParent()
       .getParent()
       .getParent()
       .resolve("protocol/whitefox-protocol-api.yml")

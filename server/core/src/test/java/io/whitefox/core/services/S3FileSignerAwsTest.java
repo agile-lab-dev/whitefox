@@ -1,7 +1,7 @@
 package io.whitefox.core.services;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.whitefox.api.deltasharing.S3TestConfig;
+import io.whitefox.S3TestConfig;
 import io.whitefox.core.*;
 import jakarta.inject.Inject;
 import java.io.IOException;

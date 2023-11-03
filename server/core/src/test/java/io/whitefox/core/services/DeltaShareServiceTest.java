@@ -1,11 +1,7 @@
 package io.whitefox.core.services;
 
-import static io.whitefox.api.server.DeltaTestUtils.deltaTable;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import io.whitefox.DeltaTestUtils;
 import io.whitefox.core.*;
-import io.whitefox.api.server.DeltaTestUtils;
 import io.whitefox.persistence.StorageManager;
 import io.whitefox.persistence.memory.InMemoryStorageManager;
 import java.util.Collections;
@@ -143,14 +139,8 @@ public class DeltaShareServiceTest {
     Assertions.assertTrue(resultSchemas.isPresent());
     Assertions.assertTrue(resultSchemas.get().getToken().isEmpty());
     Matchers.containsInAnyOrder(List.of(
-            new io.whitefox.api.deltasharing.model.v1.generated.Table()
-                .name("table2")
-                .schema("other")
-                .share("name"),
-            new io.whitefox.api.deltasharing.model.v1.generated.Table()
-                .name("table1")
-                .schema("default")
-                .share("name")))
+            new SharedTable("table2", "other", "name", null),
+            new SharedTable("table1", "default", "name", null)))
         .matches(resultSchemas.get().getContent());
   }
 

@@ -1,6 +1,5 @@
-package io.whitefox.api.server;
+package io.whitefox;
 
-import io.whitefox.api.deltasharing.S3TestConfig;
 import io.whitefox.core.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;

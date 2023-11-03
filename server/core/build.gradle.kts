@@ -23,6 +23,10 @@ dependencies {
     compileOnly("jakarta.ws.rs:jakarta.ws.rs-api")
     compileOnly("org.eclipse.microprofile.config:microprofile-config-api")
 
+
+    testFixturesImplementation("jakarta.inject:jakarta.inject-api:2.0.1")
+    testFixturesImplementation("org.eclipse.microprofile.config:microprofile-config-api:3.0.3")
+
     // DELTA
     implementation("io.delta:delta-standalone_2.13:0.6.0")
     implementation("org.apache.hadoop:hadoop-common:3.3.6")
@@ -35,6 +39,7 @@ dependencies {
     // TEST
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.quarkus:quarkus-arc")
+    testImplementation("org.hamcrest:hamcrest:2.1")
     testImplementation(project(":server:persistence:memory"))
 }
 
@@ -51,70 +56,20 @@ tasks.withType<JavaCompile> {
 
 // region test running
 
-tasks.check {
-    dependsOn(deltaTest)
-}
-tasks.register("devCheck") {
-    dependsOn(tasks.spotlessApply)
-    finalizedBy(tasks.check)
-    description = "Useful command when iterating locally to apply spotless formatting then running all the checks"
-}
 tasks.withType<Test> {
-    systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
-    testLogging {
-        exceptionFormat = TestExceptionFormat.FULL
-    }
-}
-
-val deltaTestClasses =
-    listOf("io.whitefox.api.deltasharing.DeltaSharedTableTest.*", "io.whitefox.services.DeltaLogServiceTest.*")
-
-tasks.test {
-    description = "Runs all other test classes by not forking the jvm."
-    filter {
-        deltaTestClasses.forEach { s ->
-            excludeTestsMatching(s)
-        }
-    }
-    forkEvery = 0
-}
-val deltaTest = tasks.register<Test>("deltaTest") {
-    description = "Runs delta test classes by forking the jvm."
-    group = "verification"
-    filter {
-        deltaTestClasses.forEach { s ->
-            includeTestsMatching(s)
-        }
-    }
-    forkEvery = 0
+    environment = env.allVariables
 }
 
 // endregion
 
 // region code coverage
 
-tasks.check {
-    finalizedBy(tasks.jacocoTestReport)
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.check) // tests are required to run before generating the report
-}
-
-tasks.jacocoTestReport {
-    doLast {
-        logger.lifecycle("The report can be found at: file://" + reports.html.entryPoint)
-    }
-
-    finalizedBy(tasks.jacocoTestCoverageVerification)
-}
-
 tasks.jacocoTestCoverageVerification {
     if (!isWindowsBuild()) {
         violationRules {
             rule {
                 limit {
-                    minimum = BigDecimal.valueOf(0.62)
+                    minimum = BigDecimal.valueOf(0.66)
                 }
             }
         }
