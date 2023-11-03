@@ -1,12 +1,11 @@
 package io.whitefox.api.server;
 
-import static io.whitefox.core.MetastoreType.*;
-
 import io.whitefox.api.deltasharing.model.v1.generated.*;
 import io.whitefox.api.model.v1.generated.*;
 import io.whitefox.core.*;
 import io.whitefox.core.Metastore;
 import io.whitefox.core.MetastoreProperties;
+import io.whitefox.core.MetastoreType;
 import io.whitefox.core.Provider;
 import io.whitefox.core.Share;
 import io.whitefox.core.Storage;
@@ -168,7 +167,7 @@ public class WhitefoxMappers {
       io.whitefox.api.model.v1.generated.CreateMetastore.TypeEnum type) {
     switch (type) {
       case GLUE:
-        return GLUE;
+        return MetastoreType.GLUE;
       default:
         throw new IllegalArgumentException("Unknown metastore type " + type.value());
     }

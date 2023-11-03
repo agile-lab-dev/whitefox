@@ -11,7 +11,7 @@ import io.restassured.http.Header;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.response.ValidatableResponse;
 import io.whitefox.MutableClock;
-import io.whitefox.api.OpenApiValidationFilter;
+import io.whitefox.api.OpenApiValidatorUtils;
 import io.whitefox.api.model.v1.generated.AddRecipientToShareRequest;
 import io.whitefox.api.model.v1.generated.AddTableToSchemaRequest;
 import io.whitefox.api.model.v1.generated.CreateShareInput;
@@ -22,7 +22,6 @@ import io.whitefox.core.services.ShareServiceFixture;
 import io.whitefox.core.services.StorageService;
 import io.whitefox.core.services.TableService;
 import jakarta.inject.Inject;
-import java.nio.file.Paths;
 import java.time.Clock;
 import java.util.List;
 import org.junit.jupiter.api.*;
@@ -30,7 +29,7 @@ import org.junit.jupiter.api.*;
 @QuarkusTest
 @Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ShareV1ApiImplTest {
+public class ShareV1ApiImplTest implements OpenApiValidatorUtils {
 
   private static final MutableClock clock = new MutableClock();
 
@@ -38,30 +37,6 @@ public class ShareV1ApiImplTest {
   public static void setup() {
     QuarkusMock.installMockForType(clock, Clock.class);
   }
-
-  private static final String wfSpecLocation = Paths.get(".")
-      .toAbsolutePath()
-      .getParent()
-      .getParent()
-      .getParent()
-      .resolve("protocol/whitefox-protocol-api.yml")
-      .toAbsolutePath()
-      .toString();
-
-  private static final OpenApiValidationFilter wfFilter =
-      new OpenApiValidationFilter(wfSpecLocation);
-
-  private static final String deltaSpecLocation = Paths.get(".")
-      .toAbsolutePath()
-      .getParent()
-      .getParent()
-      .getParent()
-      .resolve("protocol/delta-sharing-protocol-api.yml")
-      .toAbsolutePath()
-      .toString();
-
-  private static final OpenApiValidationFilter deltaFilter =
-      new OpenApiValidationFilter(deltaSpecLocation);
 
   @Inject
   private ObjectMapper objectMapper;
@@ -200,7 +175,7 @@ public class ShareV1ApiImplTest {
         "table1");
     given()
         .when()
-        .filter(wfFilter)
+        .filter(whitefoxFilter)
         .body(new AddTableToSchemaRequest()
             .name("shared1")
             .reference(new TableReference().providerName("provider1").name("table1")))
@@ -223,7 +198,7 @@ public class ShareV1ApiImplTest {
   ValidatableResponse createEmptyShare(String name) {
     return given()
         .when()
-        .filter(wfFilter)
+        .filter(whitefoxFilter)
         .body(
             new CreateShareInput().name(name).recipients(List.of()).schemas(List.of()),
             new Jackson2Mapper((cls, charset) -> objectMapper))
@@ -235,7 +210,7 @@ public class ShareV1ApiImplTest {
   ValidatableResponse createSchemaInShare(String share, String schema) {
     return given()
         .when()
-        .filter(wfFilter)
+        .filter(whitefoxFilter)
         .post("/whitefox-api/v1/shares/{share}/{schema}", share, schema)
         .then();
   }
