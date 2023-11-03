@@ -26,8 +26,7 @@ public class DeltaMappers {
   }
 
   public static ReadTableRequest api2ReadTableRequest(QueryRequest request) {
-    if (request.getEndingVersion() != null || request.getStartingVersion() != null)
-      throw new NotImplementedYet();
+    if (request.getEndingVersion() != null) throw new NotImplementedYet();
     if (request.getVersion() != null && request.getTimestamp() == null) {
       return new ReadTableRequest.ReadTableVersion(
           request.getPredicateHints(),
@@ -57,7 +56,7 @@ public class DeltaMappers {
 
   private static MetadataObject metadata2Api(Metadata metadata) {
     return new MetadataObject()
-        .metadata(new MetadataObjectMetadata()
+        .metaData(new MetadataObjectMetaData()
             .id(metadata.id())
             .name(metadata.name().orElse(null))
             .description(metadata.description().orElse(null))

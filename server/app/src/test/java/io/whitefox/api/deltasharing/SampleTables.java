@@ -8,6 +8,7 @@ import io.whitefox.api.deltasharing.model.FileObjectWithoutPresignedUrl;
 import io.whitefox.api.deltasharing.model.v1.generated.*;
 import io.whitefox.core.InternalTable;
 import io.whitefox.core.Principal;
+import io.whitefox.core.Share;
 import io.whitefox.core.SharedTable;
 import io.whitefox.persistence.StorageManager;
 import io.whitefox.persistence.memory.InMemoryStorageManager;
@@ -53,7 +54,7 @@ public class SampleTables {
   }
 
   public static final MetadataObject deltaTable1Metadata = new MetadataObject()
-      .metadata(new MetadataObjectMetadata()
+      .metaData(new MetadataObjectMetaData()
           .id("56d48189-cdbc-44f2-9b0e-2bded4c79ed7")
           .name("table1")
           .format(new FormatObject().provider("parquet"))
@@ -64,7 +65,7 @@ public class SampleTables {
           ._configuration(Map.of()));
 
   public static final MetadataObject s3DeltaTable1Metadata = new MetadataObject()
-      .metadata(new MetadataObjectMetadata()
+      .metaData(new MetadataObjectMetaData()
           .id("ed2297c4-8bb8-4c74-963d-8fed6bebfd8b")
           .name("s3Table1")
           .format(new FormatObject().provider("parquet"))
@@ -74,7 +75,7 @@ public class SampleTables {
           .version(0L)
           ._configuration(Map.of()));
   public static final MetadataObject deltaTableWithHistory1Metadata = new MetadataObject()
-      .metadata(new MetadataObjectMetadata()
+      .metaData(new MetadataObjectMetaData()
           .id("56d48189-cdbc-44f2-9b0e-2bded4c79ed7")
           .name("table-with-history")
           .format(new FormatObject().provider("parquet"))
