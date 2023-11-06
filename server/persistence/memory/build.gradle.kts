@@ -1,6 +1,5 @@
 plugins {
     `java-library`
-    id("io.quarkus")
     id("whitefox.java-conventions")
 }
 

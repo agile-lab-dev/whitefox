@@ -1,9 +1,7 @@
 package io.whitefox.core.services;
 
-import io.quarkus.test.junit.QuarkusTest;
 import io.whitefox.S3TestConfig;
 import io.whitefox.core.*;
-import jakarta.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,19 +23,12 @@ import org.junit.jupiter.api.Test;
  * To run the integration tests you need to obtain the required AWS credentials. They are usually provided as
  * a .env file that should be never committed to the repository.
  */
-@QuarkusTest
 @Tag("aws")
 public class S3FileSignerAwsTest {
 
-  private final FileSignerFactory fileSignerFactory;
-
-  private final S3TestConfig s3TestConfig;
-
-  @Inject
-  public S3FileSignerAwsTest(FileSignerFactory fileSignerFactory, S3TestConfig s3TestConfig) {
-    this.fileSignerFactory = fileSignerFactory;
-    this.s3TestConfig = s3TestConfig;
-  }
+  private final FileSignerFactory fileSignerFactory =
+      new FileSignerFactoryImpl(new S3ClientFactoryImpl());
+  private final S3TestConfig s3TestConfig = S3TestConfig.loadFromEnv();
 
   @Test
   public void signS3File() {

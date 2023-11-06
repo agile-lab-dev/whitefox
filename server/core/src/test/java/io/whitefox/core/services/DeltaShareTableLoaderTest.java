@@ -3,23 +3,15 @@ package io.whitefox.core.services;
 import static io.whitefox.DeltaTestUtils.deltaTable;
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.quarkus.test.junit.QuarkusTest;
 import io.whitefox.core.SharedTable;
 import java.util.Optional;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-@QuarkusTest
-@Tag("integration")
 public class DeltaShareTableLoaderTest {
 
-  private final DeltaShareTableLoader deltaShareTableLoader;
-
-  public DeltaShareTableLoaderTest(DeltaShareTableLoader deltaShareTableLoader) {
-    this.deltaShareTableLoader = deltaShareTableLoader;
-  }
+  private final DeltaShareTableLoader deltaShareTableLoader = new DeltaShareTableLoader();
 
   @Test
   @DisabledOnOs(OS.WINDOWS)

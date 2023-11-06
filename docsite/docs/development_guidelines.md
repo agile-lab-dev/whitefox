@@ -127,6 +127,12 @@ Otherwise, the project currently features two other type of tests:
 At the current state all tests are run during the `check` task, but if you want to run only unit tests you can run
 the `test` task, while if you want to run integration and aws tests you should run `integrationTest` task.
 
+`core` module should not have any `@QuarkusTest` but can have `@Tag("integration")` tests, while `app` module can have
+`@QuarkusTest` tests. `app` module should also feature integration "black-box" tests, that are annotated with 
+`@QuarkusIntegrationTest`. They are run using `testNative` gradle task and spin up the application (from the jar 
+package produced by `build` task) and run the test. They are useful to test the application in a "production-like" 
+manner.
+
 # Modules
 
 Tree of gradle modules: <!-- generated with  tree -L 3 -d and some cut and paste -->
@@ -157,7 +163,7 @@ server module is split in 3 parts:
 
 ### core
 
-Contains the core logic of whitefox, it should have nothing to do with persistence implementation or HTTP APIs.
+Contains the core logic of whitefox, it should have nothing to do with persistence or HTTP APIs implementation.
 
 ### persistence
 

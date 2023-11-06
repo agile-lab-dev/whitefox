@@ -8,6 +8,13 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Singleton
 public class S3TestConfig {
 
+  public static S3TestConfig loadFromEnv() {
+    return new S3TestConfig(
+        Optional.ofNullable(System.getenv().get("WHITEFOX_TEST_AWS_REGION")),
+        Optional.ofNullable(System.getenv().get("WHITEFOX_TEST_AWS_ACCESS_KEY_ID")),
+        Optional.ofNullable(System.getenv().get("WHITEFOX_TEST_AWS_SECRET_ACCESS_KEY")));
+  }
+
   private final Optional<String> region;
   private final Optional<String> accessKey;
   private final Optional<String> secretKey;
