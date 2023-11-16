@@ -3,6 +3,10 @@ package io.whitefox.core.services;
 import io.delta.standalone.DeltaLog;
 import io.delta.standalone.Snapshot;
 import io.whitefox.core.*;
+import io.whitefox.core.delta.Metadata;
+import io.whitefox.core.delta.Protocol;
+import io.whitefox.core.results.ReadTableResultToBeSigned;
+
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,6 +43,7 @@ public class DeltaSharedTable implements InternalSharedTable {
       var dt = DeltaLog.forTable(
           hadoopConfigBuilder.buildConfig(sharedTable.internalTable().provider().storage()),
           dataPath);
+
       if (!dt.tableExists()) {
         throw new IllegalArgumentException(
             String.format("Cannot find a delta table at %s", dataPath));
@@ -54,31 +59,52 @@ public class DeltaSharedTable implements InternalSharedTable {
     return of(sharedTable, TableSchemaConverter.INSTANCE, new HadoopConfigBuilder());
   }
 
-  public Optional<Metadata> getMetadata(Optional<String> startingTimestamp) {
-    return getSnapshot(startingTimestamp).map(this::metadataFromSnapshot);
+  public Optional<Metadata> getMetadata(
+      Optional<String> startingTimestamp, DeltaSharingCapabilities deltaSharingCapabilities) {
+    return getSnapshot(startingTimestamp)
+        .map(snapshot -> metadataFromSnapshot(snapshot, deltaSharingCapabilities));
   }
 
-  private Metadata metadataFromSnapshot(Snapshot snapshot) {
+  private Metadata metadataFromSnapshot(
+      Snapshot snapshot, DeltaSharingCapabilities requestCapabilities) {
+
     return new Metadata(
         snapshot.getMetadata().getId(),
         Optional.of(tableDetails.name()),
         Optional.ofNullable(snapshot.getMetadata().getDescription()),
-        Metadata.Format.PARQUET,
+        Metadata.Format.PARQUET, // TODO this depends on the table
         new TableSchema(tableSchemaConverter.convertDeltaSchemaToWhitefox(
             snapshot.getMetadata().getSchema())),
         snapshot.getMetadata().getPartitionColumns(),
         snapshot.getMetadata().getConfiguration(),
-        Optional.of(snapshot.getVersion()),
+        snapshot.getVersion(),
         Optional.empty(), // size is fine to be empty
-        Optional.empty() // numFiles is ok to be empty here too
+        Optional.empty(), // numFiles is ok to be empty here too
+        compatibleCapabilities(
+            DeltaSharingCapabilities.defaultValue(),
+            requestCapabilities) // TODO read it from the table
         );
+  }
+
+  private DeltaSharingCapabilities compatibleCapabilities(
+      DeltaSharingCapabilities tableCapabilities, DeltaSharingCapabilities requestCapabilities) {
+    if (requestCapabilities
+        .getResponseFormat()
+        .contains(DeltaSharingCapabilities.DeltaSharingResponseFormat.DELTA)) {
+      return tableCapabilities.withResponseFormat(
+          DeltaSharingCapabilities.DeltaSharingResponseFormat.DELTA);
+    } else {
+      return tableCapabilities.withResponseFormat(
+          DeltaSharingCapabilities.DeltaSharingResponseFormat.PARQUET);
+    }
   }
 
   public Optional<Long> getTableVersion(Optional<String> startingTimestamp) {
     return getSnapshot(startingTimestamp).map(Snapshot::getVersion);
   }
 
-  public ReadTableResultToBeSigned queryTable(ReadTableRequest readTableRequest) {
+  public ReadTableResultToBeSigned queryTable(
+      ReadTableRequest readTableRequest, DeltaSharingCapabilities requestCapabilities) {
     Snapshot snapshot;
     if (readTableRequest instanceof ReadTableRequest.ReadTableCurrentVersion) {
       snapshot = deltaLog.snapshot();
@@ -92,8 +118,8 @@ public class DeltaSharedTable implements InternalSharedTable {
       throw new IllegalArgumentException("Unknown ReadTableRequest type: " + readTableRequest);
     }
     return new ReadTableResultToBeSigned(
-        new Protocol(Optional.of(1)),
-        metadataFromSnapshot(snapshot),
+        new Protocol(Optional.of(1), Optional.of(1)), // TODO
+        metadataFromSnapshot(snapshot, requestCapabilities),
         snapshot.getAllFiles().stream()
             .map(f -> new TableFileToBeSigned(
                 location() + "/" + f.getPath(),

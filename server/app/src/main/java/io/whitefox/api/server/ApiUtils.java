@@ -60,12 +60,6 @@ public interface ApiUtils extends DeltaHeaders {
     return opt.map(fn).orElse(notFoundResponse());
   }
 
-  default String getResponseFormatHeader(Map<String, String> deltaSharingCapabilities) {
-    return String.format(
-        "%s=%s",
-        DeltaHeaders.DELTA_SHARING_RESPONSE_FORMAT, getResponseFormat(deltaSharingCapabilities));
-  }
-
   default String getResponseFormat(Map<String, String> deltaSharingCapabilities) {
     return deltaSharingCapabilities.getOrDefault(
         DeltaHeaders.DELTA_SHARING_RESPONSE_FORMAT,

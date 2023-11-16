@@ -49,6 +49,7 @@ val serverGeneratorProperties = mapOf(
     "dateLibrary" to "java8",
     "disallowAdditionalPropertiesIfNotPresent" to "false",
     "generateBuilders" to "false",
+    "legacyDiscriminatorBehavior" to "false",
     "generatePom" to "false",
     "interfaceOnly" to "true",
     "library" to "quarkus",

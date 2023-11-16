@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class TableFile {
-
   private final String url;
   private final String id;
   private final long size;
