@@ -1,5 +1,7 @@
 package io.whitefox.core.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.delta.standalone.DeltaLog;
 import io.delta.standalone.Snapshot;
 import io.delta.standalone.actions.AddFile;
@@ -10,6 +12,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import io.whitefox.core.types.predicates.BaseOp;
+import org.apache.hadoop.conf.Configuration;
 
 public class DeltaSharedTable implements InternalSharedTable {
 
@@ -80,24 +84,37 @@ public class DeltaSharedTable implements InternalSharedTable {
     return getSnapshot(startingTimestamp).map(Snapshot::getVersion);
   }
 
+  public static BaseOp parsePredicate(String predicate) throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      return mapper.readValue(predicate, BaseOp.class);
+    } catch (JsonProcessingException e) {
+      System.out.println("cant parse predicate");
+      throw e;
+    }
+  }
+
   public boolean filterFilesBasedOnPredicates(List<String> predicates, AddFile f) {
     var partitionValues = f.getPartitionValues();
-    predicates.forEach(p -> {
+    predicates.forEach(p -> {});
 
-    });
     return true;
   }
 
   public ReadTableResultToBeSigned queryTable(ReadTableRequest readTableRequest) {
+    List<String> predicates;
     Snapshot snapshot;
     if (readTableRequest instanceof ReadTableRequest.ReadTableCurrentVersion) {
       snapshot = deltaLog.snapshot();
+      predicates = ((ReadTableRequest.ReadTableCurrentVersion) readTableRequest).predicateHints();
     } else if (readTableRequest instanceof ReadTableRequest.ReadTableAsOfTimestamp) {
       snapshot = deltaLog.getSnapshotForTimestampAsOf(
           ((ReadTableRequest.ReadTableAsOfTimestamp) readTableRequest).timestamp());
+      predicates = ((ReadTableRequest.ReadTableAsOfTimestamp) readTableRequest).predicateHints();
     } else if (readTableRequest instanceof ReadTableRequest.ReadTableVersion) {
       snapshot = deltaLog.getSnapshotForVersionAsOf(
           ((ReadTableRequest.ReadTableVersion) readTableRequest).version());
+      predicates = ((ReadTableRequest.ReadTableVersion) readTableRequest).predicateHints();
     } else {
       throw new IllegalArgumentException("Unknown ReadTableRequest type: " + readTableRequest);
     }

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.wildfly.common.Assert.assertTrue;
 
-import io.whitefox.core.Protocol;
 import io.whitefox.core.ReadTableRequest;
 import io.whitefox.core.SharedTable;
 import java.time.format.DateTimeParseException;
@@ -79,9 +78,11 @@ public class DeltaSharedTableTest {
 
   @Test
   void queryTable() throws ExecutionException, InterruptedException {
-    var PTable = new SharedTable("partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
+    var PTable = new SharedTable(
+        "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
-    var request = new ReadTableRequest.ReadTableCurrentVersion(List.of("date = '2021-08-09'"), Optional.empty());
+    var request = new ReadTableRequest.ReadTableCurrentVersion(
+        List.of("date = '2021-08-09'"), Optional.empty());
     var response = DTable.queryTable(request);
     assertTrue(2 == 2);
   }
