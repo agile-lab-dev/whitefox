@@ -16,6 +16,8 @@ dependencies {
     // OPENAPI
     implementation("org.eclipse.microprofile.openapi:microprofile-openapi-api:3.1.1")
     implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    testImplementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
 
     // DELTA
     testImplementation(String.format("org.apache.hadoop:hadoop-common:%s", hadoopVersion))
@@ -44,7 +46,7 @@ tasks.getByName<Test>("test") {
 val openApiCodeGenDir = "generated/openapi"
 val generatedCodeDirectory = generatedCodeDirectory(layout, openApiCodeGenDir)
 
-tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openapiGenerateClientApi") {
+val whitefoxGenerate = tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openapiGenerateClientApi") {
     generatorName.set("java")
     inputSpec.set("$rootDir/protocol/whitefox-protocol-api.yml")
     library.set("native")
@@ -61,4 +63,18 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
             "useJakartaEe" to "true",
             "useRuntimeException" to "true"
     ))
+}
+
+sourceSets {
+    getByName("test") {
+        java {
+            srcDir("${generatedCodeDirectory(layout, openApiCodeGenDir)}/src/gen/java")
+        }
+    }
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    options.compilerArgs.add("-parameters")
+    dependsOn(whitefoxGenerate)
 }
