@@ -1,6 +1,5 @@
 package io.whitefox.api.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.mrpowers.spark.fast.tests.DatasetComparer;
 import io.whitefox.api.models.MrFoxDeltaTableSchema;
 import io.whitefox.api.utils.StorageManagerInitializer;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import scala.collection.GenMap;
 
-import java.net.URISyntaxException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,7 +31,7 @@ public class ITDeltaSharingClient implements DatasetComparer {
       .getOrCreate();
 
   @BeforeAll
-  static void initStorageManager() throws URISyntaxException, JsonProcessingException {
+  static void initStorageManager() {
     new StorageManagerInitializer().initStorageManager();
   }
 

@@ -43,10 +43,14 @@ tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
+tasks.withType<Test> {
+    environment = env.allVariables
+}
+
 val openApiCodeGenDir = "generated/openapi"
 val generatedCodeDirectory = generatedCodeDirectory(layout, openApiCodeGenDir)
 
-val whitefoxGenerate = tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openapiGenerateClientApi") {
+val whiteFoxGenerate = tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openapiGenerateClientApi") {
     generatorName.set("java")
     inputSpec.set("$rootDir/protocol/whitefox-protocol-api.yml")
     library.set("native")
@@ -76,5 +80,5 @@ sourceSets {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-parameters")
-    dependsOn(whitefoxGenerate)
+    dependsOn(whiteFoxGenerate)
 }
