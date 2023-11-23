@@ -1,8 +1,11 @@
 package io.whitefox.api.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.github.mrpowers.spark.fast.tests.DatasetComparer;
 import io.whitefox.api.models.MrFoxDeltaTableSchema;
 import io.whitefox.api.utils.StorageManagerInitializer;
+import java.util.List;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.Metadata;
@@ -11,10 +14,6 @@ import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import scala.collection.GenMap;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ITDeltaSharingClient implements DatasetComparer {
 
