@@ -1,4 +1,4 @@
-package models;
+package io.whitefox.api.models;
 
 public class AddTableToSchemaInput {
   private final String name;

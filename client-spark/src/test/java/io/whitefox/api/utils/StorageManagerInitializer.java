@@ -1,10 +1,10 @@
-package utils;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+package io.whitefox.api.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import io.whitefox.api.models.*;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,7 +12,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
-import models.*;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StorageManagerInitializer {
 
@@ -29,14 +31,13 @@ public class StorageManagerInitializer {
   }
 
   public void initStorageManager() throws JsonProcessingException, URISyntaxException {
-    List.of(
+    Stream.of(
             createStorageRequest(objectWriter),
             createProviderRequest(objectWriter),
             createTableRequest(objectWriter),
             createShareRequest(objectWriter),
             createSchemaRequest(objectWriter),
             addTableToSchemaRequest(objectWriter))
-        .stream()
         .forEach(request -> {
           try {
             callWhiteFoxServer(httpClient, request);

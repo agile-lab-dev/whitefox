@@ -1,4 +1,4 @@
-package models;
+package io.whitefox.api.models;
 
 public class MrFoxDeltaTableSchema {
   private final long id;

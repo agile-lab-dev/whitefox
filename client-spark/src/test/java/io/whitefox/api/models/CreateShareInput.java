@@ -1,4 +1,4 @@
-package models;
+package io.whitefox.api.models;
 
 import java.util.List;
 

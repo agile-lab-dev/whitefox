@@ -1,10 +1,11 @@
-package utils;
+package io.whitefox.api.utils;
+
+import io.whitefox.api.models.S3TestConfig;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Properties;
-import models.S3TestConfig;
 
 public class EnvReader {
 
