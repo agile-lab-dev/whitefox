@@ -29,10 +29,6 @@ dependencies {
     implementation("org.eclipse.microprofile.openapi:microprofile-openapi-api:3.1.1")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
 
-    // DELTA
-    implementation("io.delta:delta-standalone_2.13:0.6.0")
-    implementation(String.format("org.apache.hadoop:hadoop-common:%s", hadoopVersion))
-
     // TEST
     testImplementation(testFixtures(project(":server:core")))
     testImplementation("io.quarkus:quarkus-junit5")
@@ -40,12 +36,6 @@ dependencies {
     testImplementation("io.rest-assured:json-path")
     testImplementation("org.openapi4j:openapi-operation-validator:1.0.7")
     testImplementation("org.openapi4j:openapi-operation-restassured:1.0.7")
-
-    //AWS
-    compileOnly("com.amazonaws:aws-java-sdk-bom:1.12.367")
-    compileOnly("com.amazonaws:aws-java-sdk-s3:1.12.367")
-    implementation(String.format("org.apache.hadoop:hadoop-aws:%s", hadoopVersion))
-
 }
 
 // endregion
