@@ -2,7 +2,6 @@ package io.whitefox.core.types.predicates;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.whitefox.core.types.*;
 
 import java.util.List;
 import java.util.Objects;

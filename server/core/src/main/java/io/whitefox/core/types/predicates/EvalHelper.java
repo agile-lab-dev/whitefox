@@ -6,9 +6,9 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
-import io.whitefox.core.types.predicates.LeafOp;
 import org.apache.commons.lang3.tuple.Pair;
 
+// Only for partition values
 public class EvalHelper {
 
   static Pair<Pair<DataType, String>, Pair<DataType, String>> validateAndGetTypeAndValue(

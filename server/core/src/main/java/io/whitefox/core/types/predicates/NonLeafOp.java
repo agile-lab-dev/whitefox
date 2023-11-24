@@ -203,6 +203,7 @@ class AndOp extends NonLeafOp implements BinaryOp {
 
   @Override
   public Object eval(EvalContext ctx) {
+    // short-circuits, so not all exceptions will be thrown
     return children.stream().allMatch(c -> c.evalExpectBoolean(ctx));
   }
 }

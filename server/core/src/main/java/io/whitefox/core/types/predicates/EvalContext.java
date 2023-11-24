@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Map;
 
-class EvalContext {
+public class EvalContext {
 
     public EvalContext(
             Map<String, String> partitionValues, Map<String, Pair<String, String>> statsValues) {
@@ -12,6 +12,14 @@ class EvalContext {
         this.statsValues = statsValues;
     }
 
-    Map<String, String> partitionValues;
-    Map<String, Pair<String, String>> statsValues;
+    final Map<String, String> partitionValues;
+    final Map<String, Pair<String, String>> statsValues;
+
+    public Map<String, String> getPartitionValues() {
+        return partitionValues;
+    }
+
+    public Map<String, Pair<String, String>> getStatsValues() {
+        return statsValues;
+    }
 }

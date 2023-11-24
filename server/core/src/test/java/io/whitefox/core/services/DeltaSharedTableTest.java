@@ -77,7 +77,7 @@ public class DeltaSharedTableTest {
   }
 
   @Test
-  void queryTable() throws ExecutionException, InterruptedException {
+  void queryTable() {
     var PTable = new SharedTable(
         "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);

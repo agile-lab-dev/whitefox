@@ -94,11 +94,17 @@ public class DeltaSharedTable implements InternalSharedTable {
     }
   }
 
-  public boolean filterFilesBasedOnPredicates(List<String> predicates, AddFile f) {
-    var partitionValues = f.getPartitionValues();
-    predicates.forEach(p -> {});
-
-    return true;
+  public boolean filterFileBasedOnPredicates(List<String> predicates, AddFile f) {
+    var ctx = JsonPredicatesUtils.createEvalContext(f);
+    return predicates.stream().allMatch(p -> {
+      try {
+        var parsedPredicate = JsonPredicatesUtils.parsePredicate(p);
+        return parsedPredicate.evalExpectBoolean(ctx);
+      } catch (JsonProcessingException e) {
+        System.out.println("Unable to parse predicate: " + p +" due to: " + e);
+        return false;
+      }
+    });
   }
 
   public ReadTableResultToBeSigned queryTable(ReadTableRequest readTableRequest) {
@@ -121,7 +127,7 @@ public class DeltaSharedTable implements InternalSharedTable {
     return new ReadTableResultToBeSigned(
         new Protocol(Optional.of(1)),
         metadataFromSnapshot(snapshot),
-        snapshot.getAllFiles().stream()
+        snapshot.getAllFiles().stream().filter(f -> filterFileBasedOnPredicates(predicates, f))
             .map(f -> new TableFileToBeSigned(
                 location() + "/" + f.getPath(),
                 f.getSize(),
