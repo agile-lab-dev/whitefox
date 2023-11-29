@@ -11,7 +11,6 @@ repositories {
     mavenCentral()
 }
 
-val hadoopVersion = "3.3.6"
 dependencies {
     // OPENAPI
     implementation("org.eclipse.microprofile.openapi:microprofile-openapi-api:3.1.1")
@@ -20,7 +19,7 @@ dependencies {
     testImplementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
 
     // DELTA
-    testImplementation(String.format("org.apache.hadoop:hadoop-common:%s", hadoopVersion))
+    testImplementation("org.apache.hadoop:hadoop-common:3.3.6")
     testImplementation("io.delta:delta-sharing-spark_2.12:1.0.2")
 
     //SPARK
@@ -45,6 +44,7 @@ tasks.getByName<Test>("test") {
 
 tasks.withType<Test> {
     environment = env.allVariables
+    systemProperty ("java.util.logging.manager", "java.util.logging.LogManager") //TODO modularize the whitefox-conventions plugin
 }
 
 val openApiCodeGenDir = "generated/openapi"

@@ -8,7 +8,6 @@ import io.whitefox.api.deltasharing.model.FileObjectWithoutPresignedUrl;
 import io.whitefox.api.deltasharing.model.v1.generated.*;
 import io.whitefox.core.InternalTable;
 import io.whitefox.core.Principal;
-import io.whitefox.core.Share;
 import io.whitefox.core.SharedTable;
 import io.whitefox.persistence.StorageManager;
 import io.whitefox.persistence.memory.InMemoryStorageManager;
