@@ -1,3 +1,6 @@
+import com.diffplug.gradle.spotless.SpotlessApply
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     java
     id("com.diffplug.spotless")
@@ -50,7 +53,8 @@ tasks.withType<Test> {
 val openApiCodeGenDir = "generated/openapi"
 val generatedCodeDirectory = generatedCodeDirectory(layout, openApiCodeGenDir)
 
-val whiteFoxGenerate = tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openapiGenerateClientApi") {
+val whiteFoxGenerate = tasks.register<GenerateTask>("openapiGenerateClientApi") {
+    dependsOn(tasks.spotlessApply)
     generatorName.set("java")
     inputSpec.set("$rootDir/protocol/whitefox-protocol-api.yml")
     library.set("native")
