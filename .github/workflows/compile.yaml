@@ -42,7 +42,7 @@ jobs:
           WHITEFOX_TEST_AWS_ACCESS_KEY_ID: ${{ secrets.WHITEFOX_AWS_ACCESS_KEY_ID }}
           WHITEFOX_TEST_AWS_SECRET_ACCESS_KEY: ${{ secrets.WHITEFOX_AWS_SECRET_ACCESS_KEY }}
         run: |
-          java -jar server/build/quarkus-app/quarkus-run.jar &
+          java -jar server/app/build/quarkus-app/quarkus-run.jar &
           ./gradlew :client-spark:test
           kill -9 %1
       - name: Build container image
