@@ -32,14 +32,8 @@ dependencies {
 
     //JUNIT
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-
 }
 
-// region code formatting
-spotless {
-    java {}
-}
-// endregion
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
