@@ -47,7 +47,6 @@ tasks.withType<Test> {
 
 tasks.register<Test>("clientSparkTest") {
     useJUnitPlatform {
-        excludeTags.add("test")
         includeTags.add("clientSparkTest")
     }
 }
