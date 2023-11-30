@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import scala.collection.GenMap;
 
-@Tag("integration")
+@Tag("clientSparkTest")
 public class ITDeltaSharingClient implements DatasetComparer {
 
   private final String tablePath = String.format(

@@ -43,7 +43,7 @@ jobs:
           WHITEFOX_TEST_AWS_SECRET_ACCESS_KEY: ${{ secrets.WHITEFOX_AWS_SECRET_ACCESS_KEY }}
         run: |
           java -jar server/app/build/quarkus-app/quarkus-run.jar &
-          ./gradlew :client-spark:integrationTest --no-daemon
+          ./gradlew :client-spark:clientSparkTest --no-daemon
           kill -9 %1
       - name: Build container image
         if: runner.os == 'Linux'

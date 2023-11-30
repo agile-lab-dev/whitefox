@@ -43,6 +43,14 @@ tasks.withType<Test> {
     systemProperty ("java.util.logging.manager", "java.util.logging.LogManager") //TODO modularize the whitefox-conventions plugin
 }
 
+tasks.register<Test>("clientSparkTest") {
+    useJUnitPlatform {
+        excludeTags.add("integration")
+        excludeTags.add("test")
+        includeTags.add("clientSparkTest")
+    }
+}
+
 val openApiCodeGenDir = "generated/openapi"
 val generatedCodeDirectory = generatedCodeDirectory(layout, openApiCodeGenDir)
 
