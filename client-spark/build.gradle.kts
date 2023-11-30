@@ -35,7 +35,9 @@ dependencies {
 
 
 tasks.getByName<Test>("test") {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags.add("clientSparkTest")
+    }
 }
 
 tasks.withType<Test> {
@@ -45,7 +47,6 @@ tasks.withType<Test> {
 
 tasks.register<Test>("clientSparkTest") {
     useJUnitPlatform {
-        excludeTags.add("integration")
         excludeTags.add("test")
         includeTags.add("clientSparkTest")
     }
