@@ -1,4 +1,3 @@
-import com.diffplug.gradle.spotless.SpotlessApply
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
