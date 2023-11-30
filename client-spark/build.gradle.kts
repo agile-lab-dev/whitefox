@@ -6,9 +6,6 @@ plugins {
     id("whitefox.java-conventions")
 }
 
-group = "io.whitefox"
-version = "spark-connector"
-
 repositories {
     mavenCentral()
 }
