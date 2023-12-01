@@ -27,6 +27,8 @@ public class DeltaMappers {
       throw new IllegalArgumentException("The startingVersion and endingVersion are not supported");
     } else if (request.getStartingVersion() != null) {
       throw new IllegalArgumentException("The startingVersion is not supported");
+    } else if (request.getEndingVersion() != null) {
+      throw new IllegalArgumentException("The startingVersion is not supported");
     } else if (request.getVersion() != null && request.getVersion() < 0) {
       throw new IllegalArgumentException("version cannot be negative.");
     } else if (request.getVersion() != null && request.getTimestamp() == null) {
