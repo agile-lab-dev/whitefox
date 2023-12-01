@@ -3,35 +3,31 @@ package io.whitefox.core.types.predicates;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 // Represents a non-leaf operation.
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "op"
-)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "op")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = EqualOp.class, name = "equal"),
-        @JsonSubTypes.Type(value = NotOp.class, name = "not"),
-        @JsonSubTypes.Type(value = OrOp.class, name = "or"),
-        @JsonSubTypes.Type(value = IsNullOp.class, name = "null"),
-        @JsonSubTypes.Type(value = AndOp.class, name = "and"),
-        @JsonSubTypes.Type(value = LessThanOp.class, name = "lessThan"),
-        @JsonSubTypes.Type(value = LessThanOrEqualOp.class, name = "lessThanOrEqual"),
-        @JsonSubTypes.Type(value = GreaterThanOp.class, name = "greaterThan"),
-        @JsonSubTypes.Type(value = GreaterThanOrEqualOp.class, name = "greaterThanOrEqualOp")
+  @JsonSubTypes.Type(value = EqualOp.class, name = "equal"),
+  @JsonSubTypes.Type(value = NotOp.class, name = "not"),
+  @JsonSubTypes.Type(value = OrOp.class, name = "or"),
+  @JsonSubTypes.Type(value = IsNullOp.class, name = "null"),
+  @JsonSubTypes.Type(value = AndOp.class, name = "and"),
+  @JsonSubTypes.Type(value = LessThanOp.class, name = "lessThan"),
+  @JsonSubTypes.Type(value = LessThanOrEqualOp.class, name = "lessThanOrEqual"),
+  @JsonSubTypes.Type(value = GreaterThanOp.class, name = "greaterThan"),
+  @JsonSubTypes.Type(value = GreaterThanOrEqualOp.class, name = "greaterThanOrEqualOp")
 })
 public abstract class NonLeafOp implements BaseOp {
 
-    @JsonProperty("children")
-    List<BaseOp> children;
+  @JsonProperty("children")
+  List<BaseOp> children;
 
-    public List<BaseOp> getAllChildren() {
-      // TODO flat map every child
-        return List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList());
-    }
+  public List<BaseOp> getAllChildren() {
+    // TODO flat map every child
+    return List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList());
+  }
 }
 
 class IsNullOp extends NonLeafOp implements UnaryOp {
@@ -48,9 +44,10 @@ class IsNullOp extends NonLeafOp implements UnaryOp {
   }
 
   @Override
-    public void validate() {
-        validateChildren(List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
-    }
+  public void validate() {
+    validateChildren(
+        List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
+  }
 
   @Override
   public Object eval(EvalContext ctx) {
@@ -58,15 +55,13 @@ class IsNullOp extends NonLeafOp implements UnaryOp {
   }
 }
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "equal")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "equal")
 class EqualOp extends NonLeafOp implements BinaryOp {
   @JsonProperty("children")
   List<LeafOp> children;
 
   public EqualOp() {
-      super();
+    super();
   }
 
   public EqualOp(List<LeafOp> children) {
@@ -75,7 +70,8 @@ class EqualOp extends NonLeafOp implements BinaryOp {
 
   @Override
   public void validate() {
-    validateChildren(List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
+    validateChildren(
+        List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override
@@ -84,9 +80,7 @@ class EqualOp extends NonLeafOp implements BinaryOp {
   }
 }
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "lessThan")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "lessThan")
 class LessThanOp extends NonLeafOp implements BinaryOp {
   @JsonProperty("children")
   List<LeafOp> children;
@@ -95,13 +89,14 @@ class LessThanOp extends NonLeafOp implements BinaryOp {
     this.children = children;
   }
 
-    public LessThanOp() {
-      super();
-    }
+  public LessThanOp() {
+    super();
+  }
 
-    @Override
+  @Override
   public void validate() {
-    validateChildren(List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
+    validateChildren(
+        List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override
@@ -110,9 +105,7 @@ class LessThanOp extends NonLeafOp implements BinaryOp {
   }
 }
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "lessThanOrEqual")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "lessThanOrEqual")
 class LessThanOrEqualOp extends NonLeafOp implements BinaryOp {
 
   @JsonProperty("children")
@@ -122,13 +115,14 @@ class LessThanOrEqualOp extends NonLeafOp implements BinaryOp {
     this.children = children;
   }
 
-    public LessThanOrEqualOp() {
-      super();
-    }
+  public LessThanOrEqualOp() {
+    super();
+  }
 
-    @Override
+  @Override
   public void validate() {
-    validateChildren(List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
+    validateChildren(
+        List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override
@@ -137,21 +131,20 @@ class LessThanOrEqualOp extends NonLeafOp implements BinaryOp {
   }
 }
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "greaterThan")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "greaterThan")
 class GreaterThanOp extends NonLeafOp implements BinaryOp {
 
   @JsonProperty("children")
   List<LeafOp> children;
 
-    public GreaterThanOp() {
-        super();
-    }
+  public GreaterThanOp() {
+    super();
+  }
 
-    @Override
+  @Override
   public void validate() {
-    validateChildren(List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
+    validateChildren(
+        List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override
@@ -160,21 +153,20 @@ class GreaterThanOp extends NonLeafOp implements BinaryOp {
   }
 }
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "greaterThanOrEqual")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "greaterThanOrEqual")
 class GreaterThanOrEqualOp extends NonLeafOp implements BinaryOp {
 
   @JsonProperty("children")
   List<LeafOp> children;
 
-    public GreaterThanOrEqualOp() {
-        super();
-    }
+  public GreaterThanOrEqualOp() {
+    super();
+  }
 
-    @Override
+  @Override
   public void validate() {
-    validateChildren(List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
+    validateChildren(
+        List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override
@@ -183,20 +175,18 @@ class GreaterThanOrEqualOp extends NonLeafOp implements BinaryOp {
   }
 }
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "and")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "and")
 class AndOp extends NonLeafOp implements BinaryOp {
 
   public AndOp(List<BaseOp> children) {
     this.children = children;
   }
 
-    public AndOp() {
-        super();
-    }
+  public AndOp() {
+    super();
+  }
 
-    @Override
+  @Override
   public void validate() {
     validateChildren(children);
   }
@@ -208,20 +198,18 @@ class AndOp extends NonLeafOp implements BinaryOp {
   }
 }
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "or")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "or")
 class OrOp extends NonLeafOp implements BinaryOp {
 
   public OrOp(List<BaseOp> children) {
     this.children = children;
   }
 
-    public OrOp() {
-        super();
-    }
+  public OrOp() {
+    super();
+  }
 
-    @Override
+  @Override
   public void validate() {
     validateChildren(children);
   }
@@ -232,9 +220,7 @@ class OrOp extends NonLeafOp implements BinaryOp {
   }
 }
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "not")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "not")
 class NotOp extends NonLeafOp implements UnaryOp {
 
   @JsonProperty("children")
@@ -244,13 +230,14 @@ class NotOp extends NonLeafOp implements UnaryOp {
     this.children = children;
   }
 
-    public NotOp() {
-        super();
-    }
+  public NotOp() {
+    super();
+  }
 
-    @Override
+  @Override
   public void validate() {
-    validateChildren(List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
+    validateChildren(
+        List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override

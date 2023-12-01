@@ -2,27 +2,23 @@ package io.whitefox.core.types.predicates;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
+import io.whitefox.core.types.*;
 import java.util.List;
 import java.util.Objects;
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "op")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "op")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = LeafOp.class, names = {"column", "literal"}),
-//        @JsonSubTypes.Type(value = EqualOp.class, names = {"equal"/*, "not", "or", "and", "lessThan", "lessThanOrEqual", "greaterThan", "greaterThanOrEqualOp" */}),
-//        @JsonSubTypes.Type(value = ColumnOp.class, name = "column"),
-//        @JsonSubTypes.Type(value = LiteralOp.class, name = "literal"),
-        @JsonSubTypes.Type(value = EqualOp.class, name = "equal"),
-        @JsonSubTypes.Type(value = NotOp.class, name = "not"),
-        @JsonSubTypes.Type(value = OrOp.class, name = "or"),
-        @JsonSubTypes.Type(value = AndOp.class, name = "and"),
-        @JsonSubTypes.Type(value = LessThanOp.class, name = "lessThan"),
-        @JsonSubTypes.Type(value = LessThanOrEqualOp.class, name = "lessThanOrEqual"),
-        @JsonSubTypes.Type(value = GreaterThanOp.class, name = "greaterThan"),
-        @JsonSubTypes.Type(value = GreaterThanOrEqualOp.class, name = "greaterThanOrEqualOp")
+  @JsonSubTypes.Type(
+      value = LeafOp.class,
+      names = {"column", "literal"}),
+  @JsonSubTypes.Type(value = EqualOp.class, name = "equal"),
+  @JsonSubTypes.Type(value = NotOp.class, name = "not"),
+  @JsonSubTypes.Type(value = OrOp.class, name = "or"),
+  @JsonSubTypes.Type(value = AndOp.class, name = "and"),
+  @JsonSubTypes.Type(value = LessThanOp.class, name = "lessThan"),
+  @JsonSubTypes.Type(value = LessThanOrEqualOp.class, name = "lessThanOrEqual"),
+  @JsonSubTypes.Type(value = GreaterThanOp.class, name = "greaterThan"),
+  @JsonSubTypes.Type(value = GreaterThanOrEqualOp.class, name = "greaterThanOrEqualOp")
 })
 public interface BaseOp {
 
@@ -63,7 +59,6 @@ public interface BaseOp {
     }
   }
 }
-
 
 // Represents a unary operation.
 interface UnaryOp {

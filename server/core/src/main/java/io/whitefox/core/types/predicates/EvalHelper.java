@@ -5,14 +5,13 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 // Only for partition values
 public class EvalHelper {
 
   static Pair<Pair<DataType, String>, Pair<DataType, String>> validateAndGetTypeAndValue(
-          List<LeafOp> children, EvalContext ctx) {
+      List<LeafOp> children, EvalContext ctx) {
     var leftChild = children.get(0);
     var leftType = leftChild.evalExpectValueAndType(ctx).getRight();
     var leftVal = leftChild.evalExpectValueAndType(ctx).getLeft();

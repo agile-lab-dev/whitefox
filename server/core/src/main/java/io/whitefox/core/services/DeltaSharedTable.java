@@ -6,6 +6,9 @@ import io.delta.standalone.DeltaLog;
 import io.delta.standalone.Snapshot;
 import io.delta.standalone.actions.AddFile;
 import io.whitefox.core.*;
+import io.whitefox.core.Metadata;
+import io.whitefox.core.TableSchema;
+import io.whitefox.core.types.predicates.BaseOp;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -95,13 +98,16 @@ public class DeltaSharedTable implements InternalSharedTable {
   }
 
   public boolean filterFileBasedOnPredicates(List<String> predicates, AddFile f) {
+    if (predicates == null) {
+      return true;
+    }
     var ctx = JsonPredicatesUtils.createEvalContext(f);
     return predicates.stream().allMatch(p -> {
       try {
         var parsedPredicate = JsonPredicatesUtils.parsePredicate(p);
         return parsedPredicate.evalExpectBoolean(ctx);
       } catch (JsonProcessingException e) {
-        System.out.println("Unable to parse predicate: " + p +" due to: " + e);
+        System.out.println("Unable to parse predicate: " + p + " due to: " + e);
         return false;
       }
     });
@@ -127,7 +133,8 @@ public class DeltaSharedTable implements InternalSharedTable {
     return new ReadTableResultToBeSigned(
         new Protocol(Optional.of(1)),
         metadataFromSnapshot(snapshot),
-        snapshot.getAllFiles().stream().filter(f -> filterFileBasedOnPredicates(predicates, f))
+        snapshot.getAllFiles().stream()
+            .filter(f -> filterFileBasedOnPredicates(predicates, f))
             .map(f -> new TableFileToBeSigned(
                 location() + "/" + f.getPath(),
                 f.getSize(),
