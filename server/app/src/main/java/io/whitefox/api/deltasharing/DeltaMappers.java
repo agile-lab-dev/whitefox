@@ -23,7 +23,11 @@ public class DeltaMappers {
   }
 
   public static ReadTableRequest api2ReadTableRequest(QueryRequest request) {
-    if (request.getVersion() != null && request.getVersion() < 0) {
+    if (request.getStartingVersion() != null && request.getEndingVersion() != null) {
+      throw new IllegalArgumentException("The startingVersion and endingVersion are not supported");
+    } else if (request.getStartingVersion() != null) {
+      throw new IllegalArgumentException("The startingVersion is not supported");
+    } else if (request.getVersion() != null && request.getVersion() < 0) {
       throw new IllegalArgumentException("version cannot be negative.");
     } else if (request.getVersion() != null && request.getTimestamp() == null) {
       return new ReadTableRequest.ReadTableVersion(
@@ -38,10 +42,6 @@ public class DeltaMappers {
     } else if (request.getVersion() == null && request.getTimestamp() == null) {
       return new ReadTableRequest.ReadTableCurrentVersion(
           request.getPredicateHints(), Optional.ofNullable(request.getLimitHint()));
-    } else if (request.getStartingVersion() != null && request.getEndingVersion() != null) {
-      throw new IllegalArgumentException("The startingVersion and endingVersion are not supported");
-    } else if (request.getStartingVersion() != null) {
-      throw new IllegalArgumentException("The startingVersion is not supported");
     } else {
       throw new IllegalArgumentException("Cannot specify both version and timestamp");
     }
