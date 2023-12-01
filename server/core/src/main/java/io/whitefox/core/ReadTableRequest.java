@@ -58,57 +58,6 @@ public interface ReadTableRequest {
     }
   }
 
-  public static class ReadTableStartingVersion implements ReadTableRequest {
-    private final List<String> predicateHints;
-    private final Optional<Long> limitHint;
-
-    private final Long startingVersion;
-
-    public ReadTableStartingVersion(List<String> predicateHints, Optional<Long> limitHint, Long startingVersion) {
-      this.predicateHints = predicateHints;
-      this.limitHint = limitHint;
-      this.startingVersion = startingVersion;
-    }
-
-    public List<String> predicateHints() {
-      return predicateHints;
-    }
-
-    public Optional<Long> limitHint() {
-      return limitHint;
-    }
-
-    public Long startingVersion() {
-      return startingVersion;
-    }
-
-    @Override
-    @SkipCoverageGenerated
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      ReadTableStartingVersion that = (ReadTableStartingVersion) o;
-      return Objects.equals(predicateHints, that.predicateHints)
-              && Objects.equals(limitHint, that.limitHint)
-              && Objects.equals(startingVersion, that.startingVersion);
-    }
-
-    @Override
-    @SkipCoverageGenerated
-    public int hashCode() {
-      return Objects.hash(predicateHints, limitHint, startingVersion);
-    }
-
-    @Override
-    @SkipCoverageGenerated
-    public String toString() {
-      return "ReadTableStartingVersion{" + "predicateHints="
-              + predicateHints + ", limitHint="
-              + limitHint + ", startingVersion="
-              + startingVersion + '}';
-    }
-  }
-
   public static class ReadTableAsOfTimestamp implements ReadTableRequest {
     private final List<String> predicateHints;
     private final Optional<Long> limitHint;
