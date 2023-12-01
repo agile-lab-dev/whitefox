@@ -88,6 +88,9 @@ public class DeltaSharedTable {
     } else if (readTableRequest instanceof ReadTableRequest.ReadTableVersion) {
       snapshot = deltaLog.getSnapshotForVersionAsOf(
           ((ReadTableRequest.ReadTableVersion) readTableRequest).version());
+    } else if (readTableRequest instanceof ReadTableRequest.ReadTableStartingVersion) {
+      snapshot = deltaLog.getSnapshotForVersionAsOf(((ReadTableRequest.ReadTableStartingVersion) readTableRequest).startingVersion());
+      //TODO I think it's not correct
     } else {
       throw new IllegalArgumentException("Unknown ReadTableRequest type: " + readTableRequest);
     }

@@ -5,11 +5,8 @@ import io.whitefox.api.server.CommonMappers;
 import io.whitefox.core.*;
 import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
-import org.jboss.resteasy.reactive.common.NotImplementedYet;
 
 public class DeltaMappers {
 
@@ -26,8 +23,14 @@ public class DeltaMappers {
   }
 
   public static ReadTableRequest api2ReadTableRequest(QueryRequest request) {
-    if (request.getEndingVersion() != null) throw new NotImplementedYet();
-    if (request.getVersion() != null && request.getTimestamp() == null) {
+    if (request.getVersion() != null && request.getVersion() < 0) {
+      throw new IllegalArgumentException("version cannot be negative.");
+    } else if (request.getStartingVersion() != null) {
+      return new ReadTableRequest.ReadTableStartingVersion(
+          request.getPredicateHints(),
+          Optional.ofNullable(request.getLimitHint()),
+          request.getStartingVersion());
+    } else if (request.getVersion() != null && request.getTimestamp() == null) {
       return new ReadTableRequest.ReadTableVersion(
           request.getPredicateHints(),
           Optional.ofNullable(request.getLimitHint()),
