@@ -8,15 +8,16 @@ import io.delta.standalone.actions.AddFile;
 import io.whitefox.core.*;
 import io.whitefox.core.Metadata;
 import io.whitefox.core.TableSchema;
-import io.whitefox.core.types.predicates.BaseOp;
+import io.whitefox.core.types.predicates.PredicateException;
+import io.whitefox.core.types.predicates.TypeNotSupportedException;
+import jakarta.inject.Inject;
+
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import io.whitefox.core.types.predicates.BaseOp;
-import org.apache.hadoop.conf.Configuration;
 
 public class DeltaSharedTable implements InternalSharedTable {
 
@@ -87,17 +88,8 @@ public class DeltaSharedTable implements InternalSharedTable {
     return getSnapshot(startingTimestamp).map(Snapshot::getVersion);
   }
 
-  public static BaseOp parsePredicate(String predicate) throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    try {
-      return mapper.readValue(predicate, BaseOp.class);
-    } catch (JsonProcessingException e) {
-      System.out.println("cant parse predicate");
-      throw e;
-    }
-  }
-
-  public boolean filterFileBasedOnPredicates(List<String> predicates, AddFile f) {
+  public boolean filterFilesBasedOnPredicates(List<String> predicates, AddFile f) {
+    // if there are no predicates return all possible files
     if (predicates == null) {
       return true;
     }
@@ -106,9 +98,10 @@ public class DeltaSharedTable implements InternalSharedTable {
       try {
         var parsedPredicate = JsonPredicatesUtils.parsePredicate(p);
         return parsedPredicate.evalExpectBoolean(ctx);
-      } catch (JsonProcessingException e) {
-        System.out.println("Unable to parse predicate: " + p + " due to: " + e);
-        return false;
+      } catch (PredicateException e) {
+        System.out.println("Caught exception: " + e.getMessage());
+        System.out.println("File: " + f.getPath() + " will be used in processing due to failure in parsing or processing the predicate");
+        return true;
       }
     });
   }
@@ -134,7 +127,7 @@ public class DeltaSharedTable implements InternalSharedTable {
         new Protocol(Optional.of(1)),
         metadataFromSnapshot(snapshot),
         snapshot.getAllFiles().stream()
-            .filter(f -> filterFileBasedOnPredicates(predicates, f))
+            .filter(f -> filterFilesBasedOnPredicates(predicates, f))
             .map(f -> new TableFileToBeSigned(
                 location() + "/" + f.getPath(),
                 f.getSize(),

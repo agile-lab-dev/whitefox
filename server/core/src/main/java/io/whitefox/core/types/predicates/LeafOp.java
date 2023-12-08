@@ -3,29 +3,33 @@ package io.whitefox.core.types.predicates;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.whitefox.core.types.BooleanType;
 import io.whitefox.core.types.DataType;
 import java.util.List;
 import java.util.Objects;
 import org.apache.commons.lang3.tuple.Pair;
 
+import static io.whitefox.core.types.predicates.EvaluatorVersion.V1;
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "op")
 @JsonSubTypes({
   @JsonSubTypes.Type(value = ColumnOp.class, name = "column"),
   @JsonSubTypes.Type(value = LiteralOp.class, name = "literal")
 })
-// @JsonDeserialize(using = LeafOpDeserializer.class)
 public abstract class LeafOp implements BaseOp {
 
   abstract Boolean isNull(EvalContext ctx);
 
-  @JsonDeserialize(using = DataTypeDeserializer.class)
   @JsonProperty("valueType")
   DataType valueType;
 
-  Pair<String, DataType> evalExpectValueAndType(EvalContext ctx) {
-    return (Pair<String, DataType>) eval(ctx);
+  Pair<String, DataType> evalExpectValueAndType(EvalContext ctx) throws PredicateException {
+    var res = eval(ctx);
+    if (res instanceof Pair) {
+      return (Pair<String, DataType>) res;
+    } else {
+      throw new WrongExpectedTypeException(res, Pair.class);
+    }
   }
 
   @Override
@@ -72,19 +76,21 @@ class ColumnOp extends LeafOp {
 
   @Override
   public Object eval(EvalContext ctx) {
+    // TODO: handle case of null column + column ranges
     return Pair.of(resolve(ctx), valueType);
   }
 
-  public void validate() {
+  public void validate() throws PredicateException {
     if (name == null) {
       throw new IllegalArgumentException("Name must be specified: " + this);
     }
-    if (!this.isSupportedType(valueType, false)) {
-      throw new IllegalArgumentException("Unsupported type: " + valueType);
+    if (!this.isSupportedType(valueType, V1)) {
+      throw new TypeNotSupportedException(valueType);
     }
   }
 
   private String resolve(EvalContext ctx) {
+    // TODO: handle case of null column + column ranges
     return ctx.partitionValues.getOrDefault(name, null);
   }
 }
@@ -95,11 +101,11 @@ class LiteralOp extends LeafOp {
   String value;
 
   @Override
-  public void validate() {
+  public void validate() throws PredicateException {
     if (value == null) {
       throw new IllegalArgumentException("Value must be specified: " + this);
     }
-    if (!isSupportedType(valueType, false)) {
+    if (!isSupportedType(valueType, V1)) {
       throw new IllegalArgumentException("Unsupported type: " + valueType);
     }
     EvalHelper.validateValue(value, valueType);

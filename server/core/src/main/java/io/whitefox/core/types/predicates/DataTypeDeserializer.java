@@ -1,11 +1,14 @@
 package io.whitefox.core.types.predicates;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.whitefox.core.types.*;
 import java.io.IOException;
+
+
 
 public class DataTypeDeserializer extends StdDeserializer<DataType> {
 
@@ -22,25 +25,25 @@ public class DataTypeDeserializer extends StdDeserializer<DataType> {
   public DataType deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
       throws IOException {
     JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-    String valueType = node.asText();
+    String valueType = node.asText().toUpperCase();
 
-    switch (valueType) {
-      case "date":
+    switch (BasePrimitiveTypeNames.valueOf(valueType)) {
+      case DATE:
         return DateType.DATE;
-      case "int":
+      case INT:
         return IntegerType.INTEGER;
-      case "double":
+      case DOUBLE:
         return DoubleType.DOUBLE;
-      case "float":
+      case FLOAT:
         return FloatType.FLOAT;
-      case "string":
+      case STRING:
         return StringType.STRING;
-      case "timestamp":
+      case TIMESTAMP:
         return TimestampType.TIMESTAMP;
-      case "long":
+      case LONG:
         return LongType.LONG;
       default:
-        throw new IOException("Unknown type passed inside a json predicate: " + valueType);
+        throw new JsonParseException("Unknown type passed inside a json predicate: " + valueType);
     }
   }
 }

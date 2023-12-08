@@ -5,13 +5,14 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 // Only for partition values
 public class EvalHelper {
 
   static Pair<Pair<DataType, String>, Pair<DataType, String>> validateAndGetTypeAndValue(
-      List<LeafOp> children, EvalContext ctx) {
+      List<LeafOp> children, EvalContext ctx) throws PredicateException {
     var leftChild = children.get(0);
     var leftType = leftChild.evalExpectValueAndType(ctx).getRight();
     var leftVal = leftChild.evalExpectValueAndType(ctx).getLeft();
@@ -22,20 +23,18 @@ public class EvalHelper {
     // If the types don't match, it implies a malformed predicate tree.
     // We simply throw an exception, which will cause filtering to be skipped.
     if (!Objects.equals(leftType, rightType)) {
-      throw new IllegalArgumentException("Type mismatch: " + leftType + " vs " + rightType + " for "
-          + leftChild + " and " + rightChild);
+      throw new TypeMismatchException(leftType, rightType);
     }
 
     // We throw an exception for nulls, which will skip filtering.
     if (leftVal == null || rightVal == null) {
-      throw new IllegalArgumentException(
-          "Comparison with null is not supported: " + leftChild + " and " + rightChild);
+      throw new NullTypeException(leftChild, rightChild);
     }
     return Pair.of(Pair.of(leftType, leftVal), Pair.of(rightType, rightVal));
   }
 
   // Implements "equal" between two leaf operations.
-  static Boolean equal(List<LeafOp> children, EvalContext ctx) {
+  static Boolean equal(List<LeafOp> children, EvalContext ctx) throws PredicateException {
     var typesAndValues = validateAndGetTypeAndValue(children, ctx);
     var leftType = typesAndValues.getLeft().getLeft();
     var leftVal = typesAndValues.getLeft().getRight();
@@ -52,12 +51,13 @@ public class EvalHelper {
     } else if (DateType.DATE.equals(leftType)) {
       return Date.valueOf(leftVal).equals(Date.valueOf(rightVal));
     }
-    throw new IllegalArgumentException("Unsupported type: " + leftType);
+    else
+      throw new TypeNotSupportedException(leftType);
   }
 
   // TODO: supported expressions; ie. check if column + constant
   // TODO: handle column comparisons with literals
-  static Boolean lessThan(List<LeafOp> children, EvalContext ctx) {
+  static Boolean lessThan(List<LeafOp> children, EvalContext ctx) throws PredicateException {
     var typesAndValues = validateAndGetTypeAndValue(children, ctx);
     var leftType = typesAndValues.getLeft().getLeft();
     var leftVal = typesAndValues.getLeft().getRight();
@@ -72,7 +72,8 @@ public class EvalHelper {
     } else if (DateType.DATE.equals(leftType)) {
       return Date.valueOf(leftVal).before(Date.valueOf(rightVal));
     }
-    throw new IllegalArgumentException("Unsupported type: " + leftType);
+    else
+      throw new TypeNotSupportedException(leftType);
   }
   // Validates that the specified value is in the correct format.
   // Throws an exception otherwise.
@@ -94,7 +95,7 @@ public class EvalHelper {
       } else if (TimestampType.TIMESTAMP.equals(valueType)) {
         Timestamp.valueOf(value);
       } else {
-        throw new IllegalArgumentException("Unsupported type: " + valueType);
+        throw new TypeNotSupportedException(valueType);
       }
     } catch (Exception e) {
       throw new IllegalArgumentException(

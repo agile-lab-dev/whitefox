@@ -3,6 +3,7 @@ package io.whitefox.core.types.predicates;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ class IsNullOp extends NonLeafOp implements UnaryOp {
   }
 
   @Override
-  public void validate() {
+  public void validate() throws PredicateException {
     validateChildren(
         List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
@@ -69,13 +70,18 @@ class EqualOp extends NonLeafOp implements BinaryOp {
   }
 
   @Override
-  public void validate() {
+  public void validate() throws PredicateException {
     validateChildren(
         List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override
-  public Object eval(EvalContext ctx) {
+  public Object eval(EvalContext ctx) throws PredicateException {
+    try {
+      this.validate();
+    } catch (PredicateException e) {
+      throw new RuntimeException(e);
+    }
     return EvalHelper.equal(children, ctx);
   }
 }
@@ -94,13 +100,18 @@ class LessThanOp extends NonLeafOp implements BinaryOp {
   }
 
   @Override
-  public void validate() {
+  public void validate() throws PredicateException {
     validateChildren(
         List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override
-  public Object eval(EvalContext ctx) {
+  public Object eval(EvalContext ctx) throws PredicateException {
+    try {
+      this.validate();
+    } catch (PredicateException e) {
+      throw new RuntimeException(e);
+    }
     return EvalHelper.lessThan(children, ctx);
   }
 }
@@ -120,13 +131,18 @@ class LessThanOrEqualOp extends NonLeafOp implements BinaryOp {
   }
 
   @Override
-  public void validate() {
+  public void validate() throws PredicateException {
     validateChildren(
         List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override
-  public Object eval(EvalContext ctx) {
+  public Object eval(EvalContext ctx) throws PredicateException {
+    try {
+      this.validate();
+    } catch (PredicateException e) {
+      throw new RuntimeException(e);
+    }
     return EvalHelper.lessThan(children, ctx) || EvalHelper.equal(children, ctx);
   }
 }
@@ -142,13 +158,18 @@ class GreaterThanOp extends NonLeafOp implements BinaryOp {
   }
 
   @Override
-  public void validate() {
+  public void validate() throws PredicateException {
     validateChildren(
         List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override
-  public Object eval(EvalContext ctx) {
+  public Object eval(EvalContext ctx) throws PredicateException {
+    try {
+      this.validate();
+    } catch (PredicateException e) {
+      throw new RuntimeException(e);
+    }
     return !EvalHelper.lessThan(children, ctx) && !EvalHelper.equal(children, ctx);
   }
 }
@@ -164,13 +185,18 @@ class GreaterThanOrEqualOp extends NonLeafOp implements BinaryOp {
   }
 
   @Override
-  public void validate() {
+  public void validate() throws PredicateException {
     validateChildren(
         List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override
-  public Object eval(EvalContext ctx) {
+  public Object eval(EvalContext ctx) throws PredicateException {
+    try {
+      this.validate();
+    } catch (PredicateException e) {
+      throw new RuntimeException(e);
+    }
     return !EvalHelper.lessThan(children, ctx);
   }
 }
@@ -187,14 +213,24 @@ class AndOp extends NonLeafOp implements BinaryOp {
   }
 
   @Override
-  public void validate() {
+  public void validate() throws PredicateException {
     validateChildren(children);
   }
 
   @Override
-  public Object eval(EvalContext ctx) {
+  public Object eval(EvalContext ctx) throws PredicateException {
+    try {
+      this.validate();
+    } catch (PredicateException e) {
+      throw new RuntimeException(e);
+    }
     // short-circuits, so not all exceptions will be thrown
-    return children.stream().allMatch(c -> c.evalExpectBoolean(ctx));
+    for (BaseOp c : children) {
+      if (!c.evalExpectBoolean(ctx)) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 
@@ -210,13 +246,23 @@ class OrOp extends NonLeafOp implements BinaryOp {
   }
 
   @Override
-  public void validate() {
+  public void validate() throws PredicateException {
     validateChildren(children);
   }
 
   @Override
-  public Object eval(EvalContext ctx) {
-    return children.stream().anyMatch(c -> c.evalExpectBoolean(ctx));
+  public Object eval(EvalContext ctx) throws PredicateException {
+    try {
+      this.validate();
+    } catch (PredicateException e) {
+      throw new RuntimeException(e);
+    }
+    for (BaseOp c : children) {
+      if (c.evalExpectBoolean(ctx)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
@@ -235,13 +281,18 @@ class NotOp extends NonLeafOp implements UnaryOp {
   }
 
   @Override
-  public void validate() {
+  public void validate() throws PredicateException {
     validateChildren(
         List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
   }
 
   @Override
-  public Object eval(EvalContext ctx) {
+  public Object eval(EvalContext ctx) throws PredicateException {
+    try {
+      this.validate();
+    } catch (PredicateException e) {
+      throw new RuntimeException(e);
+    }
     return !children.get(0).evalExpectBoolean(ctx);
   }
 }
