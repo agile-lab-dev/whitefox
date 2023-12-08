@@ -64,11 +64,11 @@ public interface BaseOp {
   }
 }
 
-// marker interface for easier exception handling
-interface AryOp {};
+// marker interface for operator arity used for easier exception handling
+interface Arity {};
 
 // Represents a unary operation.
-interface UnaryOp extends AryOp {
+interface UnaryOp extends Arity {
   // Validates number of children to be 1.
   default void validateChildren(List<BaseOp> children) throws TypeNotSupportedException, PredicateValidationException, TypeMismatchException {
     if (children.size() != 1)
@@ -81,7 +81,7 @@ interface UnaryOp extends AryOp {
   }
 }
 
-interface BinaryOp extends AryOp {
+interface BinaryOp extends Arity {
   // Validates number of children to be 2.
   default void validateChildren(List<BaseOp> children) throws TypeMismatchException, PredicateValidationException, TypeNotSupportedException {
     if (children.size() != 2)
@@ -109,7 +109,7 @@ interface BinaryOp extends AryOp {
 }
 
 // not used currently
-interface NaryOp extends AryOp {
+interface NaryOp extends Arity {
   // Validates number of children to be at least 2.
   default void validateChildren(List<BaseOp> children) throws PredicateValidationException, TypeNotSupportedException, TypeMismatchException {
     if (children.size() < 2) {

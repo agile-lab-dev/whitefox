@@ -4,10 +4,10 @@ public class PredicateValidationException extends PredicateException {
 
 
     final private int actualNumOfChildren;
-    final private AryOp op;
+    final private Arity op;
     final private int expectedNumOfChildren;
 
-    public PredicateValidationException(int actualNumOfChildren, AryOp op, int expectedNumOfChildren) {
+    public PredicateValidationException(int actualNumOfChildren, Arity op, int expectedNumOfChildren) {
         this.actualNumOfChildren = actualNumOfChildren;
         this.op = op;
         this.expectedNumOfChildren = expectedNumOfChildren;
