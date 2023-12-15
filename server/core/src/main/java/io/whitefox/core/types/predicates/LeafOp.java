@@ -104,12 +104,6 @@ class ColumnOp extends LeafOp {
     }
   }
 
-  private ColumnRange<String> getColumnRange(EvalContext ctx){
-    var fileStats = ctx.getStatsValues();
-    var column = fileStats.get(name);
-    return new ColumnRange<>(column.getLeft(), column.getRight(), Comparator.naturalOrder());
-  }
-
   private String resolve(EvalContext ctx) {
     // TODO: handle case of null column + column ranges
     return ctx.partitionValues.getOrDefault(name, null);
@@ -144,40 +138,6 @@ class LiteralOp extends LeafOp {
   public LiteralOp(String value, DataType valueType) {
     this.value = value;
     this.valueType = valueType;
-  }
-
-  private static final Path deltaTablesRoot = Paths.get(".")
-          .toAbsolutePath()
-          .resolve("server")
-          .resolve("core")
-          .resolve("src/testFixtures/resources/delta/samples")
-          .toAbsolutePath();
-
-  public static String deltaTableUri(String tableName) {
-    return deltaTablesRoot
-            .resolve(tableName)
-            .toAbsolutePath()
-            .normalize()
-            .toUri()
-            .toString();
-  }
-
-  public static void main(String[] args) throws PredicateException {
-    var lto = new LessThanOp(
-            List.of(
-                  new ColumnOp("id", IntegerType.INTEGER),
-                  new LiteralOp("4", IntegerType.INTEGER)
-            ));
-
-    var log = DeltaLog.forTable(
-            new Configuration(), deltaTableUri("partitioned-delta-table-with-multiple-columns"));
-    var contexts = new ArrayList<EvalContext>();
-    for (AddFile file : log.snapshot().getAllFiles()) {
-      EvalContext evalContext = JsonPredicatesUtils.createEvalContext(file);
-      contexts.add(evalContext);
-    }
-
-    lto.eval(contexts.get(0));
   }
 
   @Override

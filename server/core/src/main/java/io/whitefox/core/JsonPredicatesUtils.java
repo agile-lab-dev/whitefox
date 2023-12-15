@@ -31,12 +31,7 @@ public class JsonPredicatesUtils {
   public static ColumnRange createColumnRange(String name, EvalContext ctx, DataType valueType) {
     var fileStats = ctx.getStatsValues();
     var values = fileStats.get(name);
-    if (valueType instanceof DateType) {
-      ColumnRange.toLong(values.getLeft(), values.getRight());
-    }
-    else if (valueType instanceof IntegerType)
-      return ColumnRange.toInt(values.getLeft(), values.getRight());
-    return ColumnRange.toInt(values.getLeft(), values.getRight());
+    return new ColumnRange(values.getLeft(), values.getRight(), valueType);
   }
 
   public static EvalContext createEvalContext(AddFile file) throws PredicateParsingException {

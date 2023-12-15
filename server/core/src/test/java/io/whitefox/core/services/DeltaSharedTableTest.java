@@ -145,7 +145,7 @@ public class DeltaSharedTableTest {
     var request = new ReadTableRequest.ReadTableCurrentVersion(
             List.of(predicate), Optional.empty());
     var response = DTable.queryTable(request);
-    assertEquals(response.other().size(), 9);
+    assertEquals(response.other().size(), 1);
   }
 
 }
