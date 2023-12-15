@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.Arrays;
 
-public class PredicateParsingException extends PredicateException{
+public class PredicateParsingException extends PredicateException {
 
     private final JsonProcessingException cause;
 

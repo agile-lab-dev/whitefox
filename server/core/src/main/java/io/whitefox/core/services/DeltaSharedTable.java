@@ -1,16 +1,14 @@
 package io.whitefox.core.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.delta.standalone.DeltaLog;
 import io.delta.standalone.Snapshot;
 import io.delta.standalone.actions.AddFile;
 import io.whitefox.core.*;
 import io.whitefox.core.Metadata;
 import io.whitefox.core.TableSchema;
+import io.whitefox.core.types.predicates.EvalContext;
 import io.whitefox.core.types.predicates.PredicateException;
-import io.whitefox.core.types.predicates.TypeNotSupportedException;
-import jakarta.inject.Inject;
+import org.apache.log4j.Logger;
 
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
@@ -19,7 +17,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 public class DeltaSharedTable implements InternalSharedTable {
+
+  private final Logger logger = Logger.getLogger(this.getClass());
 
   private final DeltaLog deltaLog;
   private final TableSchemaConverter tableSchemaConverter;
@@ -88,23 +89,32 @@ public class DeltaSharedTable implements InternalSharedTable {
     return getSnapshot(startingTimestamp).map(Snapshot::getVersion);
   }
 
+
+    private boolean evaluatePredicate(String predicate, EvalContext ctx, AddFile f) {
+      try {
+        var parsedPredicate = JsonPredicatesUtils.parsePredicate(predicate);
+        return parsedPredicate.evalExpectBoolean(ctx);
+      } catch (PredicateException e) {
+        logger.debug("Caught exception for predicate: " + predicate + " - " + e.getMessage());
+        logger.info("File: " + f.getPath() + " will be used in processing due to failure in parsing or processing the predicate: " + predicate);
+        return true;
+      }
+    }
+
   public boolean filterFilesBasedOnPredicates(List<String> predicates, AddFile f) {
     // if there are no predicates return all possible files
     if (predicates == null) {
       return true;
     }
-    var ctx = JsonPredicatesUtils.createEvalContext(f);
-    return predicates.stream().allMatch(p -> {
-      try {
-        var parsedPredicate = JsonPredicatesUtils.parsePredicate(p);
-        return parsedPredicate.evalExpectBoolean(ctx);
-      } catch (PredicateException e) {
-        System.out.println("Caught exception: " + e.getMessage());
-        System.out.println("File: " + f.getPath() + " will be used in processing due to failure in parsing or processing the predicate");
+    try {
+      var ctx = JsonPredicatesUtils.createEvalContext(f);
+      return predicates.stream().allMatch(p -> evaluatePredicate(p, ctx, f));
+    } catch (PredicateException e) {
+        logger.debug("Caught exception: " + e.getMessage());
+        logger.info("File: " + f.getPath() + " will be used in processing due to failure in parsing or processing the predicate");
         return true;
       }
-    });
-  }
+    };
 
   public ReadTableResultToBeSigned queryTable(ReadTableRequest readTableRequest) {
     List<String> predicates;

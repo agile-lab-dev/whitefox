@@ -1,5 +1,6 @@
 package io.whitefox.core.types.predicates;
 
+import io.whitefox.core.ColumnRange;
 import io.whitefox.core.types.*;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -11,7 +12,18 @@ import org.apache.commons.lang3.tuple.Pair;
 // Only for partition values
 public class EvalHelper {
 
-  static Pair<Pair<DataType, String>, Pair<DataType, String>> validateAndGetTypeAndValue(
+  static Pair<ColumnRange, String> validateAndGetRange(List<LeafOp> children, EvalContext ctx) throws PredicateException {
+    var leftChild = (ColumnOp) children.get(0);
+    var columnRange = leftChild.evalExpectColumnRange(ctx);
+
+    var rightChild = children.get(1);
+    var rightType = rightChild.evalExpectValueAndType(ctx).getRight();
+    var rightVal = rightChild.evalExpectValueAndType(ctx).getLeft();
+
+    return Pair.of(columnRange, rightVal);
+  }
+
+  static Pair<Pair<ColumnRange, String>,Pair<Pair<DataType, String>, Pair<DataType, String>>> validateAndGetTypeAndValue(
       List<LeafOp> children, EvalContext ctx) throws PredicateException {
     var leftChild = children.get(0);
     var leftType = leftChild.evalExpectValueAndType(ctx).getRight();
@@ -26,16 +38,29 @@ public class EvalHelper {
       throw new TypeMismatchException(leftType, rightType);
     }
 
+    if (leftVal == null && leftChild instanceof ColumnOp){
+      return Pair.of(validateAndGetRange(children, ctx), null);
+    }
+
     // We throw an exception for nulls, which will skip filtering.
     if (leftVal == null || rightVal == null) {
       throw new NullTypeException(leftChild, rightChild);
     }
-    return Pair.of(Pair.of(leftType, leftVal), Pair.of(rightType, rightVal));
+    return Pair.of(null, Pair.of(Pair.of(leftType, leftVal), Pair.of(rightType, rightVal)));
   }
 
   // Implements "equal" between two leaf operations.
   static Boolean equal(List<LeafOp> children, EvalContext ctx) throws PredicateException {
-    var typesAndValues = validateAndGetTypeAndValue(children, ctx);
+
+    var columnRangeOrTypeAndValue = validateAndGetTypeAndValue(children, ctx);
+    if (columnRangeOrTypeAndValue.getLeft() != null) {
+      var columnRange = columnRangeOrTypeAndValue.getLeft().getLeft();
+      var value = columnRangeOrTypeAndValue.getLeft().getRight();
+      return columnRange.contains(value);
+    }
+
+
+    var typesAndValues = columnRangeOrTypeAndValue.getRight();
     var leftType = typesAndValues.getLeft().getLeft();
     var leftVal = typesAndValues.getLeft().getRight();
     var rightVal = typesAndValues.getRight().getRight();
@@ -58,7 +83,16 @@ public class EvalHelper {
   // TODO: supported expressions; ie. check if column + constant
   // TODO: handle column comparisons with literals
   static Boolean lessThan(List<LeafOp> children, EvalContext ctx) throws PredicateException {
-    var typesAndValues = validateAndGetTypeAndValue(children, ctx);
+
+
+    var columnRangeOrTypeAndValue = validateAndGetTypeAndValue(children, ctx);
+    if (columnRangeOrTypeAndValue.getLeft() != null) {
+      var columnRange = columnRangeOrTypeAndValue.getLeft().getLeft();
+      var value = columnRangeOrTypeAndValue.getLeft().getRight();
+      return columnRange.contains(value);
+    }
+
+    var typesAndValues = columnRangeOrTypeAndValue.getRight();
     var leftType = typesAndValues.getLeft().getLeft();
     var leftVal = typesAndValues.getLeft().getRight();
     var rightVal = typesAndValues.getRight().getRight();

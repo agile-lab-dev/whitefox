@@ -26,7 +26,20 @@ public class ColumnRange<T> {
     return (c1 <= 0 && c2 >= 0);
   }
 
+  public Boolean canBeLess(T point) {
+    return (ord.compare(minVal, point) < 0);
+  }
+
+  public Boolean canBeGreater(T point) {
+    return (ord.compare(maxVal, point) > 0);
+  }
+
+
   public static ColumnRange<Long> toLong(String minVal, String maxVal) {
-    return new ColumnRange<>(Long.getLong(minVal), Long.getLong(maxVal), Comparator.naturalOrder());
+    return new ColumnRange<>(Long.parseLong(minVal), Long.parseLong(maxVal), Comparator.naturalOrder());
+  }
+
+  public static ColumnRange<Integer> toInt(String minVal, String maxVal) {
+    return new ColumnRange<>(Integer.parseInt(minVal), Integer.parseInt(maxVal), Comparator.naturalOrder());
   }
 }

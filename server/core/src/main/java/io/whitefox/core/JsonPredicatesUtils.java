@@ -3,12 +3,17 @@ package io.whitefox.core;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.delta.standalone.actions.AddFile;
+import io.whitefox.core.types.DataType;
+import io.whitefox.core.types.DateType;
+import io.whitefox.core.types.IntegerType;
 import io.whitefox.core.types.predicates.BaseOp;
 import io.whitefox.core.types.predicates.EvalContext;
 import java.util.Map;
 
 import io.whitefox.core.types.predicates.PredicateParsingException;
 import org.apache.commons.lang3.tuple.Pair;
+
+import static io.whitefox.core.types.DateType.DATE;
 
 public class JsonPredicatesUtils {
 
@@ -23,7 +28,18 @@ public class JsonPredicatesUtils {
     }
   }
 
-  public static EvalContext createEvalContext(AddFile file) {
+  public static ColumnRange createColumnRange(String name, EvalContext ctx, DataType valueType) {
+    var fileStats = ctx.getStatsValues();
+    var values = fileStats.get(name);
+    if (valueType instanceof DateType) {
+      ColumnRange.toLong(values.getLeft(), values.getRight());
+    }
+    else if (valueType instanceof IntegerType)
+      return ColumnRange.toInt(values.getLeft(), values.getRight());
+    return ColumnRange.toInt(values.getLeft(), values.getRight());
+  }
+
+  public static EvalContext createEvalContext(AddFile file) throws PredicateParsingException {
     var statsString = file.getStats();
     var partitionValues = file.getPartitionValues();
 
@@ -38,10 +54,8 @@ public class JsonPredicatesUtils {
       });
       return new EvalContext(partitionValues, mappedMinMaxPairs);
     } catch (JsonProcessingException e) {
-
-      // TODO handle like PredicateParsingException
-      var message = e.getMessage();
-      return new EvalContext(partitionValues, Map.of());
+      // should never happen, depends on if the delta implementation changes
+      throw new PredicateParsingException(e);
     }
   }
 }

@@ -3,12 +3,23 @@ package io.whitefox.core.types.predicates;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.delta.standalone.DeltaLog;
+import io.delta.standalone.actions.AddFile;
+import io.whitefox.core.*;
 import io.whitefox.core.types.BooleanType;
 import io.whitefox.core.types.DataType;
-import java.util.List;
-import java.util.Objects;
-import org.apache.commons.lang3.tuple.Pair;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Date;
+import java.util.*;
+
+import io.whitefox.core.types.DateType;
+import io.whitefox.core.types.IntegerType;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.hadoop.conf.Configuration;
+
+import static io.whitefox.core.JsonPredicatesUtils.createColumnRange;
 import static io.whitefox.core.types.predicates.EvaluatorVersion.V1;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "op")
@@ -69,6 +80,10 @@ class ColumnOp extends LeafOp {
     return Boolean.valueOf(resolve(ctx));
   }
 
+  public ColumnRange evalExpectColumnRange(EvalContext ctx) {
+    return createColumnRange(name, ctx, valueType);
+  }
+
   @Override
   public DataType getOpValueType() {
     return valueType;
@@ -87,6 +102,12 @@ class ColumnOp extends LeafOp {
     if (!this.isSupportedType(valueType, V1)) {
       throw new TypeNotSupportedException(valueType);
     }
+  }
+
+  private ColumnRange<String> getColumnRange(EvalContext ctx){
+    var fileStats = ctx.getStatsValues();
+    var column = fileStats.get(name);
+    return new ColumnRange<>(column.getLeft(), column.getRight(), Comparator.naturalOrder());
   }
 
   private String resolve(EvalContext ctx) {
@@ -123,6 +144,40 @@ class LiteralOp extends LeafOp {
   public LiteralOp(String value, DataType valueType) {
     this.value = value;
     this.valueType = valueType;
+  }
+
+  private static final Path deltaTablesRoot = Paths.get(".")
+          .toAbsolutePath()
+          .resolve("server")
+          .resolve("core")
+          .resolve("src/testFixtures/resources/delta/samples")
+          .toAbsolutePath();
+
+  public static String deltaTableUri(String tableName) {
+    return deltaTablesRoot
+            .resolve(tableName)
+            .toAbsolutePath()
+            .normalize()
+            .toUri()
+            .toString();
+  }
+
+  public static void main(String[] args) throws PredicateException {
+    var lto = new LessThanOp(
+            List.of(
+                  new ColumnOp("id", IntegerType.INTEGER),
+                  new LiteralOp("4", IntegerType.INTEGER)
+            ));
+
+    var log = DeltaLog.forTable(
+            new Configuration(), deltaTableUri("partitioned-delta-table-with-multiple-columns"));
+    var contexts = new ArrayList<EvalContext>();
+    for (AddFile file : log.snapshot().getAllFiles()) {
+      EvalContext evalContext = JsonPredicatesUtils.createEvalContext(file);
+      contexts.add(evalContext);
+    }
+
+    lto.eval(contexts.get(0));
   }
 
   @Override

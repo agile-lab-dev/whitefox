@@ -70,7 +70,7 @@ interface Arity {};
 // Represents a unary operation.
 interface UnaryOp extends Arity {
   // Validates number of children to be 1.
-  default void validateChildren(List<BaseOp> children) throws TypeNotSupportedException, PredicateValidationException, TypeMismatchException {
+  default void validateChildren(List<BaseOp> children) throws PredicateException {
     if (children.size() != 1)
       throw new PredicateValidationException(children.size(), this, 1);
     try {
@@ -83,7 +83,7 @@ interface UnaryOp extends Arity {
 
 interface BinaryOp extends Arity {
   // Validates number of children to be 2.
-  default void validateChildren(List<BaseOp> children) throws TypeMismatchException, PredicateValidationException, TypeNotSupportedException {
+  default void validateChildren(List<BaseOp> children) throws PredicateException {
     if (children.size() != 2)
       throw new PredicateValidationException(children.size(), this, 2);
 
@@ -111,7 +111,7 @@ interface BinaryOp extends Arity {
 // not used currently
 interface NaryOp extends Arity {
   // Validates number of children to be at least 2.
-  default void validateChildren(List<BaseOp> children) throws PredicateValidationException, TypeNotSupportedException, TypeMismatchException {
+  default void validateChildren(List<BaseOp> children) throws PredicateException {
     if (children.size() < 2) {
       throw new PredicateValidationException(children.size(), this, 2);
     }

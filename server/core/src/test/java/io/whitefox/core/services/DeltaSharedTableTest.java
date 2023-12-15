@@ -128,4 +128,24 @@ public class DeltaSharedTableTest {
     assertEquals(response.other().size(), 9);
   }
 
+  @Test
+  void queryTableWithColumnRangePredicate() {
+    var tableName = "partitioned-delta-table-with-multiple-columns";
+    var predicate = "{"
+            + "      \"op\":\"lessThan\",\n"
+            + "      \"children\":[\n"
+            + "        {\"op\":\"column\",\"name\":\"id\",\"valueType\":\"int\"},\n"
+            + "        {\"op\":\"literal\",\"value\":\"4\",\"valueType\":\"int\"}\n"
+            + "      ]\n"
+            + "}";
+
+    var PTable = new SharedTable(
+            tableName, "default", "share1", deltaTable(tableName));
+    var DTable = DeltaSharedTable.of(PTable);
+    var request = new ReadTableRequest.ReadTableCurrentVersion(
+            List.of(predicate), Optional.empty());
+    var response = DTable.queryTable(request);
+    assertEquals(response.other().size(), 9);
+  }
+
 }
