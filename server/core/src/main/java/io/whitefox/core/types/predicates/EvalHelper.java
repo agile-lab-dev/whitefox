@@ -1,31 +1,25 @@
 package io.whitefox.core.types.predicates;
 
-import io.whitefox.core.ColumnRange;
 import io.whitefox.core.types.*;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 // Only for partition values
 public class EvalHelper {
 
-  static LeafEvaluationResult validateAndGetRange(List<LeafOp> children, EvalContext ctx) throws PredicateException {
-    var leftChild = (ColumnOp) children.get(0);
-    var columnRange = leftChild.evalExpectColumnRange(ctx);
-
-    var rightChild = children.get(1);
-    var rightType = rightChild.evalExpectValueAndType(ctx).getRight();
-    var rightVal = rightChild.evalExpectValueAndType(ctx).getLeft();
+  static LeafEvaluationResult validateAndGetRange(
+      ColumnOp columnChild, LiteralOp literalChild, EvalContext ctx) throws PredicateException {
+    var columnRange = columnChild.evalExpectColumnRange(ctx);
+    var rightVal = literalChild.evalExpectValueAndType(ctx).getLeft();
 
     return LeafEvaluationResult.createFromRange(Pair.of(columnRange, rightVal));
   }
 
-  static LeafEvaluationResult validateAndGetTypeAndValue(
-      List<LeafOp> children, EvalContext ctx) throws PredicateException {
+  static LeafEvaluationResult validateAndGetTypeAndValue(List<LeafOp> children, EvalContext ctx)
+      throws PredicateException {
     var leftChild = children.get(0);
     var leftType = leftChild.evalExpectValueAndType(ctx).getRight();
     var leftVal = leftChild.evalExpectValueAndType(ctx).getLeft();
@@ -39,15 +33,22 @@ public class EvalHelper {
       throw new TypeMismatchException(leftType, rightType);
     }
 
-    if (leftVal == null && leftChild instanceof ColumnOp){
-      return validateAndGetRange(children, ctx);
+    if (leftVal == null && leftChild instanceof ColumnOp) {
+      return validateAndGetRange((ColumnOp) leftChild, (LiteralOp) rightChild, ctx);
+    }
+
+    // maybe better to enforce the Equal/LessThan... to explicitly require a column child and
+    // literal child
+    if (rightVal == null && rightChild instanceof ColumnOp) {
+      return validateAndGetRange((ColumnOp) rightChild, (LiteralOp) leftChild, ctx);
     }
 
     // We throw an exception for nulls, which will skip filtering.
     if (leftVal == null || rightVal == null) {
       throw new NullTypeException(leftChild, rightChild);
     }
-    return LeafEvaluationResult.createFromPartitionColumn(Pair.of(Pair.of(leftType, leftVal), Pair.of(rightType, rightVal)));
+    return LeafEvaluationResult.createFromPartitionColumn(
+        Pair.of(Pair.of(leftType, leftVal), Pair.of(rightType, rightVal)));
   }
 
   // Implements "equal" between two leaf operations.
@@ -59,9 +60,8 @@ public class EvalHelper {
       var value = range.getRight();
       return columnRange.contains(value);
     });
-    if (rangeEvaluation.isPresent())
-      return rangeEvaluation.get();
-    else if (leafEvaluationResult.partitionEvaluationResult.isPresent()){
+    if (rangeEvaluation.isPresent()) return rangeEvaluation.get();
+    else if (leafEvaluationResult.partitionEvaluationResult.isPresent()) {
       var typesAndValues = leafEvaluationResult.partitionEvaluationResult.get();
       var leftType = typesAndValues.getLeft().getLeft();
       var leftVal = typesAndValues.getLeft().getRight();
@@ -77,12 +77,8 @@ public class EvalHelper {
         return leftVal.equals(rightVal);
       } else if (DateType.DATE.equals(leftType)) {
         return Date.valueOf(leftVal).equals(Date.valueOf(rightVal));
-      }
-      else
-        throw new TypeNotSupportedException(leftType);
-    }
-  else
-    throw new PredicateException();
+      } else throw new TypeNotSupportedException(leftType);
+    } else throw new PredicateException();
   }
 
   static Boolean lessThan(List<LeafOp> children, EvalContext ctx) throws PredicateException {
@@ -94,9 +90,8 @@ public class EvalHelper {
       return columnRange.canBeLess(value);
     });
 
-    if (rangeEvaluation.isPresent())
-      return rangeEvaluation.get();
-    else if (leafEvaluationResult.partitionEvaluationResult.isPresent()){
+    if (rangeEvaluation.isPresent()) return rangeEvaluation.get();
+    else if (leafEvaluationResult.partitionEvaluationResult.isPresent()) {
       var typesAndValues = leafEvaluationResult.partitionEvaluationResult.get();
       var leftType = typesAndValues.getLeft().getLeft();
       var leftVal = typesAndValues.getLeft().getRight();
@@ -110,12 +105,8 @@ public class EvalHelper {
         return leftVal.compareTo(rightVal) < 0;
       } else if (DateType.DATE.equals(leftType)) {
         return Date.valueOf(leftVal).before(Date.valueOf(rightVal));
-      }
-      else
-        throw new TypeNotSupportedException(leftType);
-    }
-    else
-      throw new PredicateException();
+      } else throw new TypeNotSupportedException(leftType);
+    } else throw new PredicateException();
   }
 
   // Validates that the specified value is in the correct format.

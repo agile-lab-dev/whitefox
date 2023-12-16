@@ -12,7 +12,6 @@ import io.whitefox.core.SharedTable;
 import java.sql.Timestamp;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Test;
@@ -83,8 +82,7 @@ public class DeltaSharedTableTest {
     var PTable = new SharedTable(
         "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
-    var request = new ReadTableRequest.ReadTableCurrentVersion(
-        List.of(), Optional.empty());
+    var request = new ReadTableRequest.ReadTableCurrentVersion(List.of(), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(response.protocol(), new Protocol(Optional.of(1)));
     assertEquals(response.other().size(), 9);
@@ -93,18 +91,18 @@ public class DeltaSharedTableTest {
   @Test
   void queryTableWithJsonPredicate() {
     var predicate = "{"
-            + "      \"op\":\"equal\",\n"
-            + "      \"children\":[\n"
-            + "        {\"op\":\"column\",\"name\":\"date\",\"valueType\":\"date\"},\n"
-            + "        {\"op\":\"literal\",\"value\":\"2021-08-15\",\"valueType\":\"date\"}\n"
-            + "      ]\n"
-            + "}";
+        + "      \"op\":\"equal\",\n"
+        + "      \"children\":[\n"
+        + "        {\"op\":\"column\",\"name\":\"date\",\"valueType\":\"date\"},\n"
+        + "        {\"op\":\"literal\",\"value\":\"2021-08-15\",\"valueType\":\"date\"}\n"
+        + "      ]\n"
+        + "}";
 
     var PTable = new SharedTable(
-            "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
+        "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
-    var request = new ReadTableRequest.ReadTableCurrentVersion(
-            List.of(predicate), Optional.empty());
+    var request =
+        new ReadTableRequest.ReadTableCurrentVersion(List.of(predicate), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(response.other().size(), 4);
   }
@@ -112,18 +110,18 @@ public class DeltaSharedTableTest {
   @Test
   void queryTableWithInvalidJsonPredicate() {
     var predicate = "{"
-            + "      \"op\":\"equal\",\n"
-            + "      \"children\":[\n"
-            + "        {\"op\":\"column\",\"name\":\"dating\",\"valueType\":\"date\"},\n"
-            + "        {\"op\":\"literal\",\"value\":\"2021-08-15\",\"valueType\":\"date\"}\n"
-            + "      ]\n"
-            + "}";
+        + "      \"op\":\"equal\",\n"
+        + "      \"children\":[\n"
+        + "        {\"op\":\"column\",\"name\":\"dating\",\"valueType\":\"date\"},\n"
+        + "        {\"op\":\"literal\",\"value\":\"2021-08-15\",\"valueType\":\"date\"}\n"
+        + "      ]\n"
+        + "}";
 
     var PTable = new SharedTable(
-            "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
+        "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
-    var request = new ReadTableRequest.ReadTableCurrentVersion(
-            List.of(predicate), Optional.empty());
+    var request =
+        new ReadTableRequest.ReadTableCurrentVersion(List.of(predicate), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(response.other().size(), 9);
   }
@@ -132,20 +130,18 @@ public class DeltaSharedTableTest {
   void queryTableWithColumnRangePredicate() {
     var tableName = "partitioned-delta-table-with-multiple-columns";
     var predicate = "{"
-            + "      \"op\":\"lessThan\",\n"
-            + "      \"children\":[\n"
-            + "        {\"op\":\"column\",\"name\":\"id\",\"valueType\":\"int\"},\n"
-            + "        {\"op\":\"literal\",\"value\":\"4\",\"valueType\":\"int\"}\n"
-            + "      ]\n"
-            + "}";
+        + "      \"op\":\"lessThan\",\n"
+        + "      \"children\":[\n"
+        + "        {\"op\":\"column\",\"name\":\"id\",\"valueType\":\"int\"},\n"
+        + "        {\"op\":\"literal\",\"value\":\"4\",\"valueType\":\"int\"}\n"
+        + "      ]\n"
+        + "}";
 
-    var PTable = new SharedTable(
-            tableName, "default", "share1", deltaTable(tableName));
+    var PTable = new SharedTable(tableName, "default", "share1", deltaTable(tableName));
     var DTable = DeltaSharedTable.of(PTable);
-    var request = new ReadTableRequest.ReadTableCurrentVersion(
-            List.of(predicate), Optional.empty());
+    var request =
+        new ReadTableRequest.ReadTableCurrentVersion(List.of(predicate), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(response.other().size(), 1);
   }
-
 }

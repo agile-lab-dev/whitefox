@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.whitefox.core.types.*;
 import java.io.IOException;
 
-
-
 public class DataTypeDeserializer extends StdDeserializer<DataType> {
 
   // needed for jackson

@@ -3,14 +3,14 @@ package io.whitefox.core.types.predicates;
 import io.whitefox.core.types.DataType;
 
 public class TypeNotSupportedException extends PredicateException {
-    final private DataType type;
+  private final DataType type;
 
-    public TypeNotSupportedException(DataType type) {
-        this.type = type;
-    }
+  public TypeNotSupportedException(DataType type) {
+    this.type = type;
+  }
 
-    @Override
-    public String getMessage() {
-        return "Unsupported type: " + type.toString();
-    }
+  @Override
+  public String getMessage() {
+    return "Unsupported type: " + type.toString();
+  }
 }

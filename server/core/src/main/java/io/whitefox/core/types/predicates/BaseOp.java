@@ -3,7 +3,6 @@ package io.whitefox.core.types.predicates;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.whitefox.core.types.*;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -28,18 +27,19 @@ public interface BaseOp {
   default Boolean isSupportedType(DataType valueType, EvaluatorVersion version) {
     if (version == EvaluatorVersion.V2) {
       return (valueType instanceof BooleanType
-              || valueType instanceof IntegerType
-              || valueType instanceof StringType
-              || valueType instanceof DateType
-              || valueType instanceof LongType
-              || valueType instanceof TimestampType
-              || valueType instanceof FloatType
-              || valueType instanceof DoubleType);
-    } else return (valueType instanceof BooleanType
-            || valueType instanceof IntegerType
-            || valueType instanceof StringType
-            || valueType instanceof DateType
-            || valueType instanceof LongType);
+          || valueType instanceof IntegerType
+          || valueType instanceof StringType
+          || valueType instanceof DateType
+          || valueType instanceof LongType
+          || valueType instanceof TimestampType
+          || valueType instanceof FloatType
+          || valueType instanceof DoubleType);
+    } else
+      return (valueType instanceof BooleanType
+          || valueType instanceof IntegerType
+          || valueType instanceof StringType
+          || valueType instanceof DateType
+          || valueType instanceof LongType);
   }
 
   Object eval(EvalContext ctx) throws PredicateException;
@@ -65,14 +65,14 @@ public interface BaseOp {
 }
 
 // marker interface for operator arity used for easier exception handling
-interface Arity {};
+interface Arity {}
+;
 
 // Represents a unary operation.
 interface UnaryOp extends Arity {
   // Validates number of children to be 1.
   default void validateChildren(List<BaseOp> children) throws PredicateException {
-    if (children.size() != 1)
-      throw new PredicateValidationException(children.size(), this, 1);
+    if (children.size() != 1) throw new PredicateValidationException(children.size(), this, 1);
     try {
       children.get(0).validate();
     } catch (PredicateException e) {
@@ -84,8 +84,7 @@ interface UnaryOp extends Arity {
 interface BinaryOp extends Arity {
   // Validates number of children to be 2.
   default void validateChildren(List<BaseOp> children) throws PredicateException {
-    if (children.size() != 2)
-      throw new PredicateValidationException(children.size(), this, 2);
+    if (children.size() != 2) throw new PredicateValidationException(children.size(), this, 2);
 
     // otherwise cannot throw exception in method call of lambda
     for (BaseOp c : children) {

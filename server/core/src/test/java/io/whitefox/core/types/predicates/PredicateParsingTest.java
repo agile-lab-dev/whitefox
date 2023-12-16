@@ -1,10 +1,9 @@
 package io.whitefox.core.types.predicates;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import io.whitefox.core.JsonPredicatesUtils;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PredicateParsingTest {
 
@@ -52,22 +51,23 @@ public class PredicateParsingTest {
   @Test
   void testCustomExceptionOnBadJson() {
     var predicate = "{\n" + "  \"op\":\"and\",\n"
-            + "  \"children\":[\n"
-            + "    {\n"
-            + "      \"op\":\"equals\",\n"
-            + "      \"children\":[\n"
-            + "        {\"op\":\"columna\",\"name\":\"hireDate\",\"valueType\":\"date\"},\n"
-            + "        {\"op\":\"literal\",\"value\":\"2021-04-29\",\"valueType\":\"date\"}\n"
-            + "      ]\n"
-            + "    },\n"
-            + "    {\n"
-            + "      \"op\":\"lessThans\",\"children\":[\n"
-            + "        {\"op\":\"column\",\"name\":\"id\",\"valueType\":\"int\"},\n"
-            + "        {\"op\":\"literal\",\"value\":\"25\",\"valueType\":\"int\"}\n"
-            + "      ]\n"
-            + "    }\n"
-            + "  ]\n"
-            + "}";
-    assertThrows(PredicateParsingException.class , () -> JsonPredicatesUtils.parsePredicate(predicate));
+        + "  \"children\":[\n"
+        + "    {\n"
+        + "      \"op\":\"equals\",\n"
+        + "      \"children\":[\n"
+        + "        {\"op\":\"columna\",\"name\":\"hireDate\",\"valueType\":\"date\"},\n"
+        + "        {\"op\":\"literal\",\"value\":\"2021-04-29\",\"valueType\":\"date\"}\n"
+        + "      ]\n"
+        + "    },\n"
+        + "    {\n"
+        + "      \"op\":\"lessThans\",\"children\":[\n"
+        + "        {\"op\":\"column\",\"name\":\"id\",\"valueType\":\"int\"},\n"
+        + "        {\"op\":\"literal\",\"value\":\"25\",\"valueType\":\"int\"}\n"
+        + "      ]\n"
+        + "    }\n"
+        + "  ]\n"
+        + "}";
+    assertThrows(
+        PredicateParsingException.class, () -> JsonPredicatesUtils.parsePredicate(predicate));
   }
 }

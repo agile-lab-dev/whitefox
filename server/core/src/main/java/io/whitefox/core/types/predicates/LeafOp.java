@@ -1,18 +1,17 @@
 package io.whitefox.core.types.predicates;
 
+import static io.whitefox.core.JsonPredicatesUtils.createColumnRange;
+import static io.whitefox.core.types.predicates.EvaluatorVersion.V1;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.whitefox.core.ColumnRange;
 import io.whitefox.core.types.BooleanType;
 import io.whitefox.core.types.DataType;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.List;
 import java.util.Objects;
-
-import static io.whitefox.core.JsonPredicatesUtils.createColumnRange;
-import static io.whitefox.core.types.predicates.EvaluatorVersion.V1;
+import org.apache.commons.lang3.tuple.Pair;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "op")
 @JsonSubTypes({
@@ -72,7 +71,7 @@ class ColumnOp extends LeafOp {
     return Boolean.valueOf(resolve(ctx));
   }
 
-  public ColumnRange evalExpectColumnRange(EvalContext ctx) {
+  public ColumnRange evalExpectColumnRange(EvalContext ctx) throws NonExistingColumnException {
     return createColumnRange(name, ctx, valueType);
   }
 
