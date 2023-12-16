@@ -3,21 +3,13 @@ package io.whitefox.core.types.predicates;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.delta.standalone.DeltaLog;
-import io.delta.standalone.actions.AddFile;
-import io.whitefox.core.*;
+import io.whitefox.core.ColumnRange;
 import io.whitefox.core.types.BooleanType;
 import io.whitefox.core.types.DataType;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Date;
-import java.util.*;
-
-import io.whitefox.core.types.DateType;
-import io.whitefox.core.types.IntegerType;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.hadoop.conf.Configuration;
+
+import java.util.List;
+import java.util.Objects;
 
 import static io.whitefox.core.JsonPredicatesUtils.createColumnRange;
 import static io.whitefox.core.types.predicates.EvaluatorVersion.V1;

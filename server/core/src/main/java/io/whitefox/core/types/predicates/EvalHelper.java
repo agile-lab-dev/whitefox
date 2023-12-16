@@ -6,13 +6,14 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 // Only for partition values
 public class EvalHelper {
 
-  static Pair<ColumnRange, String> validateAndGetRange(List<LeafOp> children, EvalContext ctx) throws PredicateException {
+  static LeafEvaluationResult validateAndGetRange(List<LeafOp> children, EvalContext ctx) throws PredicateException {
     var leftChild = (ColumnOp) children.get(0);
     var columnRange = leftChild.evalExpectColumnRange(ctx);
 
@@ -20,10 +21,10 @@ public class EvalHelper {
     var rightType = rightChild.evalExpectValueAndType(ctx).getRight();
     var rightVal = rightChild.evalExpectValueAndType(ctx).getLeft();
 
-    return Pair.of(columnRange, rightVal);
+    return LeafEvaluationResult.createFromRange(Pair.of(columnRange, rightVal));
   }
 
-  static Pair<Pair<ColumnRange, String>,Pair<Pair<DataType, String>, Pair<DataType, String>>> validateAndGetTypeAndValue(
+  static LeafEvaluationResult validateAndGetTypeAndValue(
       List<LeafOp> children, EvalContext ctx) throws PredicateException {
     var leftChild = children.get(0);
     var leftType = leftChild.evalExpectValueAndType(ctx).getRight();
@@ -39,76 +40,84 @@ public class EvalHelper {
     }
 
     if (leftVal == null && leftChild instanceof ColumnOp){
-      return Pair.of(validateAndGetRange(children, ctx), null);
+      return validateAndGetRange(children, ctx);
     }
 
     // We throw an exception for nulls, which will skip filtering.
     if (leftVal == null || rightVal == null) {
       throw new NullTypeException(leftChild, rightChild);
     }
-    return Pair.of(null, Pair.of(Pair.of(leftType, leftVal), Pair.of(rightType, rightVal)));
+    return LeafEvaluationResult.createFromPartitionColumn(Pair.of(Pair.of(leftType, leftVal), Pair.of(rightType, rightVal)));
   }
 
   // Implements "equal" between two leaf operations.
   static Boolean equal(List<LeafOp> children, EvalContext ctx) throws PredicateException {
 
-    var columnRangeOrTypeAndValue = validateAndGetTypeAndValue(children, ctx);
-    if (columnRangeOrTypeAndValue.getLeft() != null) {
-      var columnRange = columnRangeOrTypeAndValue.getLeft().getLeft();
-      var value = columnRangeOrTypeAndValue.getLeft().getRight();
+    var leafEvaluationResult = validateAndGetTypeAndValue(children, ctx);
+    var rangeEvaluation = leafEvaluationResult.rangeEvaluationResult.map(range -> {
+      var columnRange = range.getLeft();
+      var value = range.getRight();
       return columnRange.contains(value);
+    });
+    if (rangeEvaluation.isPresent())
+      return rangeEvaluation.get();
+    else if (leafEvaluationResult.partitionEvaluationResult.isPresent()){
+      var typesAndValues = leafEvaluationResult.partitionEvaluationResult.get();
+      var leftType = typesAndValues.getLeft().getLeft();
+      var leftVal = typesAndValues.getLeft().getRight();
+      var rightVal = typesAndValues.getRight().getRight();
+
+      if (BooleanType.BOOLEAN.equals(leftType)) {
+        return Boolean.valueOf(leftVal) == Boolean.valueOf(rightVal);
+      } else if (IntegerType.INTEGER.equals(leftType)) {
+        return Integer.parseInt(leftVal) == Integer.parseInt(rightVal);
+      } else if (LongType.LONG.equals(leftType)) {
+        return Long.parseLong(leftVal) == Long.parseLong(rightVal);
+      } else if (StringType.STRING.equals(leftType)) {
+        return leftVal.equals(rightVal);
+      } else if (DateType.DATE.equals(leftType)) {
+        return Date.valueOf(leftVal).equals(Date.valueOf(rightVal));
+      }
+      else
+        throw new TypeNotSupportedException(leftType);
     }
-
-
-    var typesAndValues = columnRangeOrTypeAndValue.getRight();
-    var leftType = typesAndValues.getLeft().getLeft();
-    var leftVal = typesAndValues.getLeft().getRight();
-    var rightVal = typesAndValues.getRight().getRight();
-
-    if (BooleanType.BOOLEAN.equals(leftType)) {
-      return Boolean.valueOf(leftVal) == Boolean.valueOf(rightVal);
-    } else if (IntegerType.INTEGER.equals(leftType)) {
-      return Integer.parseInt(leftVal) == Integer.parseInt(rightVal);
-    } else if (LongType.LONG.equals(leftType)) {
-      return Long.parseLong(leftVal) == Long.parseLong(rightVal);
-    } else if (StringType.STRING.equals(leftType)) {
-      return leftVal.equals(rightVal);
-    } else if (DateType.DATE.equals(leftType)) {
-      return Date.valueOf(leftVal).equals(Date.valueOf(rightVal));
-    }
-    else
-      throw new TypeNotSupportedException(leftType);
+  else
+    throw new PredicateException();
   }
 
-  // TODO: supported expressions; ie. check if column + constant
-  // TODO: handle column comparisons with literals
   static Boolean lessThan(List<LeafOp> children, EvalContext ctx) throws PredicateException {
 
+    var leafEvaluationResult = validateAndGetTypeAndValue(children, ctx);
+    var rangeEvaluation = leafEvaluationResult.rangeEvaluationResult.map(range -> {
+      var columnRange = range.getLeft();
+      var value = range.getRight();
+      return columnRange.canBeLess(value);
+    });
 
-    var columnRangeOrTypeAndValue = validateAndGetTypeAndValue(children, ctx);
-    if (columnRangeOrTypeAndValue.getLeft() != null) {
-      var columnRange = columnRangeOrTypeAndValue.getLeft().getLeft();
-      var value = columnRangeOrTypeAndValue.getLeft().getRight();
-      return columnRange.contains(value);
-    }
+    if (rangeEvaluation.isPresent())
+      return rangeEvaluation.get();
+    else if (leafEvaluationResult.partitionEvaluationResult.isPresent()){
+      var typesAndValues = leafEvaluationResult.partitionEvaluationResult.get();
+      var leftType = typesAndValues.getLeft().getLeft();
+      var leftVal = typesAndValues.getLeft().getRight();
+      var rightVal = typesAndValues.getRight().getRight();
 
-    var typesAndValues = columnRangeOrTypeAndValue.getRight();
-    var leftType = typesAndValues.getLeft().getLeft();
-    var leftVal = typesAndValues.getLeft().getRight();
-    var rightVal = typesAndValues.getRight().getRight();
-
-    if (IntegerType.INTEGER.equals(leftType)) {
-      return Integer.parseInt(leftVal) < Integer.parseInt(rightVal);
-    } else if (LongType.LONG.equals(leftType)) {
-      return Long.parseLong(leftVal) < Long.parseLong(rightVal);
-    } else if (StringType.STRING.equals(leftType)) {
-      return leftVal.compareTo(rightVal) < 0;
-    } else if (DateType.DATE.equals(leftType)) {
-      return Date.valueOf(leftVal).before(Date.valueOf(rightVal));
+      if (IntegerType.INTEGER.equals(leftType)) {
+        return Integer.parseInt(leftVal) < Integer.parseInt(rightVal);
+      } else if (LongType.LONG.equals(leftType)) {
+        return Long.parseLong(leftVal) < Long.parseLong(rightVal);
+      } else if (StringType.STRING.equals(leftType)) {
+        return leftVal.compareTo(rightVal) < 0;
+      } else if (DateType.DATE.equals(leftType)) {
+        return Date.valueOf(leftVal).before(Date.valueOf(rightVal));
+      }
+      else
+        throw new TypeNotSupportedException(leftType);
     }
     else
-      throw new TypeNotSupportedException(leftType);
+      throw new PredicateException();
   }
+
   // Validates that the specified value is in the correct format.
   // Throws an exception otherwise.
   public static void validateValue(String value, DataType valueType) {
