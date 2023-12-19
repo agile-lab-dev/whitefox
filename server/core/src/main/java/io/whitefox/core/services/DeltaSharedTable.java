@@ -88,9 +88,9 @@ public class DeltaSharedTable implements InternalSharedTable {
     return getSnapshot(startingTimestamp).map(Snapshot::getVersion);
   }
 
-  private boolean evaluatePredicate(String predicate, EvalContext ctx, AddFile f) {
+  private boolean evaluateJsonPredicate(String predicate, EvalContext ctx, AddFile f) {
     try {
-      var parsedPredicate = JsonPredicatesUtils.parsePredicate(predicate);
+      var parsedPredicate = JsonPredicatesUtils.parseJsonPredicate(predicate);
       return parsedPredicate.evalExpectBoolean(ctx);
     } catch (PredicateException e) {
       logger.debug("Caught exception for predicate: " + predicate + " - " + e.getMessage());
@@ -101,14 +101,14 @@ public class DeltaSharedTable implements InternalSharedTable {
     }
   }
 
-  public boolean filterFilesBasedOnPredicates(List<String> predicates, AddFile f) {
+  public boolean filterFilesBasedOnJsonPredicates(List<String> predicates, AddFile f) {
     // if there are no predicates return all possible files
     if (predicates == null) {
       return true;
     }
     try {
       var ctx = JsonPredicatesUtils.createEvalContext(f);
-      return predicates.stream().allMatch(p -> evaluatePredicate(p, ctx, f));
+      return predicates.stream().allMatch(p -> evaluateJsonPredicate(p, ctx, f));
     } catch (PredicateException e) {
       logger.debug("Caught exception: " + e.getMessage());
       logger.info("File: " + f.getPath()
@@ -139,7 +139,7 @@ public class DeltaSharedTable implements InternalSharedTable {
         new Protocol(Optional.of(1)),
         metadataFromSnapshot(snapshot),
         snapshot.getAllFiles().stream()
-            .filter(f -> filterFilesBasedOnPredicates(predicates, f))
+            .filter(f -> filterFilesBasedOnJsonPredicates(predicates, f))
             .map(f -> new TableFileToBeSigned(
                 location() + "/" + f.getPath(),
                 f.getSize(),

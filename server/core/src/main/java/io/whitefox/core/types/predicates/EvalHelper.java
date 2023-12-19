@@ -10,7 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 // Only for partition values
 public class EvalHelper {
 
-  static LeafEvaluationResult validateAndGetRange(
+  private static LeafEvaluationResult validateAndGetRange(
       ColumnOp columnChild, LiteralOp literalChild, EvalContext ctx) throws PredicateException {
     var columnRange = columnChild.evalExpectColumnRange(ctx);
     var rightVal = literalChild.evalExpectValueAndType(ctx).getLeft();
@@ -18,7 +18,7 @@ public class EvalHelper {
     return LeafEvaluationResult.createFromRange(Pair.of(columnRange, rightVal));
   }
 
-  static LeafEvaluationResult validateAndGetTypeAndValue(List<LeafOp> children, EvalContext ctx)
+  private static LeafEvaluationResult validateAndGetTypeAndValue(List<LeafOp> children, EvalContext ctx)
       throws PredicateException {
     var leftChild = children.get(0);
     var leftType = leftChild.evalExpectValueAndType(ctx).getRight();

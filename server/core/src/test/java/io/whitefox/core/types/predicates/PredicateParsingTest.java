@@ -16,7 +16,7 @@ public class PredicateParsingTest {
         + "    {\"op\":\"literal\",\"value\":\"2021-04-29\",\"valueType\":\"date\"}\n"
         + "  ]\n"
         + "}";
-    var op = JsonPredicatesUtils.parsePredicate(predicate);
+    var op = JsonPredicatesUtils.parseJsonPredicate(predicate);
     op.validate();
     assert (op instanceof EqualOp);
     assert (((EqualOp) op).children.size() == 2);
@@ -41,7 +41,7 @@ public class PredicateParsingTest {
         + "    }\n"
         + "  ]\n"
         + "}";
-    var op = JsonPredicatesUtils.parsePredicate(predicate);
+    var op = JsonPredicatesUtils.parseJsonPredicate(predicate);
     op.validate();
     assert (op instanceof AndOp);
     assert (((AndOp) op).children.size() == 2);
@@ -68,6 +68,6 @@ public class PredicateParsingTest {
         + "  ]\n"
         + "}";
     assertThrows(
-        PredicateParsingException.class, () -> JsonPredicatesUtils.parsePredicate(predicate));
+        PredicateParsingException.class, () -> JsonPredicatesUtils.parseJsonPredicate(predicate));
   }
 }

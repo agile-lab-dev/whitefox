@@ -3,7 +3,14 @@ package io.whitefox.core.types.predicates;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.whitefox.core.types.DateType;
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.expression.BinaryExpression;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.statement.select.PlainSelect;
+
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 // Represents a non-leaf operation.
@@ -23,6 +30,26 @@ public abstract class NonLeafOp implements BaseOp {
 
   @JsonProperty("children")
   List<BaseOp> children;
+
+  public static NonLeafOp createPartitionFilter(List<LeafOp> children, String operator) throws PredicateException {
+    switch (operator) {
+      case "=":
+        return new EqualOp(children);
+      case "<":
+        return new LessThanOp(children);
+      case "<=":
+        return new LessThanOrEqualOp(children);
+      case ">":
+        return new GreaterThanOp(children);
+      case ">=":
+        return new GreaterThanOrEqualOp(children);
+      case "isnull":
+        return new IsNullOp(children);
+      default:
+        // TODO: add not supported sql exception
+        throw new PredicateException();
+    }
+  }
 
   public List<BaseOp> getAllChildren() {
     // TODO flat map every child
@@ -156,6 +183,10 @@ class GreaterThanOp extends NonLeafOp implements BinaryOp {
     super();
   }
 
+  public GreaterThanOp(List<LeafOp> children) {
+    this.children = children;
+  }
+
   @Override
   public void validate() throws PredicateException {
     validateChildren(
@@ -181,6 +212,10 @@ class GreaterThanOrEqualOp extends NonLeafOp implements BinaryOp {
 
   public GreaterThanOrEqualOp() {
     super();
+  }
+
+  public GreaterThanOrEqualOp(List<LeafOp> children) {
+    this.children = children;
   }
 
   @Override
