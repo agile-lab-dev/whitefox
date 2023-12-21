@@ -1,13 +1,20 @@
 provider "aws" {
-  region = "eu-west-1"
+  region = var.region
 }
+
 data "aws_availability_zones" "available" {
   state = "available"
 }
+
 variable "public_subnet" {
   type    = list(string)
   default = []
 }
+
+variable "region" {
+  type = string
+}
+
 resource "aws_vpc" "whitefox_vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_support   = true
@@ -16,22 +23,12 @@ resource "aws_vpc" "whitefox_vpc" {
     Name = "whitefox-vpc"
   }
 }
+
 resource "aws_internet_gateway" "whitefox_igv" {
   vpc_id = "${aws_vpc.whitefox_vpc.id}"
   tags   = {
     Name = "whitefox_igv"
   }
-}
-
-resource "aws_subnet" "whitefox_public_subnets" {
-  count             = "${length(var.public_subnet)}"
-  vpc_id            = "${aws_vpc.whitefox_vpc.id}"
-  cidr_block        = "${var.public_subnet[count.index]}"
-  availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
-  tags              = {
-    Name = "whitefox-public-subnet-${count.index}"
-  }
-  map_public_ip_on_launch = true  # This is important for instances in the subnet to get a public IP
 }
 
 # Create a route table for public subnets
@@ -56,8 +53,7 @@ resource "aws_route_table_association" "public_association" {
 }
 
 ####
-resource "aws_subnet" "whitefox_subnets" {
-
+resource "aws_subnet" "whitefox_public_subnets" {
   count             = "${length(var.public_subnet)}"
   vpc_id            = "${aws_vpc.whitefox_vpc.id}"
   cidr_block        = "${var.public_subnet[count.index]}"
@@ -93,8 +89,8 @@ resource "aws_security_group" "whitefox_lb_sg" {
   vpc_id      = aws_vpc.whitefox_vpc.id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 8080
+    to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -117,7 +113,7 @@ resource "aws_ecs_task_definition" "whitefox_server" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
-
+  execution_role_arn       = aws_iam_role.whitefox_execution_role.arn
   container_definitions = <<DEFINITION
   [
     {
@@ -127,13 +123,24 @@ resource "aws_ecs_task_definition" "whitefox_server" {
       "portMappings": [
         {
           "containerPort": 8080,
-          "hostPort": 8080
+          "hostPort": 8080,
+          "protocol": "TCP"
         }
-      ]
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "${aws_cloudwatch_log_group.whitefox_server_log_group.name}",
+          "awslogs-region": "${var.region}",
+          "awslogs-stream-prefix": "whitefox-prefix"
+        }
+      }
     }
   ]
   DEFINITION
 }
+
 resource "aws_ecs_service" "whitefox_service" {
   name            = "whitefox-service"
   cluster         = aws_ecs_cluster.ecs_cluster.id
@@ -141,42 +148,56 @@ resource "aws_ecs_service" "whitefox_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = [for subnet in aws_subnet.whitefox_public_subnets : subnet.id]
-    security_groups = [aws_security_group.whitefox_sg.id]
+    assign_public_ip = true
+    subnets          = [for subnet in aws_subnet.whitefox_public_subnets : subnet.id]
+    security_groups  = [aws_security_group.whitefox_sg.id]
   }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.whitefox_target_group.arn
-    container_name = "whitefox"
-    container_port = 8080
-  }
-
-  depends_on = [aws_ecs_cluster.ecs_cluster, aws_ecs_task_definition.whitefox_server, aws_lb_listener.whitefox_listener]
+  desired_count = 1
 }
 
-resource "aws_lb" "whitefox_lb" {
-  name               = "whitefox-lb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.whitefox_lb_sg.id]
-  subnets            = [for subnet in aws_subnet.whitefox_public_subnets : subnet.id]
+resource "aws_iam_role" "whitefox_execution_role" {
+  name = "whitefox-server-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version   = "2012-10-17",
+    Statement = [
+      {
+        Action    = "sts:AssumeRole",
+        Effect    = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com",
+        },
+      },
+    ],
+  })
 }
 
-resource "aws_lb_listener" "whitefox_listener" {
-  load_balancer_arn = aws_lb.whitefox_lb.arn
-  port              = 80
-  protocol          = "HTTP"
+resource "aws_iam_policy" "whitefox-cloudwatch_logs_policy" {
+  name        = "whitefox-cloudwatch-logs-policy"
+  description = "Allows Fargate to write logs to CloudWatch Logs"
 
-  default_action {
-    target_group_arn = aws_lb_target_group.whitefox_target_group.arn
-    type             = "forward"
-  }
+  policy = jsonencode({
+    Version   = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ],
+        Effect   = "Allow",
+        Resource = "*",
+      },
+    ],
+  })
 }
-resource "aws_lb_target_group" "whitefox_target_group" {
-  name     = "whitefox-target-group"
-  port     = 8080
-  protocol = "HTTP"
-  target_type = "ip"
 
-  vpc_id = aws_vpc.whitefox_vpc.id
+resource "aws_iam_role_policy_attachment" "attach_cloudwatch_logs_policy" {
+  policy_arn = aws_iam_policy.whitefox-cloudwatch_logs_policy.arn
+  role       = aws_iam_role.whitefox_execution_role.name
+}
+resource "aws_cloudwatch_log_group" "whitefox_server_log_group" {
+  name = "/ecs/whitefox"
+
+  retention_in_days = 1
 }
