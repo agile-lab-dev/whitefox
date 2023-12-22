@@ -1,13 +1,12 @@
 package io.whitefox.core.types.predicates;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Arrays;
 
 public class PredicateParsingException extends PredicateException {
 
-  private final JsonProcessingException cause;
+  private final Exception cause;
 
-  public PredicateParsingException(JsonProcessingException cause) {
+  public PredicateParsingException(Exception cause) {
     this.cause = cause;
   }
 

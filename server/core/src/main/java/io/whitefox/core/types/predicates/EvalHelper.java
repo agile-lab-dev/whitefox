@@ -18,8 +18,8 @@ public class EvalHelper {
     return LeafEvaluationResult.createFromRange(Pair.of(columnRange, rightVal));
   }
 
-  private static LeafEvaluationResult validateAndGetTypeAndValue(List<LeafOp> children, EvalContext ctx)
-      throws PredicateException {
+  private static LeafEvaluationResult validateAndGetTypeAndValue(
+      List<LeafOp> children, EvalContext ctx) throws PredicateException {
     var leftChild = children.get(0);
     var leftType = leftChild.evalExpectValueAndType(ctx).getRight();
     var leftVal = leftChild.evalExpectValueAndType(ctx).getLeft();
@@ -128,6 +128,8 @@ public class EvalHelper {
         // TODO check for non deprecated
       } else if (TimestampType.TIMESTAMP.equals(valueType)) {
         Timestamp.valueOf(value);
+      } else if (StringType.STRING.equals(valueType)) {
+        return;
       } else {
         throw new TypeNotSupportedException(valueType);
       }

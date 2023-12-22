@@ -90,7 +90,7 @@ public class DeltaSharedTable implements InternalSharedTable {
 
   private boolean evaluateJsonPredicate(String predicate, EvalContext ctx, AddFile f) {
     try {
-      var parsedPredicate = JsonPredicatesUtils.parseJsonPredicate(predicate);
+      var parsedPredicate = PredicateUtils.parseJsonPredicate(predicate);
       return parsedPredicate.evalExpectBoolean(ctx);
     } catch (PredicateException e) {
       logger.debug("Caught exception for predicate: " + predicate + " - " + e.getMessage());
@@ -101,13 +101,44 @@ public class DeltaSharedTable implements InternalSharedTable {
     }
   }
 
+  private boolean evaluateSqlPredicate(
+      String predicate, EvalContext ctx, AddFile f, Metadata metadata) {
+    try {
+      var parsedPredicate = PredicateUtils.parseSqlPredicate(predicate, ctx, metadata);
+      return parsedPredicate.evalExpectBoolean(ctx);
+    } catch (PredicateException e) {
+      logger.debug("Caught exception for predicate: " + predicate + " - " + e.getMessage());
+      logger.info("File: " + f.getPath()
+          + " will be used in processing due to failure in parsing or processing the predicate: "
+          + predicate);
+      return true;
+    }
+  }
+
+  public boolean filterFilesBasedOnSqlPredicates(
+      List<String> predicates, AddFile f, Metadata metadata) {
+    // if there are no predicates return all possible files
+    if (predicates == null) {
+      return true;
+    }
+    try {
+      var ctx = PredicateUtils.createEvalContext(f);
+      return predicates.stream().allMatch(p -> evaluateSqlPredicate(p, ctx, f, metadata));
+    } catch (PredicateException e) {
+      logger.debug("Caught exception: " + e.getMessage());
+      logger.info("File: " + f.getPath()
+          + " will be used in processing due to failure in parsing or processing the predicate");
+      return true;
+    }
+  }
+
   public boolean filterFilesBasedOnJsonPredicates(List<String> predicates, AddFile f) {
     // if there are no predicates return all possible files
     if (predicates == null) {
       return true;
     }
     try {
-      var ctx = JsonPredicatesUtils.createEvalContext(f);
+      var ctx = PredicateUtils.createEvalContext(f);
       return predicates.stream().allMatch(p -> evaluateJsonPredicate(p, ctx, f));
     } catch (PredicateException e) {
       logger.debug("Caught exception: " + e.getMessage());
@@ -116,30 +147,38 @@ public class DeltaSharedTable implements InternalSharedTable {
       return true;
     }
   }
-  ;
 
   public ReadTableResultToBeSigned queryTable(ReadTableRequest readTableRequest) {
     List<String> predicates;
+    List<String> sqlPredicates;
     Snapshot snapshot;
     if (readTableRequest instanceof ReadTableRequest.ReadTableCurrentVersion) {
       snapshot = deltaLog.snapshot();
-      predicates = ((ReadTableRequest.ReadTableCurrentVersion) readTableRequest).predicateHints();
+      predicates =
+          ((ReadTableRequest.ReadTableCurrentVersion) readTableRequest).jsonPredicateHints();
+      sqlPredicates =
+          ((ReadTableRequest.ReadTableCurrentVersion) readTableRequest).predicateHints();
     } else if (readTableRequest instanceof ReadTableRequest.ReadTableAsOfTimestamp) {
       snapshot = deltaLog.getSnapshotForTimestampAsOf(
           ((ReadTableRequest.ReadTableAsOfTimestamp) readTableRequest).timestamp());
-      predicates = ((ReadTableRequest.ReadTableAsOfTimestamp) readTableRequest).predicateHints();
+      predicates =
+          ((ReadTableRequest.ReadTableAsOfTimestamp) readTableRequest).jsonPredicateHints();
+      sqlPredicates = ((ReadTableRequest.ReadTableAsOfTimestamp) readTableRequest).predicateHints();
     } else if (readTableRequest instanceof ReadTableRequest.ReadTableVersion) {
       snapshot = deltaLog.getSnapshotForVersionAsOf(
           ((ReadTableRequest.ReadTableVersion) readTableRequest).version());
-      predicates = ((ReadTableRequest.ReadTableVersion) readTableRequest).predicateHints();
+      predicates = ((ReadTableRequest.ReadTableVersion) readTableRequest).jsonPredicateHints();
+      sqlPredicates = ((ReadTableRequest.ReadTableVersion) readTableRequest).predicateHints();
     } else {
       throw new IllegalArgumentException("Unknown ReadTableRequest type: " + readTableRequest);
     }
+    var metadata = metadataFromSnapshot(snapshot);
     return new ReadTableResultToBeSigned(
         new Protocol(Optional.of(1)),
-        metadataFromSnapshot(snapshot),
+        metadata,
         snapshot.getAllFiles().stream()
             .filter(f -> filterFilesBasedOnJsonPredicates(predicates, f))
+            .filter(f -> filterFilesBasedOnSqlPredicates(sqlPredicates, f, metadata))
             .map(f -> new TableFileToBeSigned(
                 location() + "/" + f.getPath(),
                 f.getSize(),

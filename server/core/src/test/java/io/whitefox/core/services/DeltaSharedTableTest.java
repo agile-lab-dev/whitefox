@@ -82,7 +82,8 @@ public class DeltaSharedTableTest {
     var PTable = new SharedTable(
         "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
-    var request = new ReadTableRequest.ReadTableCurrentVersion(List.of(), Optional.empty());
+    var request =
+        new ReadTableRequest.ReadTableCurrentVersion(List.of(), List.of(), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(response.protocol(), new Protocol(Optional.of(1)));
     assertEquals(response.other().size(), 9);
@@ -101,10 +102,36 @@ public class DeltaSharedTableTest {
     var PTable = new SharedTable(
         "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
-    var request =
-        new ReadTableRequest.ReadTableCurrentVersion(List.of(predicate), Optional.empty());
+    var request = new ReadTableRequest.ReadTableCurrentVersion(
+        List.of(), List.of(predicate), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(response.other().size(), 4);
+  }
+
+  @Test
+  void queryTableWithSqlPredicate() {
+    var predicate = "date = '2021-08-15'";
+
+    var PTable = new SharedTable(
+        "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
+    var DTable = DeltaSharedTable.of(PTable);
+    var request = new ReadTableRequest.ReadTableCurrentVersion(
+        List.of(predicate), List.of(), Optional.empty());
+    var response = DTable.queryTable(request);
+    assertEquals(4, response.other().size());
+  }
+
+  @Test
+  void queryTableWithNonPartitionSqlPredicate() {
+    var predicate = "id < 5";
+    var tableName = "partitioned-delta-table-with-multiple-columns";
+
+    var PTable = new SharedTable(tableName, "default", "share1", deltaTable(tableName));
+    var DTable = DeltaSharedTable.of(PTable);
+    var request = new ReadTableRequest.ReadTableCurrentVersion(
+        List.of(predicate), List.of(), Optional.empty());
+    var response = DTable.queryTable(request);
+    assertEquals(1, response.other().size());
   }
 
   @Test
@@ -120,8 +147,8 @@ public class DeltaSharedTableTest {
     var PTable = new SharedTable(
         "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
-    var request =
-        new ReadTableRequest.ReadTableCurrentVersion(List.of(predicate), Optional.empty());
+    var request = new ReadTableRequest.ReadTableCurrentVersion(
+        List.of(), List.of(predicate), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(response.other().size(), 9);
   }
@@ -139,8 +166,8 @@ public class DeltaSharedTableTest {
 
     var PTable = new SharedTable(tableName, "default", "share1", deltaTable(tableName));
     var DTable = DeltaSharedTable.of(PTable);
-    var request =
-        new ReadTableRequest.ReadTableCurrentVersion(List.of(predicate), Optional.empty());
+    var request = new ReadTableRequest.ReadTableCurrentVersion(
+        List.of(), List.of(predicate), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(response.other().size(), 1);
   }

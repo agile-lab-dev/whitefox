@@ -2,7 +2,7 @@ package io.whitefox.core.types.predicates;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.whitefox.core.JsonPredicatesUtils;
+import io.whitefox.core.PredicateUtils;
 import org.junit.jupiter.api.Test;
 
 public class PredicateParsingTest {
@@ -16,7 +16,7 @@ public class PredicateParsingTest {
         + "    {\"op\":\"literal\",\"value\":\"2021-04-29\",\"valueType\":\"date\"}\n"
         + "  ]\n"
         + "}";
-    var op = JsonPredicatesUtils.parseJsonPredicate(predicate);
+    var op = PredicateUtils.parseJsonPredicate(predicate);
     op.validate();
     assert (op instanceof EqualOp);
     assert (((EqualOp) op).children.size() == 2);
@@ -41,7 +41,7 @@ public class PredicateParsingTest {
         + "    }\n"
         + "  ]\n"
         + "}";
-    var op = JsonPredicatesUtils.parseJsonPredicate(predicate);
+    var op = PredicateUtils.parseJsonPredicate(predicate);
     op.validate();
     assert (op instanceof AndOp);
     assert (((AndOp) op).children.size() == 2);
@@ -68,6 +68,6 @@ public class PredicateParsingTest {
         + "  ]\n"
         + "}";
     assertThrows(
-        PredicateParsingException.class, () -> JsonPredicatesUtils.parseJsonPredicate(predicate));
+        PredicateParsingException.class, () -> PredicateUtils.parseJsonPredicate(predicate));
   }
 }

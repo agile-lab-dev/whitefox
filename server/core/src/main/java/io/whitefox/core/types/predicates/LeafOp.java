@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.whitefox.core.types.DataType;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "op")
 @JsonSubTypes({
@@ -36,4 +35,3 @@ public abstract class LeafOp implements BaseOp {
 
   abstract DataType getOpValueType();
 }
-

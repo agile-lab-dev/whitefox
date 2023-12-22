@@ -3,14 +3,7 @@ package io.whitefox.core.types.predicates;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.whitefox.core.types.DateType;
-import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.expression.BinaryExpression;
-import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 // Represents a non-leaf operation.
@@ -31,7 +24,8 @@ public abstract class NonLeafOp implements BaseOp {
   @JsonProperty("children")
   List<BaseOp> children;
 
-  public static NonLeafOp createPartitionFilter(List<LeafOp> children, String operator) throws PredicateException {
+  public static NonLeafOp createPartitionFilter(List<LeafOp> children, String operator)
+      throws PredicateException {
     switch (operator) {
       case "=":
         return new EqualOp(children);

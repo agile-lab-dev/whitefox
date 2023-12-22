@@ -34,16 +34,20 @@ public class DeltaMappers {
     } else if (request.getVersion() != null && request.getTimestamp() == null) {
       return new ReadTableRequest.ReadTableVersion(
           request.getPredicateHints(),
+          request.getJsonPredicateHints(),
           Optional.ofNullable(request.getLimitHint()),
           request.getVersion());
     } else if (request.getVersion() == null && request.getTimestamp() != null) {
       return new ReadTableRequest.ReadTableAsOfTimestamp(
           request.getPredicateHints(),
+          request.getJsonPredicateHints(),
           Optional.ofNullable(request.getLimitHint()),
           CommonMappers.parseTimestamp(request.getTimestamp()));
     } else if (request.getVersion() == null && request.getTimestamp() == null) {
       return new ReadTableRequest.ReadTableCurrentVersion(
-          request.getPredicateHints(), Optional.ofNullable(request.getLimitHint()));
+          request.getPredicateHints(),
+          request.getJsonPredicateHints(),
+          Optional.ofNullable(request.getLimitHint()));
     } else {
       throw new IllegalArgumentException("Cannot specify both version and timestamp");
     }

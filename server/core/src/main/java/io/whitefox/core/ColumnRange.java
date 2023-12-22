@@ -34,7 +34,7 @@ public class ColumnRange {
       return (c1 <= 0 && c2 >= 0);
     } else if (valueType instanceof TimestampType) {
       var c1 = Timestamp.valueOf(minVal).before(Timestamp.valueOf(point));
-      var c2 = Timestamp.valueOf(maxVal).before(Timestamp.valueOf(point));
+      var c2 = Timestamp.valueOf(maxVal).after(Timestamp.valueOf(point));
       return c1 && c2;
     } else if (valueType instanceof FloatType) {
       var c1 = Float.compare(Float.parseFloat(minVal), Float.parseFloat(point));
@@ -46,7 +46,7 @@ public class ColumnRange {
       return (c1 <= 0 && c2 >= 0);
     } else if (valueType instanceof DateType) {
       var c1 = Date.valueOf(minVal).before(Date.valueOf(point));
-      var c2 = Date.valueOf(maxVal).before(Date.valueOf(point));
+      var c2 = Date.valueOf(maxVal).after(Date.valueOf(point));
       return c1 && c2;
     } else if (valueType instanceof BooleanType) {
       var c1 = Boolean.parseBoolean(minVal) == Boolean.parseBoolean(point);
@@ -57,15 +57,6 @@ public class ColumnRange {
       var c2 = maxVal.compareTo(point);
       return (c1 <= 0 && c2 >= 0);
     }
-  }
-
-  public static void main(String[] args) {
-    var minVal = "4";
-    var point = "5";
-    var maxVal = "8";
-
-    var cr = new ColumnRange(minVal, maxVal, IntegerType.INTEGER);
-    cr.typedLessThan(point);
   }
 
   private Boolean typedLessThan(String point) {
@@ -85,7 +76,6 @@ public class ColumnRange {
       return (c1 < 0);
     } else if (valueType instanceof DateType) {
       return Date.valueOf(minVal).before(Date.valueOf(point));
-
     } else {
       var c = minVal.compareTo(point);
       return (c < 0);
