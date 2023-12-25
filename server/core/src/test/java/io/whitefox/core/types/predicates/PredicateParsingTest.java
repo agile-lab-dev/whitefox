@@ -2,13 +2,21 @@ package io.whitefox.core.types.predicates;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.whitefox.core.Metadata;
 import io.whitefox.core.PredicateUtils;
+import io.whitefox.core.TableSchema;
+import io.whitefox.core.types.DateType;
+import io.whitefox.core.types.StructField;
+import io.whitefox.core.types.StructType;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 public class PredicateParsingTest {
 
   @Test
-  void testParsingOfEqual() throws PredicateException {
+  void testParsingOfJsonEqual() throws PredicateException {
 
     var predicate = "{\n" + "  \"op\": \"equal\",\n"
         + "  \"children\": [\n"
@@ -17,6 +25,28 @@ public class PredicateParsingTest {
         + "  ]\n"
         + "}";
     var op = PredicateUtils.parseJsonPredicate(predicate);
+    op.validate();
+    assert (op instanceof EqualOp);
+    assert (((EqualOp) op).children.size() == 2);
+  }
+
+  @Test
+  void testParsingOfSqlEqual() throws PredicateException {
+    var ctx = new EvalContext(Map.of("date", "date"), Map.of());
+    var meta = new Metadata(
+        "id",
+        Optional.empty(),
+        Optional.empty(),
+        Metadata.Format.PARQUET,
+        new TableSchema(
+            new StructType(List.of(new StructField("date", DateType.DATE, true, Map.of())))),
+        List.of("date", "age"),
+        Map.of(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty());
+    var predicate = "date = '2021-09-09'";
+    var op = PredicateUtils.parseSqlPredicate(predicate, ctx, meta);
     op.validate();
     assert (op instanceof EqualOp);
     assert (((EqualOp) op).children.size() == 2);

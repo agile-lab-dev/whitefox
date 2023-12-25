@@ -1,5 +1,8 @@
 package io.whitefox.core.services;
 
+import static io.whitefox.core.PredicateUtils.evaluateJsonPredicate;
+import static io.whitefox.core.PredicateUtils.evaluateSqlPredicate;
+
 import io.delta.standalone.DeltaLog;
 import io.delta.standalone.Snapshot;
 import io.delta.standalone.actions.AddFile;
@@ -86,33 +89,6 @@ public class DeltaSharedTable implements InternalSharedTable {
 
   public Optional<Long> getTableVersion(Optional<Timestamp> startingTimestamp) {
     return getSnapshot(startingTimestamp).map(Snapshot::getVersion);
-  }
-
-  private boolean evaluateJsonPredicate(String predicate, EvalContext ctx, AddFile f) {
-    try {
-      var parsedPredicate = PredicateUtils.parseJsonPredicate(predicate);
-      return parsedPredicate.evalExpectBoolean(ctx);
-    } catch (PredicateException e) {
-      logger.debug("Caught exception for predicate: " + predicate + " - " + e.getMessage());
-      logger.info("File: " + f.getPath()
-          + " will be used in processing due to failure in parsing or processing the predicate: "
-          + predicate);
-      return true;
-    }
-  }
-
-  private boolean evaluateSqlPredicate(
-      String predicate, EvalContext ctx, AddFile f, Metadata metadata) {
-    try {
-      var parsedPredicate = PredicateUtils.parseSqlPredicate(predicate, ctx, metadata);
-      return parsedPredicate.evalExpectBoolean(ctx);
-    } catch (PredicateException e) {
-      logger.debug("Caught exception for predicate: " + predicate + " - " + e.getMessage());
-      logger.info("File: " + f.getPath()
-          + " will be used in processing due to failure in parsing or processing the predicate: "
-          + predicate);
-      return true;
-    }
   }
 
   public boolean filterFilesBasedOnSqlPredicates(

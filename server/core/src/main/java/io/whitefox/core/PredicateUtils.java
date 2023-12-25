@@ -14,8 +14,11 @@ import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.relational.IsNullExpression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
 
 public class PredicateUtils {
+
+  private static final Logger logger = Logger.getLogger(PredicateUtils.class);
 
   private static final ObjectMapper objectMapper = DeltaObjectMapper.getInstance();
 
@@ -24,6 +27,34 @@ public class PredicateUtils {
       return objectMapper.readValue(predicate, BaseOp.class);
     } catch (JsonProcessingException e) {
       throw new PredicateParsingException(e);
+    }
+  }
+
+
+  public static boolean evaluateJsonPredicate(String predicate, EvalContext ctx, AddFile f) {
+    try {
+      var parsedPredicate = PredicateUtils.parseJsonPredicate(predicate);
+      return parsedPredicate.evalExpectBoolean(ctx);
+    } catch (PredicateException e) {
+      logger.debug("Caught exception for predicate: " + predicate + " - " + e.getMessage());
+      logger.info("File: " + f.getPath()
+          + " will be used in processing due to failure in parsing or processing the predicate: "
+          + predicate);
+      return true;
+    }
+  }
+
+  public static boolean evaluateSqlPredicate(
+      String predicate, EvalContext ctx, AddFile f, Metadata metadata) {
+    try {
+      var parsedPredicate = PredicateUtils.parseSqlPredicate(predicate, ctx, metadata);
+      return parsedPredicate.evalExpectBoolean(ctx);
+    } catch (PredicateException e) {
+      logger.debug("Caught exception for predicate: " + predicate + " - " + e.getMessage());
+      logger.info("File: " + f.getPath()
+          + " will be used in processing due to failure in parsing or processing the predicate: "
+          + predicate);
+      return true;
     }
   }
 

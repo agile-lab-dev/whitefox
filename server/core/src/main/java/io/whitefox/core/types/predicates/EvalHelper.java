@@ -111,7 +111,8 @@ public class EvalHelper {
 
   // Validates that the specified value is in the correct format.
   // Throws an exception otherwise.
-  public static void validateValue(String value, DataType valueType) {
+  public static void validateValue(String value, DataType valueType)
+      throws TypeValidationException {
     try {
       if (BooleanType.BOOLEAN.equals(valueType)) {
         Boolean.parseBoolean(value);
@@ -134,8 +135,7 @@ public class EvalHelper {
         throw new TypeNotSupportedException(valueType);
       }
     } catch (Exception e) {
-      throw new IllegalArgumentException(
-          "Error validating " + value + " for type " + valueType + ": " + e);
+      throw new TypeValidationException(value, valueType);
     }
   }
 }
