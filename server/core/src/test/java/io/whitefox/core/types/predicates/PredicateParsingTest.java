@@ -18,7 +18,7 @@ public class PredicateParsingTest {
   @Test
   void testParsingOfJsonEqual() throws PredicateException {
 
-    var predicate = "{\n" + "  \"op\": \"equal\",\n"
+    String predicate = "{\n" + "  \"op\": \"equal\",\n"
         + "  \"children\": [\n"
         + "    {\"op\": \"column\", \"name\":\"hireDate\", \"valueType\":\"date\"},\n"
         + "    {\"op\":\"literal\",\"value\":\"2021-04-29\",\"valueType\":\"date\"}\n"
@@ -54,7 +54,7 @@ public class PredicateParsingTest {
 
   @Test
   void testParsingOfNested() throws PredicateException {
-    var predicate = "{\n" + "  \"op\":\"and\",\n"
+    String predicate = "{\n" + "  \"op\":\"and\",\n"
         + "  \"children\":[\n"
         + "    {\n"
         + "      \"op\":\"equal\",\n"
@@ -80,7 +80,7 @@ public class PredicateParsingTest {
 
   @Test
   void testCustomExceptionOnBadJson() {
-    var predicate = "{\n" + "  \"op\":\"and\",\n"
+    String predicate = "{\n" + "  \"op\":\"and\",\n"
         + "  \"children\":[\n"
         + "    {\n"
         + "      \"op\":\"equals\",\n"

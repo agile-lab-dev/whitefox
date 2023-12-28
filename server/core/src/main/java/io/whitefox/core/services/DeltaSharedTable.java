@@ -9,7 +9,6 @@ import io.delta.standalone.actions.AddFile;
 import io.whitefox.core.*;
 import io.whitefox.core.Metadata;
 import io.whitefox.core.TableSchema;
-import io.whitefox.core.types.predicates.EvalContext;
 import io.whitefox.core.types.predicates.PredicateException;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
@@ -108,14 +107,14 @@ public class DeltaSharedTable implements InternalSharedTable {
     }
   }
 
-  public boolean filterFilesBasedOnJsonPredicates(List<String> predicates, AddFile f) {
+  public boolean filterFilesBasedOnJsonPredicates(Optional<String> predicates, AddFile f) {
     // if there are no predicates return all possible files
     if (predicates == null) {
       return true;
     }
     try {
       var ctx = PredicateUtils.createEvalContext(f);
-      return predicates.stream().allMatch(p -> evaluateJsonPredicate(p, ctx, f));
+      return evaluateJsonPredicate(predicates, ctx, f);
     } catch (PredicateException e) {
       logger.debug("Caught exception: " + e.getMessage());
       logger.info("File: " + f.getPath()
@@ -125,7 +124,7 @@ public class DeltaSharedTable implements InternalSharedTable {
   }
 
   public ReadTableResultToBeSigned queryTable(ReadTableRequest readTableRequest) {
-    List<String> predicates;
+    Optional<String> predicates;
     List<String> sqlPredicates;
     Snapshot snapshot;
     if (readTableRequest instanceof ReadTableRequest.ReadTableCurrentVersion) {

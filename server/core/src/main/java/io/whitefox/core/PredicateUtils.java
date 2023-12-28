@@ -30,11 +30,14 @@ public class PredicateUtils {
     }
   }
 
-
-  public static boolean evaluateJsonPredicate(String predicate, EvalContext ctx, AddFile f) {
+  public static boolean evaluateJsonPredicate(
+      Optional<String> predicate, EvalContext ctx, AddFile f) {
     try {
-      var parsedPredicate = PredicateUtils.parseJsonPredicate(predicate);
-      return parsedPredicate.evalExpectBoolean(ctx);
+      if (predicate.isEmpty()) return true;
+      else {
+        var parsedPredicate = PredicateUtils.parseJsonPredicate(predicate.get());
+        return parsedPredicate.evalExpectBoolean(ctx);
+      }
     } catch (PredicateException e) {
       logger.debug("Caught exception for predicate: " + predicate + " - " + e.getMessage());
       logger.info("File: " + f.getPath()
