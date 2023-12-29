@@ -46,7 +46,7 @@ public class WhitefoxHttpAuthenticatorTest {
     }
   }
 
-  // Nesting two test-profiles leads to an OMM: https://github.com/quarkusio/quarkus/issues/12498
+  // Nesting two test-profiles leads to an OOM: https://github.com/quarkusio/quarkus/issues/12498
   @Test
   void expectDenied() {
     given()

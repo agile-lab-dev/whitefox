@@ -20,10 +20,7 @@ import jakarta.inject.Singleton;
  * A custom {@link HttpAuthenticator}. This authenticator that performs the following main duties:
  *
  * <ul>
- *   <li>Prevents the Quarkus OIDC authentication mechanism from attempting authentication when it
- *       is not configured. Note that attempts to use the OIDC authentication mechanism when the
- *       authentication server is not properly configured will result in 500 errors as opposed to
- *       401 (not authorized).
+ *   <li>Authenticates requests using a token provided in the application.properties when authentication is enabled.
  *   <li>Completely disallows unauthenticated requests when authentication is enabled.
  * </ul>
  */
@@ -68,8 +65,9 @@ public class WhitefoxHttpAuthenticator extends HttpAuthenticator {
     // quarkus dev paths
     else if (context.normalizedPath().startsWith("/q/")) {
       return anonymous();
-    } else
+    } else {
       return selectAuthenticationMechanism(config, context).authenticate(context, identityProvider);
+    }
   }
 
   private Uni<SecurityIdentity> anonymous() {

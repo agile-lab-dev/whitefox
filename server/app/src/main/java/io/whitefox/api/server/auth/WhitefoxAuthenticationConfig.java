@@ -15,10 +15,7 @@ public interface WhitefoxAuthenticationConfig {
   @WithDefault("false")
   boolean enabled();
 
+  /** Bearer token that should be used in requests to grant authorization. */
   @WithName("bearerToken")
   Optional<String> bearerToken();
-
-  /** Returns the set of HTTP URL paths that are permitted to be serviced without authentication. */
-  @WithName("anonymous-paths")
-  Set<String> anonymousPaths();
 }
