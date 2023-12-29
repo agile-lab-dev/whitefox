@@ -14,7 +14,6 @@ import io.quarkus.vertx.http.runtime.security.HttpAuthenticationMechanism;
 import io.smallrye.mutiny.Uni;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.inject.Inject;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -40,14 +39,15 @@ public class SimpleTokenAuthenticationMechanism implements HttpAuthenticationMec
   @Override
   public Uni<SecurityIdentity> authenticate(
       RoutingContext context, IdentityProviderManager identityProviderManager) {
-    if (context.normalizedPath().startsWith("/q/"))
-      return anonymous();
+    if (context.normalizedPath().startsWith("/q/")) return anonymous();
     var optionalHeader = Optional.ofNullable(context.request().headers().get(AUTHORIZATION_HEADER));
-    QuarkusSecurityIdentity identity = new QuarkusSecurityIdentity.Builder().setPrincipal(principal).build();
-    AuthenticationFailedException missingOrUnrecognizedCredentials = new AuthenticationFailedException("Missing or unrecognized credentials");
-    AuthenticationFailedException missingToken = new AuthenticationFailedException("Simple authentication enabled, but token is missing in the request");
-    if (optionalHeader.isEmpty())
-      throw missingToken;
+    QuarkusSecurityIdentity identity =
+        new QuarkusSecurityIdentity.Builder().setPrincipal(principal).build();
+    AuthenticationFailedException missingOrUnrecognizedCredentials =
+        new AuthenticationFailedException("Missing or unrecognized credentials");
+    AuthenticationFailedException missingToken = new AuthenticationFailedException(
+        "Simple authentication enabled, but token is missing in the request");
+    if (optionalHeader.isEmpty()) throw missingToken;
     else {
       if (Objects.equals("Bearer " + token, optionalHeader.get())) {
         return Uni.createFrom().item(identity);
@@ -58,14 +58,13 @@ public class SimpleTokenAuthenticationMechanism implements HttpAuthenticationMec
   }
 
   // Not really needed for this mechanism, does not get called;
-  // The response to the user is handled through a custom attemptAuthentication from WhitefoxHttpAuthenticator
+  // The response to the user is handled through a custom attemptAuthentication from
+  // WhitefoxHttpAuthenticator
   @Override
   public Uni<ChallengeData> getChallenge(RoutingContext context) {
     var challenge = "token -> " + token;
     ChallengeData result = new ChallengeData(
-            HttpResponseStatus.UNAUTHORIZED.code(),
-            HttpHeaderNames.WWW_AUTHENTICATE,
-            challenge);
+        HttpResponseStatus.UNAUTHORIZED.code(), HttpHeaderNames.WWW_AUTHENTICATE, challenge);
     return Uni.createFrom().item(result);
   }
 

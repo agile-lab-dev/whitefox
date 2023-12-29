@@ -4,7 +4,6 @@ import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 import java.util.Optional;
-import java.util.Set;
 
 /** Configuration for Whitefox authentication settings. */
 @ConfigMapping(prefix = "whitefox.server.authentication")
