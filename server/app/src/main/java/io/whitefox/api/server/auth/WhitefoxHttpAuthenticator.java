@@ -61,8 +61,8 @@ public class WhitefoxHttpAuthenticator extends HttpAuthenticator {
     }
 
     private HttpAuthenticationMechanism selectAuthenticationMechanism(WhitefoxAuthenticationConfig config, RoutingContext context) {
-        if (config.bearerToken() != null)
-            return new SimpleTokenAuthenticationMechanism(config.bearerToken());
+        if (config.bearerToken().isPresent())
+            return new SimpleTokenAuthenticationMechanism(config.bearerToken().get());
         else
             throw new AuthenticationFailedException("Other auth mechanisms not supported right now! Please add your token to application.properties");
     }

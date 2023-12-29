@@ -42,10 +42,16 @@ public class SimpleTokenAuthenticationMechanism implements HttpAuthenticationMec
                 new QuarkusSecurityIdentity.Builder()
                         .setPrincipal(principal)
                         .build();
-        if (context.request().headers().get(AUTHORIZATION_HEADER).equals("Bearer " + token))
-            return Uni.createFrom().item(identity);
-        else
-            throw new AuthenticationFailedException("Missing or unrecognized credentials");
+        try {
+            if (context.request().headers().get(AUTHORIZATION_HEADER).equals("Bearer " + token))
+                return Uni.createFrom().item(identity);
+            else
+                throw new AuthenticationFailedException("Missing or unrecognized credentials");
+        }
+        catch (NullPointerException e){
+            throw new AuthenticationFailedException("Simple authentication enabled, but token is missing in the request");
+        }
+
     }
 
     @Override

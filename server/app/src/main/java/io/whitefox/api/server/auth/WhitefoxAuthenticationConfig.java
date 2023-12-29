@@ -4,6 +4,7 @@ import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 
+import java.util.Optional;
 import java.util.Set;
 
 /** Configuration for Whitefox authentication settings. */
@@ -16,7 +17,7 @@ public interface WhitefoxAuthenticationConfig {
     boolean enabled();
 
     @WithName("bearerToken")
-    String bearerToken();
+    Optional<String> bearerToken();
 
     /** Returns the set of HTTP URL paths that are permitted to be serviced without authentication. */
     @WithName("anonymous-paths")
