@@ -12,55 +12,48 @@ import io.quarkus.vertx.http.runtime.security.HttpAuthenticationMechanism;
 import io.smallrye.mutiny.Uni;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.inject.Inject;
-
 import java.util.Set;
 
 public class SimpleTokenAuthenticationMechanism implements HttpAuthenticationMechanism {
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final QuarkusPrincipal principal = new QuarkusPrincipal("Mr. WhiteFox");
+  private static final String AUTHORIZATION_HEADER = "Authorization";
+  private static final QuarkusPrincipal principal = new QuarkusPrincipal("Mr. WhiteFox");
 
-    String token;
+  String token;
 
-    @Inject
-    IdentityProviderManager identityProvider;
+  @Inject
+  IdentityProviderManager identityProvider;
 
+  public SimpleTokenAuthenticationMechanism(String token) {
+    this.token = token;
+  }
 
-    public SimpleTokenAuthenticationMechanism(String token) {
-        this.token = token;
+  private Uni<SecurityIdentity> anonymous() {
+    return identityProvider.authenticate(AnonymousAuthenticationRequest.INSTANCE);
+  }
+
+  @Override
+  public Uni<SecurityIdentity> authenticate(
+      RoutingContext context, IdentityProviderManager identityProviderManager) {
+    if (context.normalizedPath().startsWith("/q/")) return anonymous();
+    var identity = new QuarkusSecurityIdentity.Builder().setPrincipal(principal).build();
+    try {
+      if (context.request().headers().get(AUTHORIZATION_HEADER).equals("Bearer " + token))
+        return Uni.createFrom().item(identity);
+      else throw new AuthenticationFailedException("Missing or unrecognized credentials");
+    } catch (NullPointerException e) {
+      throw new AuthenticationFailedException(
+          "Simple authentication enabled, but token is missing in the request");
     }
+  }
 
-    private Uni<SecurityIdentity> anonymous() {
-        return identityProvider.authenticate(AnonymousAuthenticationRequest.INSTANCE);
-    }
+  @Override
+  public Uni<ChallengeData> getChallenge(RoutingContext context) {
+    return null;
+  }
 
-    @Override
-    public Uni<SecurityIdentity> authenticate(RoutingContext context, IdentityProviderManager identityProviderManager) {
-        if (context.normalizedPath().startsWith("/q/"))
-            return anonymous();
-        var identity =
-                new QuarkusSecurityIdentity.Builder()
-                        .setPrincipal(principal)
-                        .build();
-        try {
-            if (context.request().headers().get(AUTHORIZATION_HEADER).equals("Bearer " + token))
-                return Uni.createFrom().item(identity);
-            else
-                throw new AuthenticationFailedException("Missing or unrecognized credentials");
-        }
-        catch (NullPointerException e){
-            throw new AuthenticationFailedException("Simple authentication enabled, but token is missing in the request");
-        }
-
-    }
-
-    @Override
-    public Uni<ChallengeData> getChallenge(RoutingContext context) {
-        return null;
-    }
-
-    @Override
-    public Set<Class<? extends AuthenticationRequest>> getCredentialTypes() {
-        return null;
-    }
+  @Override
+  public Set<Class<? extends AuthenticationRequest>> getCredentialTypes() {
+    return null;
+  }
 }
