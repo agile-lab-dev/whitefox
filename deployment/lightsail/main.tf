@@ -23,6 +23,7 @@ resource "aws_lightsail_container_service_deployment_version" "whitefox-server" 
 
     environment = {
       "WHITEFOX_SERVER_AUTHENTICATION_BEARERTOKEN" = var.whitefox_token
+      "WHITEFOX_SERVER_AUTHENTICATION_ENABLED" = true
     }
 
     ports = {
