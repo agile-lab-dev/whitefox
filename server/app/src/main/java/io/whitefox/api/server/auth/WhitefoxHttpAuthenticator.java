@@ -29,7 +29,6 @@ import jakarta.inject.Singleton;
 @Singleton
 public class WhitefoxHttpAuthenticator extends HttpAuthenticator {
 
-
   private final IdentityProviderManager identityProvider;
   private final boolean authEnabled;
   private final WhitefoxAuthenticationConfig config;
@@ -53,7 +52,7 @@ public class WhitefoxHttpAuthenticator extends HttpAuthenticator {
       return new SimpleTokenAuthenticationMechanism(config.bearerToken().get());
     } else {
       throw new AuthenticationFailedException(
-              "Other auth mechanisms not supported right now! Please add your token to application.properties");
+          "Other auth mechanisms not supported right now! Please add your token to application.properties");
     }
   }
 
