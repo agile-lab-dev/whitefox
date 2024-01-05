@@ -375,12 +375,12 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
     var responseBodyLines = given()
             .when()
             .filter(deltaFilter)
-            .body("{\"jsonPredicateHints\": \"{\n" +
-                    "  \"op\": \"equal\",\n" +
-                    "  \"children\": [\n" +
-                    "    {\"op\": \"column\", \"name\":\"date\", \"valueType\":\"date\"},\n" +
-                    "    {\"op\":\"literal\",\"value\":\"2021-04-29\",\"valueType\":\"date\"}\n" +
-                    "  ]\n" +
+            .body("{\"jsonPredicateHints\": \"{" +
+                    "  \\\"op\\\": \\\"equal\\\"," +
+                    "  \\\"children\\\": [" +
+                    "    {\\\"op\\\": \\\"column\\\", \\\"name\\\":\\\"date\\\", \\\"valueType\\\":\\\"date\\\"}," +
+                    "    {\\\"op\\\":\\\"literal\\\",\\\"value\\\":\\\"2021-04-29\\\",\\\"valueType\\\":\\\"date\\\"}" +
+                    "  ]" +
                     "}\"}")
             .header(new Header("Content-Type", "application/json"))
             .post(
