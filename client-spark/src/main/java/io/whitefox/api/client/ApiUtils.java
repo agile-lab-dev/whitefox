@@ -68,6 +68,7 @@ public class ApiUtils {
       var apiClient = new ApiClient();
       apiClient.setHost(endpoint.getHost());
       apiClient.setPort(endpoint.getPort());
+      apiClient.setScheme(endpoint.getScheme());
       apiClient.setRequestInterceptor(
           builder -> builder.header("Authorization", String.format("Bearer %s", token)));
       return apiClient;

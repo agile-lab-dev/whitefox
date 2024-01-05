@@ -48,6 +48,7 @@ Run:
 
 ```shell
 cd deployment/lightsail
+terraform init
 terraform apply -var-file="demo.tfvars"
 ```
 
@@ -68,7 +69,7 @@ the output should be something similar to:
 }
 ```
 
-Also if you log into your aws lightsail account: https://lightsail.aws.amazon.com/ls/webapp/home/instances you should
+If you log into your aws lightsail account: https://lightsail.aws.amazon.com/ls/webapp/home/instances you should
 see something like this:
 
 ![lightsail console](imgs/lightsail_console.png)
@@ -81,3 +82,9 @@ Destroy everything running:
 ```shell
 terraform destroy -var-file="demo.tfvars"
 ```
+
+:::warning
+
+**Might not be the best idea to store terraform state locally, [evaluate to configure a different backend](https://developer.hashicorp.com/terraform/language/settings/backends/configuration).**
+
+:::
