@@ -29,7 +29,7 @@ public class ColumnOp extends LeafOp {
   // Determine if the column value is null.
   @Override
   public Boolean isNull(EvalContext ctx) {
-    return resolve(ctx) == null;
+    return ctx.partitionValues.get(name) == null && !ctx.getStatsValues().containsKey(name);
   }
 
   @Override

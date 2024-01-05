@@ -18,7 +18,7 @@ import java.util.Objects;
   @JsonSubTypes.Type(value = LessThanOp.class, name = "lessThan"),
   @JsonSubTypes.Type(value = LessThanOrEqualOp.class, name = "lessThanOrEqual"),
   @JsonSubTypes.Type(value = GreaterThanOp.class, name = "greaterThan"),
-  @JsonSubTypes.Type(value = GreaterThanOrEqualOp.class, name = "greaterThanOrEqualOp")
+  @JsonSubTypes.Type(value = GreaterThanOrEqualOp.class, name = "greaterThanOrEqual")
 })
 public interface BaseOp {
 

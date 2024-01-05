@@ -91,14 +91,14 @@ public class DeltaSharedTable implements InternalSharedTable {
   }
 
   public boolean filterFilesBasedOnSqlPredicates(
-      List<String> predicates, AddFile f, Metadata metadata) {
+      Optional<List<String>> predicates, AddFile f, Metadata metadata) {
     // if there are no predicates return all possible files
-    if (predicates == null) {
+    if (predicates.isEmpty()) {
       return true;
     }
     try {
       var ctx = PredicateUtils.createEvalContext(f);
-      return predicates.stream().allMatch(p -> evaluateSqlPredicate(p, ctx, f, metadata));
+      return predicates.get().stream().allMatch(p -> evaluateSqlPredicate(p, ctx, f, metadata));
     } catch (PredicateException e) {
       logger.debug("Caught exception: " + e.getMessage());
       logger.info("File: " + f.getPath()
@@ -109,7 +109,7 @@ public class DeltaSharedTable implements InternalSharedTable {
 
   public boolean filterFilesBasedOnJsonPredicates(Optional<String> predicates, AddFile f) {
     // if there are no predicates return all possible files
-    if (predicates == null) {
+    if (predicates.isEmpty()) {
       return true;
     }
     try {
@@ -125,7 +125,7 @@ public class DeltaSharedTable implements InternalSharedTable {
 
   public ReadTableResultToBeSigned queryTable(ReadTableRequest readTableRequest) {
     Optional<String> predicates;
-    List<String> sqlPredicates;
+    Optional<List<String>> sqlPredicates;
     Snapshot snapshot;
     if (readTableRequest instanceof ReadTableRequest.ReadTableCurrentVersion) {
       snapshot = deltaLog.snapshot();

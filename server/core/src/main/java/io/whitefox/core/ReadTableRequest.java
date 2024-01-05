@@ -8,14 +8,14 @@ import java.util.Optional;
 public interface ReadTableRequest {
 
   class ReadTableVersion implements ReadTableRequest {
-    private final List<String> predicateHints;
+    private final Optional<List<String>> predicateHints;
     private final Optional<String> jsonPredicateHints;
     private final Optional<Long> limitHint;
 
     private final Long version;
 
     public ReadTableVersion(
-        List<String> predicateHints,
+        Optional<List<String>> predicateHints,
         Optional<String> jsonPredicateHints,
         Optional<Long> limitHint,
         Long version) {
@@ -30,7 +30,7 @@ public interface ReadTableRequest {
       return jsonPredicateHints;
     }
 
-    public List<String> predicateHints() {
+    public Optional<List<String>> predicateHints() {
       return predicateHints;
     }
 
@@ -72,14 +72,14 @@ public interface ReadTableRequest {
   }
 
   class ReadTableAsOfTimestamp implements ReadTableRequest {
-    private final List<String> predicateHints;
+    private final Optional<List<String>> predicateHints;
 
     private final Optional<Long> limitHint;
     private final Optional<String> jsonPredicateHints;
     private final Long timestamp;
 
     public ReadTableAsOfTimestamp(
-        List<String> predicateHints,
+        Optional<List<String>> predicateHints,
         Optional<String> jsonPredicateHints,
         Optional<Long> limitHint,
         Long timestamp) {
@@ -122,7 +122,7 @@ public interface ReadTableRequest {
           + timestamp + '}';
     }
 
-    public List<String> predicateHints() {
+    public Optional<List<String>> predicateHints() {
       return predicateHints;
     }
 
@@ -136,12 +136,12 @@ public interface ReadTableRequest {
   }
 
   class ReadTableCurrentVersion implements ReadTableRequest {
-    private final List<String> predicateHints;
+    private final Optional<List<String>> predicateHints;
     private final Optional<String> jsonPredicateHints;
     private final Optional<Long> limitHint;
 
     public ReadTableCurrentVersion(
-        List<String> predicateHints,
+        Optional<List<String>> predicateHints,
         Optional<String> jsonPredicateHints,
         Optional<Long> limitHint) {
       this.predicateHints = predicateHints;
@@ -149,7 +149,7 @@ public interface ReadTableRequest {
       this.limitHint = limitHint;
     }
 
-    public List<String> predicateHints() {
+    public Optional<List<String>> predicateHints() {
       return predicateHints;
     }
 

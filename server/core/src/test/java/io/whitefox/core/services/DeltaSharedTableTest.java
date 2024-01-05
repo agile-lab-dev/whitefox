@@ -14,6 +14,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -82,8 +83,8 @@ public class DeltaSharedTableTest {
     var PTable = new SharedTable(
         "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
-    var request =
-        new ReadTableRequest.ReadTableCurrentVersion(List.of(), Optional.empty(), Optional.empty());
+    var request = new ReadTableRequest.ReadTableCurrentVersion(
+        Optional.empty(), Optional.empty(), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(response.protocol(), new Protocol(Optional.of(1)));
     assertEquals(response.other().size(), 9);
@@ -103,54 +104,137 @@ public class DeltaSharedTableTest {
         "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
     var request = new ReadTableRequest.ReadTableCurrentVersion(
-        List.of(), Optional.of(predicate), Optional.empty());
+        Optional.empty(), Optional.of(predicate), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(response.other().size(), 4);
   }
 
   @Test
-  void queryTableWithSqlPredicate() {
-    var predicate = "date = '2021-08-15'";
+  void queryTableWithSqlPredicates() {
+
+    var predicatesAndExpectedResult = List.of(
+        Pair.of(List.of("date = '2021-08-15'"), 4),
+        Pair.of(List.of("date < '2021-08-14'"), 5),
+        Pair.of(List.of("date > '2021-08-04'"), 9),
+        Pair.of(List.of("date is NULL"), 0),
+        Pair.of(List.of("date >= '2021-08-15'"), 4),
+        Pair.of(List.of("date <= '2021-08-15'"), 9));
 
     var PTable = new SharedTable(
         "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
-    var request = new ReadTableRequest.ReadTableCurrentVersion(
-        List.of(predicate), Optional.empty(), Optional.empty());
-    var response = DTable.queryTable(request);
-    assertEquals(4, response.other().size());
+
+    predicatesAndExpectedResult.forEach(p -> {
+      var request = new ReadTableRequest.ReadTableCurrentVersion(
+          Optional.of(p.getLeft()), Optional.empty(), Optional.empty());
+      var response = DTable.queryTable(request);
+      assertEquals(p.getRight(), response.other().size());
+    });
   }
 
   @Test
   void queryTableWithNonPartitionSqlPredicate() {
-    var predicate = "id < 5";
+    var predicates = List.of("id < 5");
     var tableName = "partitioned-delta-table-with-multiple-columns";
 
     var PTable = new SharedTable(tableName, "default", "share1", deltaTable(tableName));
     var DTable = DeltaSharedTable.of(PTable);
     var request = new ReadTableRequest.ReadTableCurrentVersion(
-        List.of(predicate), Optional.empty(), Optional.empty());
+        Optional.of(predicates), Optional.empty(), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(1, response.other().size());
   }
 
   @Test
   void queryTableWithInvalidJsonPredicate() {
-    var predicate = "{"
-        + "      \"op\":\"equal\",\n"
-        + "      \"children\":[\n"
-        + "        {\"op\":\"column\",\"name\":\"dating\",\"valueType\":\"date\"},\n"
-        + "        {\"op\":\"literal\",\"value\":\"2021-08-15\",\"valueType\":\"date\"}\n"
-        + "      ]\n"
-        + "}";
+
+    var predicatesAndExpectedResult = List.of(
+        Pair.of(
+            "{"
+                + "      \"op\":\"equal\",\n"
+                + "      \"children\":[\n"
+                + "        {\"op\":\"column\",\"name\":\"dating\",\"valueType\":\"date\"},\n"
+                + "        {\"op\":\"literal\",\"value\":\"2021-09-12\",\"valueType\":\"date\"}\n"
+                + "      ]\n"
+                + "}",
+            2),
+        Pair.of(
+            "{"
+                + "      \"op\":\"equal\",\n"
+                + "      \"children\":[\n"
+                + "        {\"op\":\"column\",\"name\":\"date\",\"valueType\":\"date\"},\n"
+                + "        {\"op\":\"literal\",\"value\":\"2021-09-12\",\"valueType\":\"date\"}\n"
+                + "      ]\n"
+                + "}",
+            1),
+        Pair.of(
+            "{"
+                + "      \"op\":\"lessThan\",\n"
+                + "      \"children\":[\n"
+                + "        {\"op\":\"column\",\"name\":\"id\",\"valueType\":\"int\"},\n"
+                + "        {\"op\":\"literal\",\"value\":\"31\",\"valueType\":\"int\"}\n"
+                + "      ]\n"
+                + "}",
+            1),
+        Pair.of(
+            "{"
+                + "      \"op\":\"lessThanOrEqual\",\n"
+                + "      \"children\":[\n"
+                + "        {\"op\":\"column\",\"name\":\"id\",\"valueType\":\"int\"},\n"
+                + "        {\"op\":\"literal\",\"value\":\"31\",\"valueType\":\"int\"}\n"
+                + "      ]\n"
+                + "}",
+            2),
+        Pair.of(
+            "{"
+                + "      \"op\":\"lessThan\",\n"
+                + "      \"children\":[\n"
+                + "        {\"op\":\"column\",\"name\":\"id\",\"valueType\":\"int\"},\n"
+                + "        {\"op\":\"literal\",\"value\":\"45\",\"valueType\":\"int\"}\n"
+                + "      ]\n"
+                + "}",
+            2),
+        Pair.of(
+            "{"
+                + "      \"op\":\"isNull\",\n"
+                + "      \"children\":[\n"
+                + "        {\"op\":\"column\",\"name\":\"id\",\"valueType\":\"int\"}"
+                + "      ]\n"
+                + "}",
+            2),
+        Pair.of(
+            "{\n" + "  \"op\":\"and\",\n"
+                + "  \"children\":[\n"
+                + "    {\n"
+                + "      \"op\":\"equal\",\n"
+                + "      \"children\":[\n"
+                + "        {\"op\":\"column\",\"name\":\"date\",\"valueType\":\"date\"},\n"
+                + "        {\"op\":\"literal\",\"value\":\"2022-02-06\",\"valueType\":\"date\"}\n"
+                + "      ]\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"op\":\"greaterThanOrEqual\",\"children\":[\n"
+                + "        {\"op\":\"column\",\"name\":\"id\",\"valueType\":\"int\"},\n"
+                + "        {\"op\":\"literal\",\"value\":\"31\",\"valueType\":\"int\"}\n"
+                + "      ]\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}",
+            0));
 
     var PTable = new SharedTable(
-        "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
+        "partitioned-delta-table-with-multiple-columns",
+        "default",
+        "share1",
+        deltaTable("partitioned-delta-table-with-multiple-columns"));
     var DTable = DeltaSharedTable.of(PTable);
-    var request = new ReadTableRequest.ReadTableCurrentVersion(
-        List.of(), Optional.of(predicate), Optional.empty());
-    var response = DTable.queryTable(request);
-    assertEquals(response.other().size(), 9);
+
+    predicatesAndExpectedResult.forEach(p -> {
+      var request = new ReadTableRequest.ReadTableCurrentVersion(
+          Optional.empty(), Optional.of(p.getLeft()), Optional.empty());
+      var response = DTable.queryTable(request);
+      assertEquals(p.getRight(), response.other().size());
+    });
   }
 
   @Test
@@ -167,7 +251,7 @@ public class DeltaSharedTableTest {
     var PTable = new SharedTable(tableName, "default", "share1", deltaTable(tableName));
     var DTable = DeltaSharedTable.of(PTable);
     var request = new ReadTableRequest.ReadTableCurrentVersion(
-        List.of(), Optional.of(predicate), Optional.empty());
+        Optional.empty(), Optional.of(predicate), Optional.empty());
     var response = DTable.queryTable(request);
     assertEquals(response.other().size(), 1);
   }
