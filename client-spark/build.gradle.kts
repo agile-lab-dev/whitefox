@@ -14,8 +14,8 @@ dependencies {
     // OPENAPI
     implementation("org.eclipse.microprofile.openapi:microprofile-openapi-api:3.1.1")
     implementation("org.openapitools:jackson-databind-nullable:0.2.6")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    implementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
+    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    testImplementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
 
     // DELTA
     testImplementation("org.apache.hadoop:hadoop-common:3.3.6")
@@ -72,7 +72,7 @@ val whiteFoxGenerate = tasks.register<GenerateTask>("openapiGenerateClientApi") 
 }
 
 sourceSets {
-    getByName("main") {
+    getByName("test") {
         java {
             srcDir("${generatedCodeDirectory(layout, openApiCodeGenDir)}/src/gen/java")
         }
