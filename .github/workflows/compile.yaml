@@ -32,7 +32,7 @@ jobs:
               if [ "$RUNNER_OS" == "Windows" ]; then
                 export HADOOP_HOME="$(pwd)/.github/workflows/hadoop3-win-binaries"
               fi
-              ./gradlew clean build testNative --no-daemon
+              ./gradlew build testNative --no-daemon --rerun-tasks
               ./gradlew server:app:printVersion --no-daemon -q
         shell: bash
       - name: Run integration test
