@@ -14,8 +14,8 @@ dependencies {
     // OPENAPI
     implementation("org.eclipse.microprofile.openapi:microprofile-openapi-api:3.1.1")
     implementation("org.openapitools:jackson-databind-nullable:0.2.6")
-    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    testImplementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
 
     // DELTA
     testImplementation("org.apache.hadoop:hadoop-common:3.3.6")
@@ -38,7 +38,7 @@ tasks.getByName<Test>("test") {
 }
 
 tasks.withType<Test> {
-    environment = env.allVariables
+    environment = env.allVariables()
     systemProperty ("java.util.logging.manager", "java.util.logging.LogManager") //TODO modularize the whitefox-conventions plugin
 }
 
@@ -72,7 +72,7 @@ val whiteFoxGenerate = tasks.register<GenerateTask>("openapiGenerateClientApi") 
 }
 
 sourceSets {
-    getByName("test") {
+    getByName("main") {
         java {
             srcDir("${generatedCodeDirectory(layout, openApiCodeGenDir)}/src/gen/java")
         }
