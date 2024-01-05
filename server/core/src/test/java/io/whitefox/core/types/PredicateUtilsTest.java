@@ -31,6 +31,8 @@ public class PredicateUtilsTest {
     }
     assert (contexts.size() == 2);
     var c1 = contexts.get(0);
-    assert (c1.getPartitionValues().get("date").equals("2021-08-09"));
+    var c2 = contexts.get(1);
+    assert (c1.getPartitionValues().get("date").equals("2022-02-06"));
+    assert (c2.getPartitionValues().get("date").equals("2021-09-12"));
   }
 }

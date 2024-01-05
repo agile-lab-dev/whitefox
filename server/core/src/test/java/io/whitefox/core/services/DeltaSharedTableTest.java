@@ -134,7 +134,7 @@ public class DeltaSharedTableTest {
 
   @Test
   void queryTableWithNonPartitionSqlPredicate() {
-    var predicates = List.of("id < 5");
+    var predicates = List.of("id < 30");
     var tableName = "partitioned-delta-table-with-multiple-columns";
 
     var PTable = new SharedTable(tableName, "default", "share1", deltaTable(tableName));

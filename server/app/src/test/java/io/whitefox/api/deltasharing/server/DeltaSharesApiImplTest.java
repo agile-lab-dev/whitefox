@@ -375,14 +375,13 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
     var responseBodyLines = given()
             .when()
             .filter(deltaFilter)
-            .body("{\"jsonPredicateHints\": {\"op\":\"and\",\"children\":\"[" +
-                    "  {op:not,children:[" +
-                    "    {op:isNull\",\"children\":[\n" +
-                    "      {\"op\":\"column\",\"name\":\"birthday\",\"valueType\":\"date\"}]}]},\n" +
-                    "  {\"op\":\"equal\",\"children\":[\n" +
-                    "    {\"op\":\"column\",\"name\":\"birthday\",\"valueType\":\"date\"},\n" +
-                    "    {\"op\":\"literal\",\"value\":\"2020-01-01\",\"valueType\":\"date\"}]}\n" +
-                    "]\"}}")
+            .body("{\"jsonPredicateHints\": {\n" +
+                    "  \"op\": \"equal\",\n" +
+                    "  \"children\": [\n" +
+                    "    {\"op\": \"column\", \"name\":\"date\", \"valueType\":\"date\"},\n" +
+                    "    {\"op\":\"literal\",\"value\":\"2021-04-29\",\"valueType\":\"date\"}\n" +
+                    "  ]\n" +
+                    "}}")
             .header(new Header("Content-Type", "application/json"))
             .post(
                     "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/query",
