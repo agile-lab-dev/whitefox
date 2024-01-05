@@ -14,6 +14,6 @@ public class TypeMismatchException extends PredicateException {
 
   @Override
   public String getMessage() {
-    return "Type are not matching between: " + lType.toString() + "and " + rType;
+    return "Type are not matching between: " + lType.toString() + " and " + rType;
   }
 }

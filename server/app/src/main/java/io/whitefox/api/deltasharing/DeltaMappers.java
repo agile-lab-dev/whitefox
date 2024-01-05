@@ -39,7 +39,7 @@ public class DeltaMappers {
           request.getVersion());
     } else if (request.getVersion() == null && request.getTimestamp() != null) {
       return new ReadTableRequest.ReadTableAsOfTimestamp(
-              Optional.ofNullable(request.getPredicateHints()),
+          Optional.ofNullable(request.getPredicateHints()),
           Optional.ofNullable(request.getJsonPredicateHints()),
           Optional.ofNullable(request.getLimitHint()),
           CommonMappers.parseTimestamp(request.getTimestamp()));

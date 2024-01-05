@@ -88,11 +88,7 @@ interface BinaryOp extends Arity {
 
     // otherwise cannot throw exception in method call of lambda
     for (BaseOp c : children) {
-      try {
-        c.validate();
-      } catch (PredicateException e) {
-        throw new RuntimeException(e);
-      }
+      c.validate();
     }
 
     var child1 = children.get(0);

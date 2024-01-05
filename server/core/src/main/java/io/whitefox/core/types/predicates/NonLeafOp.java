@@ -37,11 +37,13 @@ public abstract class NonLeafOp implements BaseOp {
         return new GreaterThanOp(children);
       case ">=":
         return new GreaterThanOrEqualOp(children);
+        //      case "<>":
+        //        return new DifferentThanOp(children);
       case "isnull":
         return new IsNullOp(children);
       default:
         // TODO: add not supported sql exception
-        throw new PredicateException();
+        throw new ExpressionNotSupportedException(operator);
     }
   }
 
@@ -97,11 +99,7 @@ class EqualOp extends NonLeafOp implements BinaryOp {
 
   @Override
   public Object eval(EvalContext ctx) throws PredicateException {
-    try {
-      this.validate();
-    } catch (PredicateException e) {
-      throw new RuntimeException(e);
-    }
+    this.validate();
     return EvalHelper.equal(children, ctx);
   }
 }

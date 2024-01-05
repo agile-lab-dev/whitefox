@@ -91,25 +91,6 @@ public class DeltaSharedTableTest {
   }
 
   @Test
-  void queryTableWithJsonPredicate() {
-    var predicate = "{"
-        + "      \"op\":\"equal\",\n"
-        + "      \"children\":[\n"
-        + "        {\"op\":\"column\",\"name\":\"date\",\"valueType\":\"date\"},\n"
-        + "        {\"op\":\"literal\",\"value\":\"2021-08-15\",\"valueType\":\"date\"}\n"
-        + "      ]\n"
-        + "}";
-
-    var PTable = new SharedTable(
-        "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
-    var DTable = DeltaSharedTable.of(PTable);
-    var request = new ReadTableRequest.ReadTableCurrentVersion(
-        Optional.empty(), Optional.of(predicate), Optional.empty());
-    var response = DTable.queryTable(request);
-    assertEquals(response.other().size(), 4);
-  }
-
-  @Test
   void queryTableWithSqlPredicates() {
 
     var predicatesAndExpectedResult = List.of(
@@ -146,7 +127,7 @@ public class DeltaSharedTableTest {
   }
 
   @Test
-  void queryTableWithInvalidJsonPredicate() {
+  void queryTableWithJsonPredicates() {
 
     var predicatesAndExpectedResult = List.of(
         Pair.of(

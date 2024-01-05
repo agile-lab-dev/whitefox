@@ -31,6 +31,29 @@ public class PredicateParsingTest {
   }
 
   @Test
+  void testParsingOfInvalidSql() {
+    var meta = new Metadata(
+        "id",
+        Optional.empty(),
+        Optional.empty(),
+        Metadata.Format.PARQUET,
+        new TableSchema(
+            new StructType(List.of(new StructField("date", DateType.DATE, true, Map.of())))),
+        List.of("date", "age"),
+        Map.of(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty());
+
+    var ctx = new EvalContext(Map.of("date", "date"), Map.of());
+    var predicate = "date LIKE '2021-09-09'";
+
+    assertThrows(
+        ExpressionNotSupportedException.class,
+        () -> PredicateUtils.parseSqlPredicate(predicate, ctx, meta));
+  }
+
+  @Test
   void testParsingOfSqlEqual() throws PredicateException {
     var ctx = new EvalContext(Map.of("date", "date"), Map.of());
     var meta = new Metadata(

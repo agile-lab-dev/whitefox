@@ -57,7 +57,7 @@ public class ColumnOp extends LeafOp {
 
   public void validate() throws PredicateException {
     if (name == null) {
-      throw new IllegalArgumentException("Name must be specified: " + this);
+      throw new NonExistingColumnException("Name must be specified: " + this);
     }
     if (!this.isSupportedType(valueType, V1)) {
       throw new TypeNotSupportedException(valueType);
