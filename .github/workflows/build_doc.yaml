@@ -24,7 +24,7 @@ jobs:
               done
         shell: bash
       - name: Upload gh-pages artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: docsite/build
   deploy:
