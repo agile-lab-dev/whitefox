@@ -1,5 +1,6 @@
 package io.whitefox.core;
 
+import io.whitefox.annotations.SkipCoverageGenerated;
 import io.whitefox.core.types.*;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -82,6 +83,7 @@ public class ColumnRange {
     }
   }
 
+  @SkipCoverageGenerated
   private Boolean typedGreaterThan(String point) {
     if (valueType instanceof IntegerType) {
       var c = Integer.compare(Integer.parseInt(point), Integer.parseInt(maxVal));

@@ -98,6 +98,7 @@ public class DeltaSharedTableTest {
         Pair.of(List.of("date > '2021-08-04'"), 9),
         Pair.of(List.of("date is NULL"), 0),
         Pair.of(List.of("date >= '2021-08-15'"), 4),
+        Pair.of(List.of("date <> '2021-08-15'"), 5),
         Pair.of(List.of("date <= '2021-08-15'"), 9));
 
     var PTable = new SharedTable(

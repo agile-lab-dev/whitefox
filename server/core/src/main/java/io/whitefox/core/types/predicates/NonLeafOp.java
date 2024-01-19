@@ -128,7 +128,7 @@ class DifferentThanOp extends NonLeafOp implements BinaryOp {
   @Override
   public Object eval(EvalContext ctx) throws PredicateException {
     this.validate();
-    return EvalHelper.equal(children, ctx);
+    return !EvalHelper.equal(children, ctx);
   }
 }
 

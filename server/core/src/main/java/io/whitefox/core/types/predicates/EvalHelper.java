@@ -67,6 +67,7 @@ public class EvalHelper {
       var leftVal = typesAndValues.getLeft().getRight();
       var rightVal = typesAndValues.getRight().getRight();
 
+      // we fear no exception here since it is validated before
       if (BooleanType.BOOLEAN.equals(leftType)) {
         return Boolean.valueOf(leftVal) == Boolean.valueOf(rightVal);
       } else if (IntegerType.INTEGER.equals(leftType)) {
@@ -78,7 +79,7 @@ public class EvalHelper {
       } else if (DateType.DATE.equals(leftType)) {
         return Date.valueOf(leftVal).equals(Date.valueOf(rightVal));
       } else throw new TypeNotSupportedException(leftType);
-    } else throw new PredicateException();
+    } else throw new PredicateColumnEvaluationException(ctx);
   }
 
   static Boolean lessThan(List<LeafOp> children, EvalContext ctx) throws PredicateException {
@@ -106,7 +107,7 @@ public class EvalHelper {
       } else if (DateType.DATE.equals(leftType)) {
         return Date.valueOf(leftVal).before(Date.valueOf(rightVal));
       } else throw new TypeNotSupportedException(leftType);
-    } else throw new PredicateException();
+    } else throw new PredicateColumnEvaluationException(ctx);
   }
 
   // Validates that the specified value is in the correct format.
@@ -126,7 +127,6 @@ public class EvalHelper {
         Float.parseFloat(value);
       } else if (DoubleType.DOUBLE.equals(valueType)) {
         Double.parseDouble(value);
-        // TODO check for non deprecated
       } else if (TimestampType.TIMESTAMP.equals(valueType)) {
         Timestamp.valueOf(value);
       } else if (StringType.STRING.equals(valueType)) {
