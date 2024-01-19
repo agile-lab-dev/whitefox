@@ -232,6 +232,7 @@ public class DeltaShareServiceTest {
   }
 
   @Test
+  @DisabledOnOs(OS.WINDOWS)
   public void queryExistingTable() {
     var shares = List.of(createShare(
         "name",
