@@ -17,7 +17,8 @@ import java.util.stream.Collectors;
   @JsonSubTypes.Type(value = LessThanOp.class, name = "lessThan"),
   @JsonSubTypes.Type(value = LessThanOrEqualOp.class, name = "lessThanOrEqual"),
   @JsonSubTypes.Type(value = GreaterThanOp.class, name = "greaterThan"),
-  @JsonSubTypes.Type(value = GreaterThanOrEqualOp.class, name = "greaterThanOrEqual")
+  @JsonSubTypes.Type(value = GreaterThanOrEqualOp.class, name = "greaterThanOrEqual"),
+  @JsonSubTypes.Type(value = DifferentThanOp.class, name = "differentThan")
 })
 public abstract class NonLeafOp implements BaseOp {
 
@@ -37,8 +38,8 @@ public abstract class NonLeafOp implements BaseOp {
         return new GreaterThanOp(children);
       case ">=":
         return new GreaterThanOrEqualOp(children);
-        //      case "<>":
-        //        return new DifferentThanOp(children);
+      case "<>":
+        return new DifferentThanOp(children);
       case "isnull":
         return new IsNullOp(children);
       default:
@@ -88,6 +89,33 @@ class EqualOp extends NonLeafOp implements BinaryOp {
   }
 
   public EqualOp(List<LeafOp> children) {
+    this.children = children;
+  }
+
+  @Override
+  public void validate() throws PredicateException {
+    validateChildren(
+        List.copyOf(children).stream().map(c -> (BaseOp) c).collect(Collectors.toList()));
+  }
+
+  @Override
+  public Object eval(EvalContext ctx) throws PredicateException {
+    this.validate();
+    return EvalHelper.equal(children, ctx);
+  }
+}
+
+// not used in JsonPredicates, only for SQL
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "differentThan")
+class DifferentThanOp extends NonLeafOp implements BinaryOp {
+  @JsonProperty("children")
+  List<LeafOp> children;
+
+  public DifferentThanOp() {
+    super();
+  }
+
+  public DifferentThanOp(List<LeafOp> children) {
     this.children = children;
   }
 
