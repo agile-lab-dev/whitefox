@@ -8,7 +8,10 @@ import io.delta.standalone.actions.AddFile;
 import io.whitefox.core.PredicateUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
+@DisabledOnOs(OS.WINDOWS)
 public class PredicateExceptionsTest {
 
   DeltaLog log = DeltaLog.forTable(

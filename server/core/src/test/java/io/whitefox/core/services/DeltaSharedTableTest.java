@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -23,7 +22,7 @@ import org.junit.jupiter.api.condition.OS;
 public class DeltaSharedTableTest {
 
   @Test
-  void getTableVersion() throws ExecutionException, InterruptedException {
+  void getTableVersion() {
     var PTable = new SharedTable("delta-table", "default", "share1", deltaTable("delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
     var version = DTable.getTableVersion(Optional.empty());
@@ -46,7 +45,7 @@ public class DeltaSharedTableTest {
   }
 
   @Test
-  void getTableVersionNonExistingTable() throws ExecutionException, InterruptedException {
+  void getTableVersionNonExistingTable() {
     var PTable =
         new SharedTable("delta-table", "default", "share1", deltaTable("delta-table-not-exists"));
     var exception = assertThrows(IllegalArgumentException.class, () -> DeltaSharedTable.of(PTable));
@@ -54,7 +53,7 @@ public class DeltaSharedTableTest {
   }
 
   @Test
-  void getTableVersionWithTimestamp() throws ExecutionException, InterruptedException {
+  void getTableVersionWithTimestamp() {
     var PTable = new SharedTable("delta-table", "default", "share1", deltaTable("delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
     var version = DTable.getTableVersion(TestDateUtils.parseTimestamp("2023-09-30T10:15:30+01:00"));
@@ -62,7 +61,7 @@ public class DeltaSharedTableTest {
   }
 
   @Test
-  void getTableVersionWithFutureTimestamp() throws ExecutionException, InterruptedException {
+  void getTableVersionWithFutureTimestamp() {
     var PTable = new SharedTable("delta-table", "default", "share1", deltaTable("delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
     var version = DTable.getTableVersion(TestDateUtils.parseTimestamp("2024-10-20T10:15:30+01:00"));
@@ -70,7 +69,7 @@ public class DeltaSharedTableTest {
   }
 
   @Test
-  void getTableVersionWithMalformedTimestamp() throws ExecutionException, InterruptedException {
+  void getTableVersionWithMalformedTimestamp() {
     var PTable = new SharedTable("delta-table", "default", "share1", deltaTable("delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
     assertThrows(

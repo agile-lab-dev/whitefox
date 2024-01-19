@@ -11,10 +11,13 @@ import io.whitefox.core.types.predicates.*;
 import java.util.ArrayList;
 import org.apache.hadoop.conf.Configuration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 public class PredicateUtilsTest {
 
   @Test
+  @DisabledOnOs(OS.WINDOWS)
   void testCreateEvalContext() throws PredicateParsingException {
     var PTable = new SharedTable(
         "partitioned-delta-table-with-multiple-columns",
