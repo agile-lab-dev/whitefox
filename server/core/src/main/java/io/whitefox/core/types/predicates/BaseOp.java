@@ -112,11 +112,7 @@ interface NaryOp extends Arity {
     }
 
     for (BaseOp c : children) {
-      try {
-        c.validate();
-      } catch (PredicateException e) {
-        throw new RuntimeException(e);
-      }
+      c.validate();
     }
   }
 }
