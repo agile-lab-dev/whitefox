@@ -30,23 +30,22 @@ public class IcebergCatalogServiceTest {
    *
    * First, uou need to create an iceberg table with your local hadoop catalog
    * {{{
-   * 		import org.apache.iceberg.catalog.Namespace;
-   * 		import org.apache.iceberg.Schema;
-   * 		import org.apache.iceberg.catalog.TableIdentifier;
-   * 		import org.apache.iceberg.hadoop.HadoopCatalog;
-   * 		import java.util.Map;
-   * 		import org.apache.hadoop.conf.Configuration;
+   * 		import org.apache.iceberg.catalog.Namespace
+   * 		import org.apache.iceberg.Schema
+   * 		import org.apache.iceberg.catalog.TableIdentifier
+   * 		import org.apache.iceberg.hadoop.HadoopCatalog
+   * 		import java.util.Map
+   * 		import org.apache.hadoop.conf.Configuration
    *
-   * 		val catalogProps = Map.of(
-   *             "warehouse", "/Volumes/repos/oss/whitefox/server/core/src/testFixtures/resources/iceberg/samples/",
-   *             "io.manifest.cache-enabled", "true");
-   *  		val catalog = new HadoopCatalog();
-   *     	catalog.setConf(new Configuration());
-   *     	catalog.initialize("hadoop", catalogProps);
-   *        catalog.createNamespace(Namespace.of("test_db"));
+   *  		val catalog = new HadoopCatalog()
+   *     	catalog.setConf(new Configuration())
+   *     	catalog.initialize("test_hadoop_catalog",
+   *       	    Map.of("warehouse", "/Volumes/repos/oss/whitefox/server/core/src/testFixtures/resources/iceberg/samples/"))
+   *        catalog.createNamespace(Namespace.of("test_db"))
    *        val schema = new Schema(org.apache.iceberg.types.Types.NestedField.required(1, "id", org.apache.iceberg.types.Types.LongType.get()))
    * 		catalog.createTable(TableIdentifier.of("test_db", "icebergtable1"),  schema)
    * }}}
+   *
    * Then, you can append data on your iceberg table
    * {{{
    * 		val data = spark.range(0, 5)
