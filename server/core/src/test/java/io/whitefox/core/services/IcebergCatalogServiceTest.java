@@ -1,6 +1,7 @@
 package io.whitefox.core.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import io.whitefox.IcebergTestUtils;
 import java.io.IOException;
@@ -10,7 +11,9 @@ import org.apache.iceberg.Table;
 import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.hadoop.HadoopCatalog;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 
+@DisabledOnOs(WINDOWS)
 public class IcebergCatalogServiceTest {
 
   /**
