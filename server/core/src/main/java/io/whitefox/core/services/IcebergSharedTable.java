@@ -82,7 +82,7 @@ public class IcebergSharedTable implements AbstractSharedTable {
         catalog.initialize(
             metastore.name(),
             Map.of(
-                "warehouse",
+                CatalogProperties.WAREHOUSE_LOCATION,
                 ((MetastoreProperties.HadoopMetastoreProperties) metastore.properties())
                     .location()));
         return catalog;
