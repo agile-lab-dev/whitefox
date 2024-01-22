@@ -23,7 +23,7 @@ public class IcebergCatalogServiceTest {
    * spark-shell --packages org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.4.2,org.apache.iceberg:iceberg-aws-bundle:1.4.2 \
    *         										--conf spark.sql.catalog.spark_catalog=org.apache.iceberg.spark.SparkCatalog \
    *         										--conf spark.sql.catalog.spark_catalog.type=hadoop \
-   *         										--conf spark.sql.catalog.spark_catalog.warehouse=/Users/marco/agilelab_wa/lake-sharing/server/core/src/testFixtures/resources/iceberg/samples/ \
+   *         										--conf spark.sql.catalog.spark_catalog.warehouse=/Volumes/repos/oss/whitefox/server/core/src/testFixtures/resources/iceberg/samples/ \
    *                                                --conf spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
    * Take care that the version of iceberg must be compatible with the version of spark and scala you are using
    * (i.e. I'm using iceberg 3.5 on scala 2.12 because my local spark-shell is version 3.5.0 using scala 2.12
@@ -38,7 +38,7 @@ public class IcebergCatalogServiceTest {
    * 		import org.apache.hadoop.conf.Configuration;
    *
    * 		val catalogProps = Map.of(
-   *             "warehouse", "/Users/marco/agilelab_wa/lake-sharing/server/core/src/testFixtures/resources/iceberg/samples/",
+   *             "warehouse", "/Volumes/repos/oss/whitefox/server/core/src/testFixtures/resources/iceberg/samples/",
    *             "io.manifest.cache-enabled", "true");
    *  		val catalog = new HadoopCatalog();
    *     	catalog.setConf(new Configuration());
@@ -55,20 +55,17 @@ public class IcebergCatalogServiceTest {
    */
   @Test
   void simpleIcebergTest() throws IOException {
-    Map<String, String> catalogProps = Map.of(
-        "warehouse",
-        IcebergTestUtils.icebergTablesRoot.toString(),
-        "io.manifest.cache-enabled",
-        "true");
     try (HadoopCatalog hadoopCatalog = new HadoopCatalog()) {
-      // Initialize your catalog
+      // Initialize catalog
       hadoopCatalog.setConf(new Configuration());
-      hadoopCatalog.initialize("hadoop", catalogProps);
+      hadoopCatalog.initialize(
+          "test_hadoop_catalog",
+          Map.of("warehouse", IcebergTestUtils.icebergTablesRoot.toString()));
       TableIdentifier tableIdentifier = TableIdentifier.of("test_db", "icebergtable1");
 
       // Load the Iceberg table
       Table table = hadoopCatalog.loadTable(tableIdentifier);
-      assertEquals("hadoop.test_db.icebergtable1", table.name());
+      assertEquals("test_hadoop_catalog.test_db.icebergtable1", table.name());
     }
   }
 }
