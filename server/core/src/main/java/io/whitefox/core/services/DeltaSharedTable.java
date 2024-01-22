@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class DeltaSharedTable {
+public class DeltaSharedTable implements AbstractSharedTable {
 
   private final DeltaLog deltaLog;
   private final TableSchemaConverter tableSchemaConverter;

@@ -6,13 +6,12 @@ import io.whitefox.S3TestConfig;
 import io.whitefox.api.deltasharing.model.FileObjectFileWithoutPresignedUrl;
 import io.whitefox.api.deltasharing.model.FileObjectWithoutPresignedUrl;
 import io.whitefox.api.deltasharing.model.v1.generated.*;
-import io.whitefox.core.InternalTable;
-import io.whitefox.core.Principal;
-import io.whitefox.core.SharedTable;
+import io.whitefox.core.*;
 import io.whitefox.persistence.StorageManager;
 import io.whitefox.persistence.memory.InMemoryStorageManager;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class SampleTables {
@@ -34,6 +33,40 @@ public class SampleTables {
   public static final String deltaTableWithHistory1Path = deltaTableUri("delta-table-with-history");
 
   public static final InternalTable deltaTableWithHistory1 = deltaTable("delta-table-with-history");
+
+  public static InternalTable s3DeltaTable(String s3TableName, S3TestConfig s3TestConfig) {
+    var mrFoxPrincipal = new Principal("Mr. Fox");
+    return new InternalTable(
+        s3TableName,
+        Optional.empty(),
+        new InternalTable.DeltaTableProperties(s3DeltaTableUri(s3TableName)),
+        Optional.of(0L),
+        0L,
+        mrFoxPrincipal,
+        0L,
+        mrFoxPrincipal,
+        getProvider(getS3Storage(mrFoxPrincipal, s3TestConfig), mrFoxPrincipal, Optional.empty()));
+  }
+
+  public static Storage getS3Storage(Principal principal, S3TestConfig s3TestConfig) {
+    return new Storage(
+        "storage",
+        Optional.empty(),
+        principal,
+        StorageType.S3,
+        Optional.empty(),
+        "uri",
+        0L,
+        principal,
+        0L,
+        principal,
+        new StorageProperties.S3Properties(new AwsCredentials.SimpleAwsCredentials(
+            s3TestConfig.accessKey(), s3TestConfig.secretKey(), s3TestConfig.region())));
+  }
+
+  public static String s3DeltaTableUri(String s3TableName) {
+    return String.format("s3a://whitefox-s3-test-bucket/delta/samples/%s", s3TableName);
+  }
 
   public static StorageManager createStorageManager() {
     return new InMemoryStorageManager(List.of(new io.whitefox.core.Share(
