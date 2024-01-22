@@ -28,7 +28,7 @@ public class IcebergCatalogServiceTest {
    * Take care that the version of iceberg must be compatible with the version of spark and scala you are using
    * (i.e. I'm using iceberg 3.5 on scala 2.12 because my local spark-shell is version 3.5.0 using scala 2.12
    *
-   * First, uou need to create an iceberg table on your local hadoop catalog
+   * First, uou need to create an iceberg table with your local hadoop catalog
    * {{{
    * 		import org.apache.iceberg.catalog.Namespace;
    * 		import org.apache.iceberg.Schema;
