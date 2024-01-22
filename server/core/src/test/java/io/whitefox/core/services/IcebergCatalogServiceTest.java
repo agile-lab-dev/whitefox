@@ -2,6 +2,7 @@ package io.whitefox.core.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import io.whitefox.IcebergTestUtils;
 import java.io.IOException;
 import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
@@ -53,8 +54,9 @@ public class IcebergCatalogServiceTest {
   void simpleIcebergTest() throws IOException {
     Map<String, String> catalogProps = Map.of(
         "warehouse",
-            "/Users/marco/agilelab_wa/lake-sharing/server/core/src/testFixtures/resources/iceberg/samples/",
-        "io.manifest.cache-enabled", "true");
+        IcebergTestUtils.icebergTablesRoot.toString(),
+        "io.manifest.cache-enabled",
+        "true");
     try (HadoopCatalog hadoopCatalog = new HadoopCatalog()) {
       // Initialize your catalog
       hadoopCatalog.setConf(new Configuration());

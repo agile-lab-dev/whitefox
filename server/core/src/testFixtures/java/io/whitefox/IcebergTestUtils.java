@@ -7,22 +7,13 @@ import java.util.Optional;
 
 public class IcebergTestUtils extends TestUtils {
 
-  private static final Path icebergTablesRoot = Paths.get(".")
+  public static final Path icebergTablesRoot = Paths.get(".")
       .toAbsolutePath()
       .getParent()
       .getParent()
       .resolve("core")
       .resolve("src/testFixtures/resources/iceberg/samples")
       .toAbsolutePath();
-
-  public static String icebergTableUri(String tableName) {
-    return icebergTablesRoot
-        .resolve(tableName)
-        .toAbsolutePath()
-        .normalize()
-        .toUri()
-        .toString();
-  }
 
   public static InternalTable icebergTableWithHadoopCatalog(String database, String tableName) {
     var mrFoxPrincipal = new Principal("Mr. Fox");
