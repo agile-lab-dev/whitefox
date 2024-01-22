@@ -4,10 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import io.whitefox.IcebergTestUtils;
+import io.whitefox.S3TestConfig;
 import java.io.IOException;
 import java.util.Map;
-
-import io.whitefox.S3TestConfig;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.iceberg.Table;
 import org.apache.iceberg.aws.glue.GlueCatalog;
@@ -19,8 +18,7 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 @DisabledOnOs(WINDOWS)
 public class IcebergCatalogServiceTest {
 
-   private final S3TestConfig s3TestConfig = S3TestConfig.loadFromEnv();
-
+  private final S3TestConfig s3TestConfig = S3TestConfig.loadFromEnv();
 
   /**
    * This is some sample code that you need to run in your spark shell to generate new iceberg tables for new test cases:
@@ -131,15 +129,13 @@ public class IcebergCatalogServiceTest {
     }
   }
 
-  private Configuration buildConfig(){
+  private Configuration buildConfig() {
     var configuration = new Configuration();
     configuration.set(
-            "fs.s3a.aws.credentials.provider",
-            "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider");
+        "fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider");
     configuration.set("fs.s3a.access.key", s3TestConfig.accessKey());
     configuration.set("fs.s3a.secret.key", s3TestConfig.secretKey());
     configuration.set("fs.s3a.endpoint.region", s3TestConfig.region());
     return configuration;
-
   }
 }
