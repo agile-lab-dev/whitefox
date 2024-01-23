@@ -11,7 +11,8 @@ public class TableLoaderFactoryImpl implements TableLoaderFactory {
     if (internalTable.properties() instanceof InternalTable.DeltaTableProperties) {
       return new DeltaShareTableLoader();
     } else if (internalTable.properties() instanceof InternalTable.IcebergTableProperties) {
-      return new IcebergTableLoader();
+      return new IcebergTableLoader(
+          new IcebergCatalogHandler(new AwsGlueConfigBuilder()), new HadoopConfigBuilder());
     } else throw new RuntimeException(String.format("unknown table [%s]", internalTable.name()));
   }
 }
