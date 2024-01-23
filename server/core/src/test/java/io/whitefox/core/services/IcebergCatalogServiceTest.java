@@ -1,5 +1,6 @@
 package io.whitefox.core.services;
 
+import static org.apache.iceberg.aws.AwsProperties.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
@@ -119,23 +120,16 @@ public class IcebergCatalogServiceTest {
   void s3IcebergTableWithAwsGlueCatalogTest() throws IOException {
     try (GlueCatalog glueCatalog = new GlueCatalog()) {
       // Initialize catalog
-      glueCatalog.setConf(buildConfig());
-      glueCatalog.initialize("test_glue_catalog", Map.of());
+      glueCatalog.setConf(new Configuration());
+      glueCatalog.initialize(
+          "test_glue_catalog",
+          Map.of(
+              "glue.id", "583975731810",
+              "client.region", "eu-west-1"));
       TableIdentifier tableIdentifier = TableIdentifier.of("test_glue_db", "icebergtable1");
-
       // Load the Iceberg table
       Table table = glueCatalog.loadTable(tableIdentifier);
       assertEquals("test_glue_catalog.test_glue_db.icebergtable1", table.name());
     }
-  }
-
-  private Configuration buildConfig() {
-    var configuration = new Configuration();
-    configuration.set(
-        "fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider");
-    configuration.set("fs.s3a.access.key", s3TestConfig.accessKey());
-    configuration.set("fs.s3a.secret.key", s3TestConfig.secretKey());
-    configuration.set("fs.s3a.endpoint.region", s3TestConfig.region());
-    return configuration;
   }
 }
