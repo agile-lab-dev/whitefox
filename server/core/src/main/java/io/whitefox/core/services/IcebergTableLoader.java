@@ -1,17 +1,17 @@
 package io.whitefox.core.services;
 
-import io.whitefox.core.*;
+import io.whitefox.core.InternalTable;
+import io.whitefox.core.Metastore;
+import io.whitefox.core.MetastoreType;
+import io.whitefox.core.SharedTable;
 import org.apache.iceberg.catalog.TableIdentifier;
 
 public class IcebergTableLoader implements TableLoader {
 
   private final IcebergCatalogHandler icebergCatalogHandler;
-  private final HadoopConfigBuilder hadoopConfigBuilder;
 
-  public IcebergTableLoader(
-      IcebergCatalogHandler icebergCatalogHandler, HadoopConfigBuilder hadoopConfigBuilder) {
+  public IcebergTableLoader(IcebergCatalogHandler icebergCatalogHandler) {
     this.icebergCatalogHandler = icebergCatalogHandler;
-    this.hadoopConfigBuilder = hadoopConfigBuilder;
   }
 
   @Override
@@ -21,16 +21,10 @@ public class IcebergTableLoader implements TableLoader {
       var tableId = getTableIdentifier(sharedTable.internalTable());
       if (metastore.type() == MetastoreType.GLUE) {
         return IcebergSharedTable.of(icebergCatalogHandler.loadTableWithGlueCatalog(
-            metastore,
-            sharedTable.internalTable().provider().storage(),
-            tableId,
-            hadoopConfigBuilder));
+            metastore, sharedTable.internalTable().provider().storage(), tableId));
       } else if (metastore.type() == MetastoreType.HADOOP) {
         return IcebergSharedTable.of(icebergCatalogHandler.loadTableWithHadoopCatalog(
-            metastore,
-            sharedTable.internalTable().provider().storage(),
-            tableId,
-            hadoopConfigBuilder));
+            metastore, sharedTable.internalTable().provider().storage(), tableId));
       } else {
         throw new RuntimeException(String.format("Unknown metastore type: [%s]", metastore.type()));
       }

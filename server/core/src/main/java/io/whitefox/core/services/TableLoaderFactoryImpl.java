@@ -12,7 +12,7 @@ public class TableLoaderFactoryImpl implements TableLoaderFactory {
       return new DeltaShareTableLoader();
     } else if (internalTable.properties() instanceof InternalTable.IcebergTableProperties) {
       return new IcebergTableLoader(
-          new IcebergCatalogHandler(new AwsGlueConfigBuilder()), new HadoopConfigBuilder());
+          new IcebergCatalogHandler(new AwsGlueConfigBuilder(), new HadoopConfigBuilder()));
     } else throw new RuntimeException(String.format("unknown table [%s]", internalTable.name()));
   }
 }

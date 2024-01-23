@@ -17,15 +17,16 @@ public class IcebergCatalogHandler {
 
   private final AwsGlueConfigBuilder awsGlueConfigBuilder;
 
-  public IcebergCatalogHandler(AwsGlueConfigBuilder awsGlueConfigBuilder) {
+  private final HadoopConfigBuilder hadoopConfigBuilder;
+
+  public IcebergCatalogHandler(
+      AwsGlueConfigBuilder awsGlueConfigBuilder, HadoopConfigBuilder hadoopConfigBuilder) {
     this.awsGlueConfigBuilder = awsGlueConfigBuilder;
+    this.hadoopConfigBuilder = hadoopConfigBuilder;
   }
 
   public Table loadTableWithGlueCatalog(
-      Metastore metastore,
-      Storage storage,
-      TableIdentifier tableIdentifier,
-      HadoopConfigBuilder hadoopConfigBuilder) {
+      Metastore metastore, Storage storage, TableIdentifier tableIdentifier) {
     try (var catalog = new GlueCatalog()) {
       catalog.setConf(hadoopConfigBuilder.buildConfig(storage));
       catalog.initialize(
@@ -39,10 +40,7 @@ public class IcebergCatalogHandler {
   }
 
   public Table loadTableWithHadoopCatalog(
-      Metastore metastore,
-      Storage storage,
-      TableIdentifier tableIdentifier,
-      HadoopConfigBuilder hadoopConfigBuilder) {
+      Metastore metastore, Storage storage, TableIdentifier tableIdentifier) {
     try (var catalog = new HadoopCatalog()) {
       catalog.setConf(hadoopConfigBuilder.buildConfig(storage));
       catalog.initialize(

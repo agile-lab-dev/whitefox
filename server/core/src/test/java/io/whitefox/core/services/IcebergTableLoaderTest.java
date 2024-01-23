@@ -15,7 +15,7 @@ import org.junit.jupiter.api.condition.OS;
 public class IcebergTableLoaderTest {
 
   private final IcebergTableLoader icebergTableLoader = new IcebergTableLoader(
-      new IcebergCatalogHandler(new AwsGlueConfigBuilder()), new HadoopConfigBuilder());
+      new IcebergCatalogHandler(new AwsGlueConfigBuilder(), new HadoopConfigBuilder()));
   private final S3TestConfig s3TestConfig = S3TestConfig.loadFromEnv();
   private final AwsGlueTestConfig awsGlueTestConfig = AwsGlueTestConfig.loadFromEnv();
 
