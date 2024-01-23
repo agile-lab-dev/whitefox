@@ -1,15 +1,16 @@
 package io.whitefox.core.services;
 
-import static org.apache.iceberg.aws.AwsProperties.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import io.whitefox.IcebergTestUtils;
 import io.whitefox.S3TestConfig;
+import io.whitefox.core.aws.utils.StaticCredentialsProvider;
 import java.io.IOException;
 import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.iceberg.Table;
+import org.apache.iceberg.aws.AwsClientProperties;
 import org.apache.iceberg.aws.glue.GlueCatalog;
 import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.hadoop.HadoopCatalog;
@@ -81,7 +82,6 @@ public class IcebergCatalogServiceTest {
    * {{{
    * export AWS_ACCESS_KEY_ID='************'
    * export AWS_SECRET_ACCESS_KEY='*******************************'
-   * export AWS_SESSION_TOKEN='************************************************************'
    * spark-shell --packages org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.4.2,org.apache.iceberg:iceberg-aws-bundle:1.4.2 \
    *                                                                              --conf spark.sql.catalog.spark_catalog=org.apache.iceberg.spark.SparkCatalog \
    *                                                                              --conf spark.sql.catalog.spark_catalog.warehouse=specify-your-s3-bucket \
@@ -119,13 +119,23 @@ public class IcebergCatalogServiceTest {
   @Test
   void s3IcebergTableWithAwsGlueCatalogTest() throws IOException {
     try (GlueCatalog glueCatalog = new GlueCatalog()) {
+
       // Initialize catalog
       glueCatalog.setConf(new Configuration());
       glueCatalog.initialize(
           "test_glue_catalog",
           Map.of(
-              "glue.id", "583975731810",
-              "client.region", "eu-west-1"));
+              AwsClientProperties.CLIENT_REGION,
+              s3TestConfig.region(),
+              AwsClientProperties.CLIENT_CREDENTIALS_PROVIDER,
+              StaticCredentialsProvider.class.getName(),
+              String.format(
+                  "%s.%s", AwsClientProperties.CLIENT_CREDENTIALS_PROVIDER, "accessKeyId"),
+              s3TestConfig.accessKey(),
+              String.format(
+                  "%s.%s", AwsClientProperties.CLIENT_CREDENTIALS_PROVIDER, "secretAccessKey"),
+              s3TestConfig.secretKey()));
+
       TableIdentifier tableIdentifier = TableIdentifier.of("test_glue_db", "icebergtable1");
       // Load the Iceberg table
       Table table = glueCatalog.loadTable(tableIdentifier);

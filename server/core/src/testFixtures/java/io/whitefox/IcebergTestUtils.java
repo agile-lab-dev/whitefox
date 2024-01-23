@@ -38,4 +38,38 @@ public class IcebergTestUtils extends TestUtils {
         MetastoreType.HADOOP,
         new MetastoreProperties.HadoopMetastoreProperties(location, MetastoreType.HADOOP));
   }
+
+  public static InternalTable s3IcebergTableWithAwsGlueCatalog(
+      S3TestConfig s3TestConfig,
+      AwsGlueTestConfig awsGlueTestConfig,
+      String database,
+      String tableName) {
+    var mrFoxPrincipal = new Principal("Mr. Fox");
+    return new InternalTable(
+        tableName,
+        Optional.empty(),
+        new InternalTable.IcebergTableProperties(database, tableName),
+        Optional.of(0L),
+        0L,
+        mrFoxPrincipal,
+        0L,
+        mrFoxPrincipal,
+        getProvider(
+            getS3Storage(mrFoxPrincipal, s3TestConfig),
+            mrFoxPrincipal,
+            Optional.of(
+                getAwsGlueMetastore(mrFoxPrincipal, awsGlueTestConfig.catalogId(), s3TestConfig))));
+  }
+
+  public static Metastore getAwsGlueMetastore(
+      Principal principal, String catalogId, S3TestConfig s3TestConfig) {
+    return getMetastore(
+        principal,
+        MetastoreType.GLUE,
+        new MetastoreProperties.GlueMetastoreProperties(
+            catalogId,
+            new AwsCredentials.SimpleAwsCredentials(
+                s3TestConfig.accessKey(), s3TestConfig.secretKey(), s3TestConfig.region()),
+            MetastoreType.GLUE));
+  }
 }

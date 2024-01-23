@@ -48,4 +48,20 @@ public class TestUtils {
         0L,
         principal);
   }
+
+  public static Storage getS3Storage(Principal principal, S3TestConfig s3TestConfig) {
+    return new Storage(
+        "storage",
+        Optional.empty(),
+        principal,
+        StorageType.S3,
+        Optional.empty(),
+        "uri",
+        0L,
+        principal,
+        0L,
+        principal,
+        new StorageProperties.S3Properties(new AwsCredentials.SimpleAwsCredentials(
+            s3TestConfig.accessKey(), s3TestConfig.secretKey(), s3TestConfig.region())));
+  }
 }
