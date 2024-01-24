@@ -5,7 +5,7 @@ import io.whitefox.core.ReadTableRequest;
 import io.whitefox.core.ReadTableResultToBeSigned;
 import java.util.Optional;
 
-public interface AbstractSharedTable {
+public interface InternalSharedTable {
 
   Optional<Metadata> getMetadata(Optional<String> startingTimestamp);
 

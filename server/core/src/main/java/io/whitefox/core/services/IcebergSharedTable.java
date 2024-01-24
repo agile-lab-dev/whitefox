@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.iceberg.Table;
 
-public class IcebergSharedTable implements AbstractSharedTable {
+public class IcebergSharedTable implements InternalSharedTable {
 
   private final Table icebergTable;
   private final TableSchemaConverter tableSchemaConverter;
