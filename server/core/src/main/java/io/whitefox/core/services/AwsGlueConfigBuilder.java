@@ -13,7 +13,7 @@ public class AwsGlueConfigBuilder {
 
   public Map<String, String> buildConfig(
       MetastoreProperties.GlueMetastoreProperties glueMetastoreProperties) {
-    try {
+    if (glueMetastoreProperties.credentials() instanceof AwsCredentials.SimpleAwsCredentials) {
       AwsCredentials.SimpleAwsCredentials credentials =
           (AwsCredentials.SimpleAwsCredentials) glueMetastoreProperties.credentials();
       Map<String, String> config = new HashMap<>();
@@ -32,9 +32,9 @@ public class AwsGlueConfigBuilder {
               "%s.%s", AwsClientProperties.CLIENT_CREDENTIALS_PROVIDER, "secretAccessKey"),
           credentials.awsSecretAccessKey());
       return config;
-    } catch (Exception e) {
+    } else {
       throw new IllegalArgumentException(String.format(
-          "Credentials not found on GlueMetastoreProperties [%s]", glueMetastoreProperties));
+          "Credentials type not supported with glue metastore %s", glueMetastoreProperties));
     }
   }
 }
