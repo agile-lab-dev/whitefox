@@ -26,7 +26,8 @@ public class IcebergTableLoader implements TableLoader {
         return IcebergSharedTable.of(icebergCatalogHandler.loadTableWithHadoopCatalog(
             metastore, sharedTable.internalTable().provider().storage(), tableId));
       } else {
-        throw new RuntimeException(String.format("Unknown metastore type: [%s]", metastore.type()));
+        throw new RuntimeException(String.format(
+            "Metastore type: [%s] not compatible with Iceberg table", metastore.type()));
       }
     } else {
       throw new IllegalArgumentException(

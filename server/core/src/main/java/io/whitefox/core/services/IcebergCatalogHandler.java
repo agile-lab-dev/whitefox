@@ -59,7 +59,7 @@ public class IcebergCatalogHandler {
       return catalog.loadTable(tableIdentifier);
     } catch (NoSuchTableException e) {
       throw new IllegalArgumentException(String.format(
-          "Cannot found iceberg table [%s] under namespace [%s]",
+          "Cannot find iceberg table [%s] under namespace [%s]",
           tableIdentifier.name(), tableIdentifier.namespace()));
     } catch (Throwable e) {
       throw new RuntimeException(String.format(

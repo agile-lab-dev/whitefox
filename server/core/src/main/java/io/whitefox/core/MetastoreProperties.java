@@ -58,7 +58,7 @@ public interface MetastoreProperties {
     public HadoopMetastoreProperties(String location, MetastoreType type) {
       if (type != MetastoreType.HADOOP) {
         throw new IllegalArgumentException(String.format(
-            "GlueMetastore properties are not compatible with metastore of type %o", type));
+            "Hadoop metatstore properties are not compatible with metastore of type %o", type));
       }
       this.location = location;
     }

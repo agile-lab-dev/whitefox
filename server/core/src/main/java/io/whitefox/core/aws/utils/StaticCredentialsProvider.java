@@ -16,9 +16,9 @@ public class StaticCredentialsProvider implements AwsCredentialsProvider {
 
   private static AwsCredentials retrieveCredentials(Map<String, String> properties) {
     if (!properties.containsKey("accessKeyId")) {
-      throw new RuntimeException("accessKeyId not found");
+      throw new IllegalArgumentException("accessKeyId not found");
     } else if (!properties.containsKey("secretAccessKey")) {
-      throw new RuntimeException("secretAccessKey not found");
+      throw new IllegalArgumentException("secretAccessKey not found");
     }
     return AwsBasicCredentials.create(
         properties.get("accessKeyId"), properties.get("secretAccessKey"));
