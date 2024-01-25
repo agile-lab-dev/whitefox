@@ -42,7 +42,7 @@ public class SampleTables {
       icebergTableWithHadoopCatalog("test_db", "icebergtable1");
 
   public static final InternalTable icebergtable2 =
-          icebergTableWithHadoopCatalog("test_db", "icebergtable2");
+      icebergTableWithHadoopCatalog("test_db", "icebergtable2");
 
   public static final String deltaTable1Path = deltaTableUri("delta-table");
 

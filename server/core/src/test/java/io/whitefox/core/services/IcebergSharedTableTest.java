@@ -33,10 +33,10 @@ public class IcebergSharedTableTest {
   @Test
   void getTableMetadataWithTimestamp() {
     var PTable = new SharedTable(
-            "icebergtable2",
-            "default",
-            "share1",
-            icebergTableWithHadoopCatalog("test_db", "icebergtable2"));
+        "icebergtable2",
+        "default",
+        "share1",
+        icebergTableWithHadoopCatalog("test_db", "icebergtable2"));
     var DTable = icebergTableLoader.loadTable(PTable);
     var metadata = DTable.getMetadata(Optional.of("2024-01-25T01:32:00+01:00"));
     assertTrue(metadata.isPresent());
@@ -53,10 +53,10 @@ public class IcebergSharedTableTest {
   @Test
   void getTableVersion() {
     var PTable = new SharedTable(
-            "icebergtable1",
-            "default",
-            "share1",
-            icebergTableWithHadoopCatalog("test_db", "icebergtable1"));
+        "icebergtable1",
+        "default",
+        "share1",
+        icebergTableWithHadoopCatalog("test_db", "icebergtable1"));
     var DTable = icebergTableLoader.loadTable(PTable);
     var version = DTable.getTableVersion(Optional.empty());
     assertTrue(version.isPresent());
@@ -66,10 +66,10 @@ public class IcebergSharedTableTest {
   @Test
   void getTableVersionWithTimestamp() {
     var PTable = new SharedTable(
-            "icebergtable2",
-            "default",
-            "share1",
-            icebergTableWithHadoopCatalog("test_db", "icebergtable2"));
+        "icebergtable2",
+        "default",
+        "share1",
+        icebergTableWithHadoopCatalog("test_db", "icebergtable2"));
     var DTable = icebergTableLoader.loadTable(PTable);
     var version = DTable.getTableVersion(Optional.of("2024-01-25T01:32:00+01:00"));
     assertTrue(version.isPresent());

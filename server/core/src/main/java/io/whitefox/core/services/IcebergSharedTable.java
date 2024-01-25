@@ -8,12 +8,10 @@ import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.iceberg.PartitionField;
 import org.apache.iceberg.Snapshot;
@@ -65,9 +63,8 @@ public class IcebergSharedTable implements InternalSharedTable {
         .map(this::getTimestamp)
         .map(Timestamp::getTime)
         .map(t -> StreamSupport.stream(icebergTable.snapshots().spliterator(), false)
-                  .sorted(Comparator.comparingLong(Snapshot::timestampMillis))
-                  .filter(s -> s.timestampMillis() > t)
-        )
+            .sorted(Comparator.comparingLong(Snapshot::timestampMillis))
+            .filter(s -> s.timestampMillis() > t))
         .map(Stream::findFirst)
         .map(s -> s.or(Optional::empty))
         .orElseGet(() -> Optional.of(icebergTable.currentSnapshot()));
