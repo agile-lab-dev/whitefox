@@ -24,6 +24,7 @@ public class ITDeltaSharingClient implements DatasetComparer, ScalaUtils {
   private final StorageManagerInitializer storageManagerInitializer;
   private final String deltaTablePath;
 
+
   public ITDeltaSharingClient() {
     this.storageManagerInitializer = new StorageManagerInitializer();
     this.deltaTablePath =
@@ -53,6 +54,30 @@ public class ITDeltaSharingClient implements DatasetComparer, ScalaUtils {
                 new MrFoxDeltaTableSchema(4)),
             MrFoxDeltaTableSchema.class)
         .toDF();
+
+    assertEquals(expectedSchema, ds.schema());
+    assertEquals(5, ds.count());
+    assertSmallDatasetEquality(ds, expectedData, true, false, false, 500);
+  }
+
+  @Test
+  void showS3IcebergTableWithQueryTableApi() {
+    var spark = TestSparkSession.newSparkSession();
+    registerAnIcebergTable();
+    var ds = spark.read().format("deltaSharing").load(deltaTablePath);
+    var expectedSchema = new StructType(new StructField[] {
+            new StructField("id", DataType.fromDDL("long"), true, new Metadata(emptyScalaMap()))
+    });
+    var expectedData = spark
+            .createDataFrame(
+                    List.of(
+                            new MrFoxDeltaTableSchema(0),
+                            new MrFoxDeltaTableSchema(3),
+                            new MrFoxDeltaTableSchema(2),
+                            new MrFoxDeltaTableSchema(1),
+                            new MrFoxDeltaTableSchema(4)),
+                    MrFoxDeltaTableSchema.class)
+            .toDF();
 
     assertEquals(expectedSchema, ds.schema());
     assertEquals(5, ds.count());
