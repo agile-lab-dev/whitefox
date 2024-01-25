@@ -62,7 +62,8 @@ public class SampleTables {
                     new SharedTable("table1", "default", "name", deltaTable1),
                     new SharedTable(
                         "table-with-history", "default", "name", deltaTableWithHistory1),
-                    new SharedTable("icebergtable1", "default", "name", icebergtable1)),
+                    new SharedTable("icebergtable1", "default", "name", icebergtable1),
+                    new SharedTable("icebergtable2", "default", "name", icebergtable2)),
                 "name")),
         testPrincipal,
         0L)));

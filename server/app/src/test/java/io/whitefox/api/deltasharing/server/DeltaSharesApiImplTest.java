@@ -149,10 +149,10 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
         .get("delta-api/v1/shares/{share}/schemas/{schema}/tables", "name", "default")
         .then()
         .statusCode(200)
-        .body("items", hasSize(3))
+        .body("items", hasSize(4))
         .body(
             "items[0].name",
-            either(is("table1")).or(is("table-with-history")).or(is("icebergtable1")))
+            either(is("table1")).or(is("table-with-history")).or(is("icebergtable1")).or(is("icebergtable2")))
         .body("items[0].schema", is("default"))
         .body("items[0].share", is("name"))
         .body("nextPageToken", is(nullValue()));
