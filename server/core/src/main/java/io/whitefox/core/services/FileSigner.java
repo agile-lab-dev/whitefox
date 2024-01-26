@@ -1,8 +1,8 @@
 package io.whitefox.core.services;
 
-import io.whitefox.core.TableFile;
-import io.whitefox.core.TableFileToBeSigned;
+import io.whitefox.core.delta.signed.FileAction;
+import io.whitefox.core.delta.unsigned.FileActionToBeSigned;
 
 public interface FileSigner {
-  TableFile sign(TableFileToBeSigned s);
+  FileAction sign(FileActionToBeSigned s);
 }

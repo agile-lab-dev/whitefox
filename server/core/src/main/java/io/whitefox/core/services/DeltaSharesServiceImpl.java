@@ -1,6 +1,8 @@
 package io.whitefox.core.services;
 
 import io.whitefox.core.*;
+import io.whitefox.core.delta.Metadata;
+import io.whitefox.core.results.ReadTableResult;
 import io.whitefox.core.services.exceptions.TableNotFound;
 import io.whitefox.persistence.StorageManager;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -123,7 +125,11 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
 
   @Override
   public ReadTableResult queryTable(
-      String share, String schema, String tableName, ReadTableRequest queryRequest) {
+      String share,
+      String schema,
+      String tableName,
+      ReadTableRequest queryRequest,
+      DeltaSharingCapabilities requestCapabilities) {
     SharedTable sharedTable = storageManager
         .getSharedTable(share, schema, tableName)
         .orElseThrow(() -> new TableNotFound(String.format(

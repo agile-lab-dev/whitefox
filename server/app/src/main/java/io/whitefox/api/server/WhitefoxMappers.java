@@ -14,6 +14,9 @@ import io.whitefox.core.StorageType;
 import io.whitefox.core.actions.*;
 import io.whitefox.core.actions.CreateMetastore;
 import io.whitefox.core.actions.CreateStorage;
+import io.whitefox.core.delta.Metadata;
+import io.whitefox.core.delta.Protocol;
+
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Function;
@@ -173,6 +176,7 @@ public class WhitefoxMappers {
     }
   }
 
+  // TODO we need to resolve the json schema anyOf/oneOf problem
   private static MetadataObject metadata2Api(Metadata metadata) {
     return new MetadataObject()
         .metaData(new MetadataObjectMetaData()

@@ -28,7 +28,7 @@ public class DeltaSharedTableTest {
   void getTableMetadata() {
     var PTable = new SharedTable("delta-table", "default", "share1", deltaTable("delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
-    var metadata = DTable.getMetadata(Optional.empty());
+    var metadata = DTable.getMetadata(Optional.empty(), DeltaSharingCapabilities.defaultValue());
     assertTrue(metadata.isPresent());
     assertEquals("56d48189-cdbc-44f2-9b0e-2bded4c79ed7", metadata.get().id());
   }

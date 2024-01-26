@@ -9,9 +9,7 @@ public class TableFileToBeSigned {
 
   private final String url;
   private final long size;
-
   private final long version;
-
   private final Optional<Long> timestamp;
 
   private final String stats;

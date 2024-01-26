@@ -2,6 +2,7 @@ plugins {
     `java-library`
     `java-test-fixtures`
     id("whitefox.java-conventions")
+    id("io.freefair.lombok") version "8.4"
 }
 
 val quarkusPlatformGroupId: String by project
