@@ -23,12 +23,14 @@ public class ITDeltaSharingClient implements DatasetComparer, ScalaUtils {
 
   private final StorageManagerInitializer storageManagerInitializer;
   private final String deltaTablePath;
-
+  private final String icebergTablePath;
 
   public ITDeltaSharingClient() {
     this.storageManagerInitializer = new StorageManagerInitializer();
     this.deltaTablePath =
         TablePath.getDeltaTablePath(getClass().getClassLoader().getResource("MrFoxProfile.json"));
+    this.icebergTablePath =
+        TablePath.getIcebergTablePath(getClass().getClassLoader().getResource("MrFoxProfile.json"));
   }
 
   @BeforeAll
@@ -37,10 +39,10 @@ public class ITDeltaSharingClient implements DatasetComparer, ScalaUtils {
   }
 
   @Test
-  void showS3Table1withQueryTableApi() {
+  void showS3IcebergTable1withQueryTableApi() {
     var spark = TestSparkSession.newSparkSession();
-    storageManagerInitializer.createS3DeltaTable();
-    var ds = spark.read().format("deltaSharing").load(deltaTablePath);
+    storageManagerInitializer.createIcebergTableWithGlueMetastore();
+    var ds = spark.read().format("deltaSharing").load(icebergTablePath);
     var expectedSchema = new StructType(new StructField[] {
       new StructField("id", DataType.fromDDL("long"), true, new Metadata(emptyScalaMap()))
     });
@@ -61,23 +63,23 @@ public class ITDeltaSharingClient implements DatasetComparer, ScalaUtils {
   }
 
   @Test
-  void showS3IcebergTableWithQueryTableApi() {
+  void showS3Table1withQueryTableApi() {
     var spark = TestSparkSession.newSparkSession();
-    registerAnIcebergTable();
+    storageManagerInitializer.createS3DeltaTable();
     var ds = spark.read().format("deltaSharing").load(deltaTablePath);
     var expectedSchema = new StructType(new StructField[] {
-            new StructField("id", DataType.fromDDL("long"), true, new Metadata(emptyScalaMap()))
+      new StructField("id", DataType.fromDDL("long"), true, new Metadata(emptyScalaMap()))
     });
     var expectedData = spark
-            .createDataFrame(
-                    List.of(
-                            new MrFoxDeltaTableSchema(0),
-                            new MrFoxDeltaTableSchema(3),
-                            new MrFoxDeltaTableSchema(2),
-                            new MrFoxDeltaTableSchema(1),
-                            new MrFoxDeltaTableSchema(4)),
-                    MrFoxDeltaTableSchema.class)
-            .toDF();
+        .createDataFrame(
+            List.of(
+                new MrFoxDeltaTableSchema(0),
+                new MrFoxDeltaTableSchema(3),
+                new MrFoxDeltaTableSchema(2),
+                new MrFoxDeltaTableSchema(1),
+                new MrFoxDeltaTableSchema(4)),
+            MrFoxDeltaTableSchema.class)
+        .toDF();
 
     assertEquals(expectedSchema, ds.schema());
     assertEquals(5, ds.count());

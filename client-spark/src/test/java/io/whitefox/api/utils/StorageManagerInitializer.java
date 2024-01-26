@@ -58,7 +58,14 @@ public class StorageManagerInitializer {
     var provider = ApiUtils.recoverConflictLazy(
         () -> providerV1Api.addProvider(providerRequest),
         () -> providerV1Api.getProvider(providerRequest.getName()));
+    var schemaRequest = createSchemaRequest(TableFormat.iceberg);
+    var shareRequest = createShareRequest();
+    ignoreConflict(() -> schemaV1Api.createSchema(shareRequest.getName(), schemaRequest));
     var createTableRequest = createIcebergTableRequest();
+    ignoreConflict(() -> schemaV1Api.addTableToSchema(
+        shareRequest.getName(),
+        schemaRequest,
+        addTableToSchemaRequest(providerRequest.getName(), createTableRequest.getName())));
     return ApiUtils.recoverConflictLazy(
         () -> tableV1Api.createTableInProvider(provider.getName(), createTableRequest),
         () -> tableV1Api.describeTableInProvider(provider.getName(), createTableRequest.getName()));
