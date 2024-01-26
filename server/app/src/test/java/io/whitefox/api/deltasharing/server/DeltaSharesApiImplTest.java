@@ -211,6 +211,22 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
 
   @Test
   @DisabledOnOs(OS.WINDOWS)
+  public void icebergTableVersion() {
+    given()
+        .when()
+        .filter(deltaFilter)
+        .get(
+            "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/version",
+            "name",
+            "default",
+            "icebergtable1")
+        .then()
+        .statusCode(200)
+        .header("Delta-Table-Version", "1");
+  }
+
+  @Test
+  @DisabledOnOs(OS.WINDOWS)
   public void icebergTableMetadata() throws IOException {
     var responseBodyLines = given()
         .when()
