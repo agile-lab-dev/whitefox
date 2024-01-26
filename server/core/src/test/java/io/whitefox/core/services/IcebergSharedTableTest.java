@@ -38,7 +38,7 @@ public class IcebergSharedTableTest {
         "share1",
         icebergTableWithHadoopCatalog("test_db", "icebergtable2"));
     var DTable = icebergTableLoader.loadTable(PTable);
-    var metadata = DTable.getMetadata(Optional.of("2024-01-25T01:32:00+01:00"));
+    var metadata = DTable.getMetadata(Optional.of("2024-01-25T01:32:15+01:00"));
     assertTrue(metadata.isPresent());
     assertEquals("2174306913745765008", metadata.get().id());
   }
@@ -71,8 +71,20 @@ public class IcebergSharedTableTest {
         "share1",
         icebergTableWithHadoopCatalog("test_db", "icebergtable2"));
     var DTable = icebergTableLoader.loadTable(PTable);
-    var version = DTable.getTableVersion(Optional.of("2024-01-25T01:32:00+01:00"));
+    var version = DTable.getTableVersion(Optional.of("2024-01-25T01:32:15+01:00"));
     assertTrue(version.isPresent());
     assertEquals(1, version.get());
+  }
+
+  @Test
+  void getTableVersionWithTooOldTimestamp() {
+    var PTable = new SharedTable(
+        "icebergtable2",
+        "default",
+        "share1",
+        icebergTableWithHadoopCatalog("test_db", "icebergtable2"));
+    var DTable = icebergTableLoader.loadTable(PTable);
+    var version = DTable.getTableVersion(Optional.of("2024-01-24T01:32:15+01:00"));
+    assertTrue(version.isEmpty());
   }
 }

@@ -7,15 +7,13 @@ import io.whitefox.core.TableSchema;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.iceberg.PartitionField;
 import org.apache.iceberg.Snapshot;
 import org.apache.iceberg.Table;
+import org.apache.iceberg.util.SnapshotUtil;
 
 public class IcebergSharedTable implements InternalSharedTable {
 
@@ -62,12 +60,17 @@ public class IcebergSharedTable implements InternalSharedTable {
     return startingTimestamp
         .map(this::getTimestamp)
         .map(Timestamp::getTime)
-        .map(t -> StreamSupport.stream(icebergTable.snapshots().spliterator(), false)
-            .sorted(Comparator.comparingLong(Snapshot::timestampMillis))
-            .filter(s -> s.timestampMillis() > t))
-        .map(Stream::findFirst)
-        .map(s -> s.or(Optional::empty))
-        .orElseGet(() -> Optional.of(icebergTable.currentSnapshot()));
+        .map(this::getSnapshotForTimestampAsOf)
+        .orElseGet(() -> Optional.ofNullable(icebergTable.currentSnapshot()));
+  }
+
+  private Optional<Snapshot> getSnapshotForTimestampAsOf(long l) {
+    try {
+      return Optional.of(SnapshotUtil.snapshotIdAsOfTime(icebergTable, l))
+          .map(icebergTable::snapshot);
+    } catch (IllegalArgumentException iea) {
+      return Optional.empty();
+    }
   }
 
   private Timestamp getTimestamp(String timestamp) {
