@@ -371,6 +371,23 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
 
   @DisabledOnOs(OS.WINDOWS)
   @Test
+  public void queryNotExistingTable() throws IOException {
+    given()
+        .when()
+        .filter(deltaFilter)
+        .body("{}")
+        .header(new Header("Content-Type", "application/json"))
+        .post(
+            "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/query",
+            "name",
+            "default",
+            "tableThatDoesNotExist")
+        .then()
+        .statusCode(404);
+  }
+
+  @DisabledOnOs(OS.WINDOWS)
+  @Test
   public void queryTableCurrentVersion() throws IOException {
     var responseBodyLines = given()
         .when()
