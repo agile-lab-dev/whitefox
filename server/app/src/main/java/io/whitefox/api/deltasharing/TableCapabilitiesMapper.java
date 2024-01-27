@@ -1,0 +1,60 @@
+package io.whitefox.api.deltasharing;
+
+import io.micrometer.common.util.StringUtils;
+import io.whitefox.api.server.DeltaHeaders;
+import io.whitefox.core.services.capabilities.ClientCapabilities;
+import io.whitefox.core.services.capabilities.ReaderFeatures;
+import io.whitefox.core.services.capabilities.ResponseFormat;
+import jakarta.inject.Singleton;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Singleton
+public class TableCapabilitiesMapper implements DeltaHeaders {
+    public ClientCapabilities parseDeltaSharingCapabilities(String header) {
+
+        if (header == null) {
+            return ClientCapabilities.parquet();
+        } else {
+            Map<String, Set<String>> rawValues =
+                    Arrays.stream(header.split(";", -1))
+                            .flatMap(entry -> {
+                                if (StringUtils.isBlank(entry)) {
+                                    return Stream.empty();
+                                }
+                                var keyAndValues = entry.split("=", -1);
+                                if (keyAndValues.length != 2) {
+                                    throw new IllegalArgumentException(String.format(
+                                            "Each %s must be in the format key=value", DELTA_SHARE_CAPABILITIES_HEADER));
+                                }
+                                var key = keyAndValues[0];
+                                var values = Arrays.stream(keyAndValues[1].split(",", -1))
+                                        .collect(Collectors.toUnmodifiableSet());
+                                return Stream.of(Map.entry(key, values));
+                            })
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            Set<String> responseFormats = rawValues.get(DELTA_SHARING_RESPONSE_FORMAT);
+            String theResponseFormat = pickResponseFormat(responseFormats);
+            if (ResponseFormat.parquet.stringRepresentation().equalsIgnoreCase(theResponseFormat)) {
+                return ClientCapabilities.parquet();
+            } else if (ResponseFormat.delta.stringRepresentation().equalsIgnoreCase(theResponseFormat)) {
+                var unparsed = rawValues.get(DELTA_SHARING_READER_FEATURES);
+                return ClientCapabilities.delta(unparsed.stream().map(ReaderFeatures::fromString).collect(Collectors.toSet()));
+            } else {
+                throw new IllegalArgumentException(String.format("Unknown response format %s", theResponseFormat));
+            }
+        }
+    }
+
+    private String pickResponseFormat(Set<String> responseFormats) {
+        if (responseFormats.isEmpty()) {
+            return ResponseFormat.parquet.stringRepresentation();
+        } else {
+            return responseFormats.iterator().next();
+        }
+    }
+}

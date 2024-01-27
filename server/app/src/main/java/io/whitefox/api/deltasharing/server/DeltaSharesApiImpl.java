@@ -3,6 +3,7 @@ package io.whitefox.api.deltasharing.server;
 import static io.whitefox.api.server.CommonMappers.mapList;
 
 import io.whitefox.api.deltasharing.DeltaMappers;
+import io.whitefox.api.deltasharing.TableCapabilitiesMapper;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.api.deltasharing.model.v1.generated.ListSchemasResponse;
 import io.whitefox.api.deltasharing.model.v1.generated.ListShareResponse;
@@ -15,6 +16,7 @@ import io.whitefox.api.server.ApiUtils;
 import io.whitefox.core.services.ContentAndToken;
 import io.whitefox.core.services.DeltaSharesService;
 import io.whitefox.core.services.ShareService;
+import io.whitefox.core.services.capabilities.ClientCapabilities;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -29,18 +31,22 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
   private final TableMetadataSerializer tableResponseSerializer;
   private final TableQueryResponseSerializer tableQueryResponseSerializer;
 
+  private final TableCapabilitiesMapper tableCapabilitiesMapper;
+
   @Inject
   public DeltaSharesApiImpl(
-      DeltaSharesService deltaSharesService,
-      ShareService shareService,
-      DeltaPageTokenEncoder encoder,
-      TableMetadataSerializer tableResponseSerializer,
-      TableQueryResponseSerializer tableQueryResponseSerializer) {
+          DeltaSharesService deltaSharesService,
+          ShareService shareService,
+          DeltaPageTokenEncoder encoder,
+          TableMetadataSerializer tableResponseSerializer,
+          TableQueryResponseSerializer tableQueryResponseSerializer,
+          TableCapabilitiesMapper tableCapabilitiesMapper) {
     this.deltaSharesService = deltaSharesService;
     this.tokenEncoder = encoder;
     this.tableResponseSerializer = tableResponseSerializer;
     this.tableQueryResponseSerializer = tableQueryResponseSerializer;
     this.shareService = shareService;
+    this.tableCapabilitiesMapper = tableCapabilitiesMapper;
   }
 
   @Override
@@ -61,9 +67,10 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
       Integer endingVersion,
       String endingTimestamp,
       Boolean includeHistoricalMetadata) {
-    return Response.ok().build();
+    return Response.status(501).build();
   }
 
+  // TODO handle capabilities
   @Override
   public Response getTableMetadata(
       String share,
@@ -180,6 +187,7 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
    * </pre>
    */
   @Override
+  // TODO
   public Response queryTable(
       String share,
       String schema,
