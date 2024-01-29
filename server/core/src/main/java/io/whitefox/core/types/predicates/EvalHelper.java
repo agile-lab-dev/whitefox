@@ -1,11 +1,11 @@
 package io.whitefox.core.types.predicates;
 
+import io.whitefox.core.ColumnRange;
 import io.whitefox.core.types.*;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
-import org.apache.commons.lang3.tuple.Pair;
 
 // Only for partition values
 public class EvalHelper {
@@ -15,7 +15,7 @@ public class EvalHelper {
     var columnRange = columnChild.evalExpectColumnRange(ctx);
     var rightVal = literalChild.evalExpectValueAndType(ctx).getLeft();
 
-    return LeafEvaluationResult.createFromRange(Pair.of(columnRange, rightVal));
+    return LeafEvaluationResult.createFromRange(new RangeEvaluationResult(columnRange, rightVal));
   }
 
   private static LeafEvaluationResult validateAndGetTypeAndValue(
@@ -47,8 +47,8 @@ public class EvalHelper {
     if (leftVal == null || rightVal == null) {
       throw new NullTypeException(leftChild, rightChild);
     }
-    return LeafEvaluationResult.createFromPartitionColumn(
-        Pair.of(Pair.of(leftType, leftVal), Pair.of(rightType, rightVal)));
+    return LeafEvaluationResult.createFromPartitionColumn(new PartitionEvaluationResult(
+        new ColumnRange(leftVal, leftType), new ColumnRange(rightVal, rightType)));
   }
 
   // Implements "equal" between two leaf operations.
@@ -56,16 +56,16 @@ public class EvalHelper {
 
     var leafEvaluationResult = validateAndGetTypeAndValue(children, ctx);
     var rangeEvaluation = leafEvaluationResult.rangeEvaluationResult.map(range -> {
-      var columnRange = range.getLeft();
-      var value = range.getRight();
+      var columnRange = range.getColumnRange();
+      var value = range.getValue();
       return columnRange.contains(value);
     });
     if (rangeEvaluation.isPresent()) return rangeEvaluation.get();
     else if (leafEvaluationResult.partitionEvaluationResult.isPresent()) {
       var typesAndValues = leafEvaluationResult.partitionEvaluationResult.get();
-      var leftType = typesAndValues.getLeft().getLeft();
-      var leftVal = typesAndValues.getLeft().getRight();
-      var rightVal = typesAndValues.getRight().getRight();
+      var leftType = typesAndValues.getPartitionValue().getValueType();
+      var leftVal = typesAndValues.getPartitionValue().getOnlyValue();
+      var rightVal = typesAndValues.getLiteralValue().getOnlyValue();
 
       // we fear no exception here since it is validated before
       if (BooleanType.BOOLEAN.equals(leftType)) {
@@ -86,17 +86,17 @@ public class EvalHelper {
 
     var leafEvaluationResult = validateAndGetTypeAndValue(children, ctx);
     var rangeEvaluation = leafEvaluationResult.rangeEvaluationResult.map(range -> {
-      var columnRange = range.getLeft();
-      var value = range.getRight();
+      var columnRange = range.getColumnRange();
+      var value = range.getValue();
       return columnRange.canBeLess(value);
     });
 
     if (rangeEvaluation.isPresent()) return rangeEvaluation.get();
     else if (leafEvaluationResult.partitionEvaluationResult.isPresent()) {
       var typesAndValues = leafEvaluationResult.partitionEvaluationResult.get();
-      var leftType = typesAndValues.getLeft().getLeft();
-      var leftVal = typesAndValues.getLeft().getRight();
-      var rightVal = typesAndValues.getRight().getRight();
+      var leftType = typesAndValues.getPartitionValue().getValueType();
+      var leftVal = typesAndValues.getPartitionValue().getOnlyValue();
+      var rightVal = typesAndValues.getLiteralValue().getOnlyValue();
 
       if (IntegerType.INTEGER.equals(leftType)) {
         return Integer.parseInt(leftVal) < Integer.parseInt(rightVal);

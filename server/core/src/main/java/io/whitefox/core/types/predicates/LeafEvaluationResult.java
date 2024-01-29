@@ -1,29 +1,25 @@
 package io.whitefox.core.types.predicates;
 
-import io.whitefox.core.ColumnRange;
-import io.whitefox.core.types.DataType;
 import java.util.Optional;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class LeafEvaluationResult {
 
-  Optional<Pair<ColumnRange, String>> rangeEvaluationResult;
-  Optional<Pair<Pair<DataType, String>, Pair<DataType, String>>> partitionEvaluationResult;
+  Optional<RangeEvaluationResult> rangeEvaluationResult;
+  Optional<PartitionEvaluationResult> partitionEvaluationResult;
 
   public LeafEvaluationResult(
-      Optional<Pair<ColumnRange, String>> rangeEvaluationResult,
-      Optional<Pair<Pair<DataType, String>, Pair<DataType, String>>> partitionEvaluationResult) {
+      Optional<RangeEvaluationResult> rangeEvaluationResult,
+      Optional<PartitionEvaluationResult> partitionEvaluationResult) {
     this.rangeEvaluationResult = rangeEvaluationResult;
     this.partitionEvaluationResult = partitionEvaluationResult;
   }
 
-  public static LeafEvaluationResult createFromRange(
-      Pair<ColumnRange, String> rangeEvaluationResult) {
+  public static LeafEvaluationResult createFromRange(RangeEvaluationResult rangeEvaluationResult) {
     return new LeafEvaluationResult(Optional.of(rangeEvaluationResult), Optional.empty());
   }
 
   public static LeafEvaluationResult createFromPartitionColumn(
-      Pair<Pair<DataType, String>, Pair<DataType, String>> partitionEvaluationResult) {
+      PartitionEvaluationResult partitionEvaluationResult) {
     return new LeafEvaluationResult(Optional.empty(), Optional.of(partitionEvaluationResult));
   }
 }

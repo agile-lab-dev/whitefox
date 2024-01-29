@@ -24,6 +24,14 @@ public class ColumnRange {
     this.valueType = valueType;
   }
 
+  public DataType getValueType() {
+    return valueType;
+  }
+
+  public String getOnlyValue() {
+    return minVal;
+  }
+
   private Boolean typedContains(String point) {
     if (valueType instanceof IntegerType) {
       var c1 = Integer.compare(Integer.parseInt(minVal), Integer.parseInt(point));
