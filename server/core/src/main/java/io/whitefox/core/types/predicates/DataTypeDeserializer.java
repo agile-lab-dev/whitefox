@@ -1,5 +1,13 @@
 package io.whitefox.core.types.predicates;
 
+import static io.whitefox.core.types.DateType.DATE;
+import static io.whitefox.core.types.DoubleType.DOUBLE;
+import static io.whitefox.core.types.FloatType.FLOAT;
+import static io.whitefox.core.types.IntegerType.INTEGER;
+import static io.whitefox.core.types.LongType.LONG;
+import static io.whitefox.core.types.StringType.STRING;
+import static io.whitefox.core.types.TimestampType.TIMESTAMP;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -23,25 +31,23 @@ public class DataTypeDeserializer extends StdDeserializer<DataType> {
   public DataType deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
       throws IOException {
     JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-    String valueType = node.asText().toUpperCase();
-
-    switch (BasePrimitiveTypeNames.valueOf(valueType)) {
-      case DATE:
-        return DateType.DATE;
-      case INT:
-        return IntegerType.INTEGER;
-      case DOUBLE:
-        return DoubleType.DOUBLE;
-      case FLOAT:
-        return FloatType.FLOAT;
-      case STRING:
-        return StringType.STRING;
-      case TIMESTAMP:
-        return TimestampType.TIMESTAMP;
-      case LONG:
-        return LongType.LONG;
-      default:
-        throw new JsonParseException("Unknown type passed inside a json predicate: " + valueType);
+    String valueType = node.asText();
+    DataType primitive = BasePrimitiveType.createPrimitive(valueType);
+    if (DATE.equals(primitive)) {
+      return DATE;
+    } else if (INTEGER.equals(primitive)) {
+      return INTEGER;
+    } else if (DOUBLE.equals(primitive)) {
+      return DOUBLE;
+    } else if (FLOAT.equals(primitive)) {
+      return FLOAT;
+    } else if (STRING.equals(primitive)) {
+      return STRING;
+    } else if (TIMESTAMP.equals(primitive)) {
+      return TIMESTAMP;
+    } else if (LONG.equals(primitive)) {
+      return LONG;
     }
+    throw new JsonParseException("Unknown type passed inside a json predicate: " + valueType);
   }
 }

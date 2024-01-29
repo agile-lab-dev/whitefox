@@ -414,7 +414,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
         })
         .collect(Collectors.toSet());
     assertEquals(7, responseBodyLines.length);
-    assertEquals(deltaTable1FilesWithoutPresignedUrl, files); // TOD
+    assertEquals(deltaTable1FilesWithoutPresignedUrl, files);
   }
 
   @DisabledOnOs(OS.WINDOWS)

@@ -34,7 +34,7 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.register("devCheck") {
     dependsOn(tasks.spotlessApply)
-    finalizedBy(tasks.test)
+    finalizedBy(tasks.check)
     description = "Useful command when iterating locally to apply spotless formatting then running all the checks"
 }
 

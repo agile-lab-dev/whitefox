@@ -16,9 +16,9 @@ public class EvalHelperTest {
     var children1 =
         List.of(new ColumnOp("date", DateType.DATE), new LiteralOp("2020-10-11", DateType.DATE));
     assertTrue(EvalHelper.lessThan(children1, evalContext1));
-    var evalContext2 = new EvalContext(Map.of("integer", "19"), Map.of());
+    var evalContext2 = new EvalContext(Map.of("integerCol", "19"), Map.of());
     var children2 = List.of(
-        new ColumnOp("integer", IntegerType.INTEGER), new LiteralOp("20", IntegerType.INTEGER));
+        new ColumnOp("integerCol", IntegerType.INTEGER), new LiteralOp("20", IntegerType.INTEGER));
     assertTrue(EvalHelper.lessThan(children2, evalContext2));
     var evalContext3 = new EvalContext(Map.of("long", "20"), Map.of());
     var children3 =
@@ -37,9 +37,9 @@ public class EvalHelperTest {
     var children1 =
         List.of(new ColumnOp("date", DateType.DATE), new LiteralOp("2020-10-11", DateType.DATE));
     assertTrue(EvalHelper.equal(children1, evalContext1));
-    var evalContext2 = new EvalContext(Map.of("integer", "20"), Map.of());
+    var evalContext2 = new EvalContext(Map.of("integerCol", "20"), Map.of());
     var children2 = List.of(
-        new ColumnOp("integer", IntegerType.INTEGER), new LiteralOp("20", IntegerType.INTEGER));
+        new ColumnOp("integerCol", IntegerType.INTEGER), new LiteralOp("20", IntegerType.INTEGER));
     assertTrue(EvalHelper.equal(children2, evalContext2));
     var evalContext3 = new EvalContext(Map.of("long", "20"), Map.of());
     var children3 =
