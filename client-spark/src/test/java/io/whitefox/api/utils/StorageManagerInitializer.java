@@ -62,13 +62,14 @@ public class StorageManagerInitializer {
     var shareRequest = createShareRequest();
     ignoreConflict(() -> schemaV1Api.createSchema(shareRequest.getName(), schemaRequest));
     var createTableRequest = createIcebergTableRequest();
+    ApiUtils.recoverConflictLazy(
+        () -> tableV1Api.createTableInProvider(provider.getName(), createTableRequest),
+        () -> tableV1Api.describeTableInProvider(provider.getName(), createTableRequest.getName()));
     ignoreConflict(() -> schemaV1Api.addTableToSchema(
         shareRequest.getName(),
         schemaRequest,
         addTableToSchemaRequest(providerRequest.getName(), createTableRequest.getName())));
-    return ApiUtils.recoverConflictLazy(
-        () -> tableV1Api.createTableInProvider(provider.getName(), createTableRequest),
-        () -> tableV1Api.describeTableInProvider(provider.getName(), createTableRequest.getName()));
+    return tableV1Api.describeTableInProvider(provider.getName(), createTableRequest.getName());
   }
 
   private String createSchemaRequest(TableFormat tableFormat) {
@@ -129,7 +130,7 @@ public class StorageManagerInitializer {
         .type(type)
         .skipValidation(true)
         .properties(new MetastoreProperties(new GlueProperties()
-            .catalogId("catalogId") // TODO
+            .catalogId(s3TestConfig.getGlueCatalogId())
             .credentials(new SimpleAwsCredentials()
                 .region(s3TestConfig.getRegion())
                 .awsAccessKeyId(s3TestConfig.getAccessKey())

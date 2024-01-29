@@ -44,7 +44,7 @@ public class ITDeltaSharingClient implements DatasetComparer, ScalaUtils {
     storageManagerInitializer.createIcebergTableWithGlueMetastore();
     var ds = spark.read().format("deltaSharing").load(icebergTablePath);
     var expectedSchema = new StructType(new StructField[] {
-      new StructField("id", DataType.fromDDL("long"), true, new Metadata(emptyScalaMap()))
+      new StructField("id", DataType.fromDDL("long"), false, new Metadata(emptyScalaMap()))
     });
     var expectedData = spark
         .createDataFrame(
@@ -70,6 +70,8 @@ public class ITDeltaSharingClient implements DatasetComparer, ScalaUtils {
     var expectedSchema = new StructType(new StructField[] {
       new StructField("id", DataType.fromDDL("long"), true, new Metadata(emptyScalaMap()))
     });
+
+    ds.show();
     var expectedData = spark
         .createDataFrame(
             List.of(
