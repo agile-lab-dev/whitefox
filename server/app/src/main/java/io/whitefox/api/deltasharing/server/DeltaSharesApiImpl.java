@@ -2,8 +2,8 @@ package io.whitefox.api.deltasharing.server;
 
 import static io.whitefox.api.server.CommonMappers.mapList;
 
+import io.whitefox.api.deltasharing.ClientCapabilitiesMapper;
 import io.whitefox.api.deltasharing.DeltaMappers;
-import io.whitefox.api.deltasharing.TableCapabilitiesMapper;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
 import io.whitefox.api.deltasharing.model.v1.generated.ListSchemasResponse;
 import io.whitefox.api.deltasharing.model.v1.generated.ListShareResponse;
@@ -16,7 +16,6 @@ import io.whitefox.api.server.ApiUtils;
 import io.whitefox.core.services.ContentAndToken;
 import io.whitefox.core.services.DeltaSharesService;
 import io.whitefox.core.services.ShareService;
-import io.whitefox.core.services.capabilities.ClientCapabilities;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -31,22 +30,22 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
   private final TableMetadataSerializer tableResponseSerializer;
   private final TableQueryResponseSerializer tableQueryResponseSerializer;
 
-  private final TableCapabilitiesMapper tableCapabilitiesMapper;
+  private final ClientCapabilitiesMapper clientCapabilitiesMapper;
 
   @Inject
   public DeltaSharesApiImpl(
-          DeltaSharesService deltaSharesService,
-          ShareService shareService,
-          DeltaPageTokenEncoder encoder,
-          TableMetadataSerializer tableResponseSerializer,
-          TableQueryResponseSerializer tableQueryResponseSerializer,
-          TableCapabilitiesMapper tableCapabilitiesMapper) {
+      DeltaSharesService deltaSharesService,
+      ShareService shareService,
+      DeltaPageTokenEncoder encoder,
+      TableMetadataSerializer tableResponseSerializer,
+      TableQueryResponseSerializer tableQueryResponseSerializer,
+      ClientCapabilitiesMapper clientCapabilitiesMapper) {
     this.deltaSharesService = deltaSharesService;
     this.tokenEncoder = encoder;
     this.tableResponseSerializer = tableResponseSerializer;
     this.tableQueryResponseSerializer = tableQueryResponseSerializer;
     this.shareService = shareService;
-    this.tableCapabilitiesMapper = tableCapabilitiesMapper;
+    this.clientCapabilitiesMapper = clientCapabilitiesMapper;
   }
 
   @Override
@@ -197,15 +196,21 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
     return wrapExceptions(
         () -> {
           var readResult = deltaSharesService.queryTable(
-              share, schema, table, DeltaMappers.api2ReadTableRequest(queryRequest));
+              share,
+              schema,
+              table,
+              DeltaMappers.api2ReadTableRequest(queryRequest),
+              clientCapabilitiesMapper.parseDeltaSharingCapabilities(deltaSharingCapabilities));
           var serializedReadResult =
               tableQueryResponseSerializer.serialize(DeltaMappers.readTableResult2api(readResult));
           return Response.ok(serializedReadResult, ndjsonMediaType)
               .header(DELTA_TABLE_VERSION_HEADER, readResult.version())
               .header(
                   DELTA_SHARE_CAPABILITIES_HEADER,
-                  getResponseFormatHeader(
-                      DeltaMappers.toHeaderCapabilitiesMap(deltaSharingCapabilities)))
+                  String.format(
+                      "%s=%s",
+                      DELTA_SHARING_RESPONSE_FORMAT,
+                      readResult.responseFormat().stringRepresentation()))
               .build();
         },
         exceptionToResponse);

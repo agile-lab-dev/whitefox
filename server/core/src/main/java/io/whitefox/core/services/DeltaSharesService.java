@@ -6,6 +6,7 @@ import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
 import io.whitefox.core.SharedTable;
 import java.sql.Timestamp;
+import io.whitefox.core.services.capabilities.ClientCapabilities;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,5 +34,9 @@ public interface DeltaSharesService {
       String share, Optional<ContentAndToken.Token> token, Optional<Integer> maxResults);
 
   ReadTableResult queryTable(
-      String share, String schema, String table, ReadTableRequest queryRequest);
+      String share,
+      String schema,
+      String table,
+      ReadTableRequest queryRequest,
+      ClientCapabilities clientCapabilities);
 }
