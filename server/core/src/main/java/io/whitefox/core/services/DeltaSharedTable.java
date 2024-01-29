@@ -3,6 +3,7 @@ package io.whitefox.core.services;
 import io.delta.standalone.DeltaLog;
 import io.delta.standalone.Snapshot;
 import io.whitefox.core.*;
+import io.whitefox.core.services.capabilities.ResponseFormat;
 import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,7 +62,7 @@ public class DeltaSharedTable implements InternalSharedTable {
         snapshot.getMetadata().getId(),
         Optional.of(tableDetails.name()),
         Optional.ofNullable(snapshot.getMetadata().getDescription()),
-        Metadata.Format.PARQUET,
+        ResponseFormat.parquet,
         new TableSchema(tableSchemaConverter.convertDeltaSchemaToWhitefox(
             snapshot.getMetadata().getSchema())),
         snapshot.getMetadata().getPartitionColumns(),

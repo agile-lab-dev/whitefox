@@ -179,7 +179,8 @@ public class WhitefoxMappers {
             .id(metadata.id())
             .name(metadata.name().orElse(null))
             .description(metadata.description().orElse(null))
-            .format(new FormatObject().provider(metadata.format().provider()))
+            .format(new FormatObject()
+                .provider("parquet")) // this is hard-coded because we don't support delta yet
             .schemaString(metadata.tableSchema().structType().toJson())
             .partitionColumns(metadata.partitionColumns())
             ._configuration(metadata.configuration())

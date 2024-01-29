@@ -13,4 +13,26 @@ public enum ResponseFormat {
   ResponseFormat(String str) {
     stringRepresentation = str;
   }
+
+  /**
+   * This is seen from the client perspective, i.e. a parquet client is not compatible with a delta response
+   * while the other way around is compatible
+   */
+  public boolean isCompatibleWith(ResponseFormat other) {
+    switch (this) {
+      case parquet:
+        switch (other) {
+          case parquet:
+            return true;
+          case delta:
+            return false;
+          default:
+            throw new IllegalArgumentException("Unknown response format: " + other);
+        }
+      case delta:
+        return true;
+      default:
+        throw new IllegalArgumentException("Unknown response format: " + this);
+    }
+  }
 }

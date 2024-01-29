@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -63,11 +64,17 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
 
   @Override
   public Optional<Metadata> getTableMetadata(
-      String share, String schema, String table, Optional<Timestamp> startingTimestamp) {
-    return storageManager.getSharedTable(share, schema, table).flatMap(t -> tableLoaderFactory
-        .newTableLoader(t.internalTable())
-        .loadTable(t)
-        .getMetadata(startingTimestamp));
+      String share,
+      String schema,
+      String tableName,
+      Optional<Timestamp> startingTimestamp,
+      ClientCapabilities clientCapabilities) {
+    var table = storageManager
+        .getSharedTable(share, schema, tableName)
+        .map(t -> tableLoaderFactory.newTableLoader(t.internalTable()).loadTable(t));
+    return table
+        .flatMap(t -> t.getMetadata(startingTimestamp))
+        .map(m -> checkResponseFormat(clientCapabilities, Metadata::format, m, tableName));
   }
 
   @Override
@@ -142,13 +149,33 @@ public class DeltaSharesServiceImpl implements DeltaSharesService {
         .newTableLoader(sharedTable.internalTable())
         .loadTable(sharedTable)
         .queryTable(queryRequest);
-    return new ReadTableResult(
-        readTableResultToBeSigned.protocol(),
-        readTableResultToBeSigned.metadata(),
-        readTableResultToBeSigned.other().stream()
-            .map(fileSigner::sign)
-            .collect(Collectors.toList()),
-        readTableResultToBeSigned.version(),
-        ResponseFormat.parquet);
+    return checkResponseFormat(
+        clientCapabilities,
+        ReadTableResult::responseFormat,
+        new ReadTableResult(
+            readTableResultToBeSigned.protocol(),
+            readTableResultToBeSigned.metadata(),
+            readTableResultToBeSigned.other().stream()
+                .map(fileSigner::sign)
+                .collect(Collectors.toList()),
+            readTableResultToBeSigned.version(),
+            ResponseFormat.parquet),
+        tableName);
+  }
+
+  private <A> A checkResponseFormat(
+      ClientCapabilities clientCapabilities,
+      Function<A, ResponseFormat> formatExtractor,
+      A formatContainer,
+      String tableName) {
+    if (!clientCapabilities
+        .responseFormat()
+        .isCompatibleWith(formatExtractor.apply(formatContainer))) {
+      // TODO throw a specific exception
+      throw new IllegalArgumentException(
+          "Table " + tableName + " is not compatible with client " + clientCapabilities);
+    } else {
+      return formatContainer;
+    }
   }
 }

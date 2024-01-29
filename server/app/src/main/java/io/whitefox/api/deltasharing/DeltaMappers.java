@@ -5,6 +5,7 @@ import io.whitefox.api.server.CommonMappers;
 import io.whitefox.core.*;
 import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
+import io.whitefox.core.services.capabilities.ResponseFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,7 +65,8 @@ public class DeltaMappers {
             .id(metadata.id())
             .name(metadata.name().orElse(null))
             .description(metadata.description().orElse(null))
-            .format(new FormatObject().provider(metadata.format().provider()))
+            .format(new FormatObject()
+                .provider("parquet")) // this is hard-coded because we don't support delta yet
             .schemaString(metadata.tableSchema().structType().toJson())
             .partitionColumns(metadata.partitionColumns())
             ._configuration(metadata.configuration())
@@ -105,22 +107,10 @@ public class DeltaMappers {
   }
 
   /**
-   * NOTE: this is an undocumented feature of the reference impl of delta-sharing, it's not part of the
-   * protocol
-   * ----
-   * Return the [[io.whitefox.api.server.DeltaHeaders.DELTA_SHARE_CAPABILITIES_HEADER]] header
-   * that will be set in the response w/r/t the one received in the request.
-   * If the request did not contain any, we will return an empty one.
+   * Serializes the response format in its text-based representation
    */
-  public static Map<String, String> toHeaderCapabilitiesMap(String headerCapabilities) {
-    if (headerCapabilities == null) {
-      return Map.of();
-    }
-    return Arrays.stream(headerCapabilities.toLowerCase().split(";"))
-        .map(h -> h.split("="))
-        .filter(h -> h.length == 2)
-        .map(splits -> Map.entry(splits[0], splits[1]))
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+  public static String toResponseFormatHeader(ResponseFormat responseFormat) {
+    return responseFormat.stringRepresentation();
   }
 
   public static TableMetadataResponseObject toTableResponseMetadata(Metadata m) {

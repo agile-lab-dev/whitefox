@@ -5,6 +5,7 @@ import io.whitefox.core.Principal;
 import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
 import io.whitefox.core.SharedTable;
+import io.whitefox.core.services.capabilities.ClientCapabilities;
 import io.whitefox.persistence.StorageManager;
 import io.whitefox.persistence.memory.InMemoryStorageManager;
 import java.util.Collections;
@@ -202,8 +203,8 @@ public class DeltaShareServiceTest {
     StorageManager storageManager = new InMemoryStorageManager(shares);
     DeltaSharesService deltaSharesService =
         new DeltaSharesServiceImpl(storageManager, 100, tableLoaderFactory, fileSignerFactory);
-    var tableMetadata =
-        deltaSharesService.getTableMetadata("name", "default", "table1", Optional.empty());
+    var tableMetadata = deltaSharesService.getTableMetadata(
+        "name", "default", "table1", Optional.empty(), ClientCapabilities.parquet());
     Assertions.assertTrue(tableMetadata.isPresent());
     Assertions.assertEquals(
         "56d48189-cdbc-44f2-9b0e-2bded4c79ed7", tableMetadata.get().id());
@@ -224,8 +225,8 @@ public class DeltaShareServiceTest {
     StorageManager storageManager = new InMemoryStorageManager(shares);
     DeltaSharesService deltaSharesService =
         new DeltaSharesServiceImpl(storageManager, 100, tableLoaderFactory, fileSignerFactory);
-    var resultTable =
-        deltaSharesService.getTableMetadata("name", "default", "tableNotFound", Optional.empty());
+    var resultTable = deltaSharesService.getTableMetadata(
+        "name", "default", "tableNotFound", Optional.empty(), ClientCapabilities.parquet());
     Assertions.assertTrue(resultTable.isEmpty());
   }
 }

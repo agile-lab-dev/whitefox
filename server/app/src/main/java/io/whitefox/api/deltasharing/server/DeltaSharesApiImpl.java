@@ -80,20 +80,21 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
     return wrapExceptions(
         () -> {
           var startingTimestamp = parseTimestamp(startingTimestampStr);
+          var clientCapabilities =
+              clientCapabilitiesMapper.parseDeltaSharingCapabilities(deltaSharingCapabilities);
           return optionalToNotFound(
-              deltaSharesService.getTableMetadata(share, schema, table, startingTimestamp),
+              deltaSharesService.getTableMetadata(
+                  share, schema, table, startingTimestamp, clientCapabilities),
               m -> optionalToNotFound(
                   deltaSharesService.getTableVersion(share, schema, table, startingTimestamp),
                   v -> Response.ok(
                           tableResponseSerializer.serialize(
                               DeltaMappers.toTableResponseMetadata(m)),
                           ndjsonMediaType)
-                      .status(Response.Status.OK.getStatusCode())
                       .header(DELTA_TABLE_VERSION_HEADER, String.valueOf(v))
                       .header(
                           DELTA_SHARE_CAPABILITIES_HEADER,
-                          getResponseFormatHeader(
-                              DeltaMappers.toHeaderCapabilitiesMap(deltaSharingCapabilities)))
+                          DeltaMappers.toResponseFormatHeader(m.format()))
                       .build()));
         },
         exceptionToResponse);
@@ -186,7 +187,6 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
    * </pre>
    */
   @Override
-  // TODO
   public Response queryTable(
       String share,
       String schema,
@@ -207,10 +207,7 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
               .header(DELTA_TABLE_VERSION_HEADER, readResult.version())
               .header(
                   DELTA_SHARE_CAPABILITIES_HEADER,
-                  String.format(
-                      "%s=%s",
-                      DELTA_SHARING_RESPONSE_FORMAT,
-                      readResult.responseFormat().stringRepresentation()))
+                  DeltaMappers.toResponseFormatHeader(readResult.responseFormat()))
               .build();
         },
         exceptionToResponse);
