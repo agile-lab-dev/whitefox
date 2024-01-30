@@ -33,7 +33,7 @@ public class EvalHelperTest {
     assertTrue(EvalHelper.lessThan(children5, evalContext3));
     var evalContext6 = new EvalContext(Map.of("float", "2.99"), Map.of());
     var children6 =
-            List.of(new ColumnOp("float", FloatType.FLOAT), new LiteralOp("2.98", FloatType.FLOAT));
+        List.of(new ColumnOp("float", FloatType.FLOAT), new LiteralOp("2.98", FloatType.FLOAT));
     assertFalse(EvalHelper.lessThan(children6, evalContext6));
   }
 
