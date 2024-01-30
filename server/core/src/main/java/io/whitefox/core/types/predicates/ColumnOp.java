@@ -9,7 +9,6 @@ import io.whitefox.core.ColumnRange;
 import io.whitefox.core.types.BooleanType;
 import io.whitefox.core.types.DataType;
 import java.util.Objects;
-import org.apache.commons.lang3.tuple.Pair;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "column")
 public class ColumnOp extends LeafOp {
@@ -52,7 +51,7 @@ public class ColumnOp extends LeafOp {
   @Override
   public Object eval(EvalContext ctx) {
     // TODO: handle case of null column + column ranges
-    return Pair.of(resolve(ctx), valueType);
+    return new ColumnRange(resolve(ctx), valueType);
   }
 
   public void validate() throws PredicateException {

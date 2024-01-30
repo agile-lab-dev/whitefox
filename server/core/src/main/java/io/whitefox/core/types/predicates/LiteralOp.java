@@ -4,8 +4,8 @@ import static io.whitefox.core.types.predicates.EvaluatorVersion.V1;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.whitefox.core.ColumnRange;
 import io.whitefox.core.types.DataType;
-import org.apache.commons.lang3.tuple.Pair;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "literal")
 public class LiteralOp extends LeafOp {
@@ -25,7 +25,7 @@ public class LiteralOp extends LeafOp {
 
   @Override
   public Object eval(EvalContext ctx) {
-    return Pair.of(value, valueType);
+    return new ColumnRange(value, valueType);
   }
 
   public LiteralOp() {

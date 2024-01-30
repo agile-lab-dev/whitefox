@@ -3,9 +3,9 @@ package io.whitefox.core.types.predicates;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.whitefox.core.ColumnRange;
 import io.whitefox.core.types.DataType;
 import java.util.List;
-import org.apache.commons.lang3.tuple.Pair;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "op")
 @JsonSubTypes({
@@ -19,12 +19,12 @@ public abstract class LeafOp implements BaseOp {
   @JsonProperty("valueType")
   DataType valueType;
 
-  Pair<String, DataType> evalExpectValueAndType(EvalContext ctx) throws PredicateException {
+  ColumnRange evalExpectValueAndType(EvalContext ctx) throws PredicateException {
     var res = eval(ctx);
-    if (res instanceof Pair) {
-      return (Pair<String, DataType>) res;
+    if (res instanceof ColumnRange) {
+      return (ColumnRange) res;
     } else {
-      throw new WrongExpectedTypeException(res, Pair.class);
+      throw new WrongExpectedTypeException(res, ColumnRange.class);
     }
   }
 

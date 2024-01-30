@@ -8,8 +8,6 @@ import static org.wildfly.common.Assert.assertTrue;
 import io.whitefox.core.Protocol;
 import io.whitefox.core.ReadTableRequest;
 import io.whitefox.core.SharedTable;
-
-import java.sql.Timestamp;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
@@ -74,7 +72,7 @@ public class DeltaSharedTableTest {
     var DTable = DeltaSharedTable.of(PTable);
     assertThrows(
         DateTimeParseException.class,
-        () -> DTable.getTableVersion(Optional.of(Timestamp.valueOf("221rfewdsad10:15:30+01:00"))));
+        () -> DTable.getTableVersion(TestDateUtils.parseTimestamp("221rfewdsad10:15:30+01:00")));
   }
 
   @Test

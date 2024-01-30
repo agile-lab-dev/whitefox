@@ -2,6 +2,8 @@ package io.whitefox.core.types.predicates;
 
 import io.whitefox.core.ColumnRange;
 import io.whitefox.core.types.*;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
@@ -13,100 +15,84 @@ public class EvalHelper {
   private static LeafEvaluationResult validateAndGetRange(
       ColumnOp columnChild, LiteralOp literalChild, EvalContext ctx) throws PredicateException {
     var columnRange = columnChild.evalExpectColumnRange(ctx);
-    var rightVal = literalChild.evalExpectValueAndType(ctx).getLeft();
+    var rightVal = literalChild.evalExpectValueAndType(ctx).getSingleValue();
 
     return LeafEvaluationResult.createFromRange(new RangeEvaluationResult(columnRange, rightVal));
   }
 
   private static LeafEvaluationResult validateAndGetTypeAndValue(
-      List<LeafOp> children, EvalContext ctx) throws PredicateException {
-    var leftChild = children.get(0);
-    var leftType = leftChild.evalExpectValueAndType(ctx).getRight();
-    var leftVal = leftChild.evalExpectValueAndType(ctx).getLeft();
+      ColumnOp columnOp, LiteralOp literalOp, EvalContext ctx) throws PredicateException {
+    var columnType = columnOp.evalExpectValueAndType(ctx).getValueType();
+    var columnValue = columnOp.evalExpectValueAndType(ctx).getSingleValue();
 
-    var rightChild = children.get(1);
-    var rightType = rightChild.evalExpectValueAndType(ctx).getRight();
-    var rightVal = rightChild.evalExpectValueAndType(ctx).getLeft();
+    var literalType = literalOp.evalExpectValueAndType(ctx).getValueType();
+    var literalValue = literalOp.evalExpectValueAndType(ctx).getSingleValue();
     // If the types don't match, it implies a malformed predicate tree.
     // We simply throw an exception, which will cause filtering to be skipped.
-    if (!Objects.equals(leftType, rightType)) {
-      throw new TypeMismatchException(leftType, rightType);
+    if (!Objects.equals(columnType, literalType)) {
+      throw new TypeMismatchException(columnType, literalType);
     }
 
-    if (leftVal == null && leftChild instanceof ColumnOp) {
-      return validateAndGetRange((ColumnOp) leftChild, (LiteralOp) rightChild, ctx);
-    }
-
-    // maybe better to enforce the Equal/LessThan... to explicitly require a column child and
-    // literal child
-    if (rightVal == null && rightChild instanceof ColumnOp) {
-      return validateAndGetRange((ColumnOp) rightChild, (LiteralOp) leftChild, ctx);
+    if (columnValue == null) {
+      return validateAndGetRange(columnOp, literalOp, ctx);
     }
 
     // We throw an exception for nulls, which will skip filtering.
-    if (leftVal == null || rightVal == null) {
-      throw new NullTypeException(leftChild, rightChild);
+    if (literalValue == null) {
+      throw new NullTypeException(columnOp, literalOp);
     }
+
     return LeafEvaluationResult.createFromPartitionColumn(new PartitionEvaluationResult(
-        new ColumnRange(leftVal, leftType), new ColumnRange(rightVal, rightType)));
+        new ColumnRange(columnValue, columnType), literalValue));
+  }
+
+  private static Pair<ColumnOp, LiteralOp> arrangeChildren(List<LeafOp> children) {
+    if (children.get(0) instanceof ColumnOp)
+      return Pair.of((ColumnOp) children.get(0), (LiteralOp) children.get(1));
+    else
+      return Pair.of((ColumnOp) children.get(1), (LiteralOp) children.get(0));
   }
 
   // Implements "equal" between two leaf operations.
   static Boolean equal(List<LeafOp> children, EvalContext ctx) throws PredicateException {
+    var columnOp = arrangeChildren(children).getLeft();
+    var literalOp = arrangeChildren(children).getRight();
 
-    var leafEvaluationResult = validateAndGetTypeAndValue(children, ctx);
-    var rangeEvaluation = leafEvaluationResult.rangeEvaluationResult.map(range -> {
-      var columnRange = range.getColumnRange();
-      var value = range.getValue();
+    var leafEvaluationResult = validateAndGetTypeAndValue(columnOp, literalOp, ctx);
+
+    if (leafEvaluationResult.rangeEvaluationResult.isPresent()){
+      var evaluationResult = leafEvaluationResult.rangeEvaluationResult.get();
+      var columnRange = evaluationResult.getColumnRange();
+      var value = evaluationResult.getValue();
       return columnRange.contains(value);
-    });
-    if (rangeEvaluation.isPresent()) return rangeEvaluation.get();
-    else if (leafEvaluationResult.partitionEvaluationResult.isPresent()) {
-      var typesAndValues = leafEvaluationResult.partitionEvaluationResult.get();
-      var leftType = typesAndValues.getPartitionValue().getValueType();
-      var leftVal = typesAndValues.getPartitionValue().getOnlyValue();
-      var rightVal = typesAndValues.getLiteralValue().getOnlyValue();
+    }
 
-      // we fear no exception here since it is validated before
-      if (BooleanType.BOOLEAN.equals(leftType)) {
-        return Boolean.valueOf(leftVal) == Boolean.valueOf(rightVal);
-      } else if (IntegerType.INTEGER.equals(leftType)) {
-        return Integer.parseInt(leftVal) == Integer.parseInt(rightVal);
-      } else if (LongType.LONG.equals(leftType)) {
-        return Long.parseLong(leftVal) == Long.parseLong(rightVal);
-      } else if (StringType.STRING.equals(leftType)) {
-        return leftVal.equals(rightVal);
-      } else if (DateType.DATE.equals(leftType)) {
-        return Date.valueOf(leftVal).equals(Date.valueOf(rightVal));
-      } else throw new TypeNotSupportedException(leftType);
+    else if (leafEvaluationResult.partitionEvaluationResult.isPresent()) {
+      var evaluationResult = leafEvaluationResult.partitionEvaluationResult.get();
+      var literalValue = evaluationResult.getLiteralValue();
+
+      return evaluationResult.getPartitionValue().contains(literalValue);
     } else throw new PredicateColumnEvaluationException(ctx);
+
   }
 
   static Boolean lessThan(List<LeafOp> children, EvalContext ctx) throws PredicateException {
+    var columnOp = arrangeChildren(children).getLeft();
+    var literalOp = arrangeChildren(children).getRight();
 
-    var leafEvaluationResult = validateAndGetTypeAndValue(children, ctx);
-    var rangeEvaluation = leafEvaluationResult.rangeEvaluationResult.map(range -> {
-      var columnRange = range.getColumnRange();
-      var value = range.getValue();
+    var leafEvaluationResult = validateAndGetTypeAndValue(columnOp, literalOp, ctx);
+
+    if (leafEvaluationResult.rangeEvaluationResult.isPresent()){
+      var evaluationResult = leafEvaluationResult.rangeEvaluationResult.get();
+      var columnRange = evaluationResult.getColumnRange();
+      var value = evaluationResult.getValue();
       return columnRange.canBeLess(value);
-    });
-
-    if (rangeEvaluation.isPresent()) return rangeEvaluation.get();
+    }
     else if (leafEvaluationResult.partitionEvaluationResult.isPresent()) {
-      var typesAndValues = leafEvaluationResult.partitionEvaluationResult.get();
-      var leftType = typesAndValues.getPartitionValue().getValueType();
-      var leftVal = typesAndValues.getPartitionValue().getOnlyValue();
-      var rightVal = typesAndValues.getLiteralValue().getOnlyValue();
+      var evaluationResult = leafEvaluationResult.partitionEvaluationResult.get();
+      var literalValue = evaluationResult.getLiteralValue();
 
-      if (IntegerType.INTEGER.equals(leftType)) {
-        return Integer.parseInt(leftVal) < Integer.parseInt(rightVal);
-      } else if (LongType.LONG.equals(leftType)) {
-        return Long.parseLong(leftVal) < Long.parseLong(rightVal);
-      } else if (StringType.STRING.equals(leftType)) {
-        return leftVal.compareTo(rightVal) < 0;
-      } else if (DateType.DATE.equals(leftType)) {
-        return Date.valueOf(leftVal).before(Date.valueOf(rightVal));
-      } else throw new TypeNotSupportedException(leftType);
+      return evaluationResult.getPartitionValue().canBeLess(literalValue);
     } else throw new PredicateColumnEvaluationException(ctx);
   }
 

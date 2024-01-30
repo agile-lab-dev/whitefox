@@ -1,11 +1,11 @@
 package io.whitefox.core.services;
 
 import io.whitefox.DeltaTestUtils;
+import io.whitefox.core.*;
 import io.whitefox.core.Principal;
 import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
 import io.whitefox.core.SharedTable;
-import io.whitefox.core.*;
 import io.whitefox.core.services.exceptions.TableNotFound;
 import io.whitefox.persistence.StorageManager;
 import io.whitefox.persistence.memory.InMemoryStorageManager;
@@ -273,7 +273,7 @@ public class DeltaShareServiceTest {
                 "name"))));
     StorageManager storageManager = new InMemoryStorageManager(shares);
     DeltaSharesService deltaSharesService =
-        new DeltaSharesServiceImpl(storageManager, 100, loader, fileSignerFactory);
+        new DeltaSharesServiceImpl(storageManager, 100, tableLoaderFactory, fileSignerFactory);
     Assertions.assertThrows(
         TableNotFound.class,
         () -> deltaSharesService.queryTable("name", "default", "tableNotFound", null));

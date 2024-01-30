@@ -24,11 +24,17 @@ public class EvalHelperTest {
     var children3 =
         List.of(new ColumnOp("long", LongType.LONG), new LiteralOp("21", LongType.LONG));
     assertTrue(EvalHelper.lessThan(children3, evalContext3));
-    var evalContext4 = new EvalContext(Map.of("float", "2.99"), Map.of());
+    var evalContext4 = new EvalContext(Map.of("float", "2.97"), Map.of());
     var children4 =
         List.of(new ColumnOp("float", FloatType.FLOAT), new LiteralOp("2.98", FloatType.FLOAT));
-    assertThrows(
-        TypeNotSupportedException.class, () -> EvalHelper.lessThan(children4, evalContext4));
+    assertTrue(EvalHelper.lessThan(children4, evalContext4));
+    var children5 =
+        List.of(new LiteralOp("21", LongType.LONG), new ColumnOp("long", LongType.LONG));
+    assertTrue(EvalHelper.lessThan(children5, evalContext3));
+    var evalContext6 = new EvalContext(Map.of("float", "2.99"), Map.of());
+    var children6 =
+            List.of(new ColumnOp("float", FloatType.FLOAT), new LiteralOp("2.98", FloatType.FLOAT));
+    assertFalse(EvalHelper.lessThan(children6, evalContext6));
   }
 
   @Test
@@ -52,7 +58,7 @@ public class EvalHelperTest {
     var evalContext5 = new EvalContext(Map.of("float", "2.99"), Map.of());
     var children5 =
         List.of(new ColumnOp("float", FloatType.FLOAT), new LiteralOp("2.99", FloatType.FLOAT));
-    assertThrows(TypeNotSupportedException.class, () -> EvalHelper.equal(children5, evalContext5));
+    assertTrue(EvalHelper.equal(children5, evalContext5));
   }
 
   @Test

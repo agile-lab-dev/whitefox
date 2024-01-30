@@ -11,13 +11,10 @@ import io.whitefox.core.Metadata;
 import io.whitefox.core.TableSchema;
 import io.whitefox.core.types.predicates.PredicateException;
 import java.sql.Timestamp;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
-
 
 public class DeltaSharedTable implements InternalSharedTable {
 

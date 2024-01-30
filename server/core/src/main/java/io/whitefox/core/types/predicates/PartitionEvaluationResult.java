@@ -5,9 +5,9 @@ import io.whitefox.core.ColumnRange;
 public class PartitionEvaluationResult {
 
   ColumnRange partitionValue;
-  ColumnRange literalValue;
+  String literalValue;
 
-  public PartitionEvaluationResult(ColumnRange partitionValue, ColumnRange literalValue) {
+  public PartitionEvaluationResult(ColumnRange partitionValue, String literalValue) {
     this.partitionValue = partitionValue;
     this.literalValue = literalValue;
   }
@@ -16,7 +16,7 @@ public class PartitionEvaluationResult {
     return partitionValue;
   }
 
-  public ColumnRange getLiteralValue() {
+  public String getLiteralValue() {
     return literalValue;
   }
 }

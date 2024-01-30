@@ -2,6 +2,7 @@ package io.whitefox.core;
 
 import io.whitefox.annotations.SkipCoverageGenerated;
 import io.whitefox.core.types.*;
+import io.whitefox.core.types.predicates.TypeNotSupportedException;
 import java.sql.Date;
 import java.sql.Timestamp;
 
@@ -28,11 +29,11 @@ public class ColumnRange {
     return valueType;
   }
 
-  public String getOnlyValue() {
+  public String getSingleValue() {
     return minVal;
   }
 
-  private Boolean typedContains(String point) {
+  private Boolean typedContains(String point) throws TypeNotSupportedException {
     if (valueType instanceof IntegerType) {
       var c1 = Integer.compare(Integer.parseInt(minVal), Integer.parseInt(point));
       var c2 = Integer.compare(Integer.parseInt(maxVal), Integer.parseInt(point));
@@ -44,7 +45,7 @@ public class ColumnRange {
     } else if (valueType instanceof TimestampType) {
       var c1 = Timestamp.valueOf(minVal).before(Timestamp.valueOf(point));
       var c2 = Timestamp.valueOf(maxVal).after(Timestamp.valueOf(point));
-      return c1 && c2;
+      return (c1 && c2) || Timestamp.valueOf(minVal).equals(Timestamp.valueOf(point));
     } else if (valueType instanceof FloatType) {
       var c1 = Float.compare(Float.parseFloat(minVal), Float.parseFloat(point));
       var c2 = Float.compare(Float.parseFloat(maxVal), Float.parseFloat(point));
@@ -56,19 +57,19 @@ public class ColumnRange {
     } else if (valueType instanceof DateType) {
       var c1 = Date.valueOf(minVal).before(Date.valueOf(point));
       var c2 = Date.valueOf(maxVal).after(Date.valueOf(point));
-      return c1 && c2;
+      return (c1 && c2) || Date.valueOf(minVal).equals(Date.valueOf(point));
     } else if (valueType instanceof BooleanType) {
       var c1 = Boolean.parseBoolean(minVal) == Boolean.parseBoolean(point);
       var c2 = Boolean.parseBoolean(maxVal) == Boolean.parseBoolean(point);
       return c1 || c2;
-    } else {
+    } else if (valueType instanceof StringType) {
       var c1 = minVal.compareTo(point);
       var c2 = maxVal.compareTo(point);
       return (c1 <= 0 && c2 >= 0);
-    }
+    } else throw new TypeNotSupportedException(valueType);
   }
 
-  private Boolean typedLessThan(String point) {
+  private Boolean typedLessThan(String point) throws TypeNotSupportedException {
     if (valueType instanceof IntegerType) {
       var c1 = Integer.compare(Integer.parseInt(minVal), Integer.parseInt(point));
       return (c1 < 0);
@@ -85,12 +86,13 @@ public class ColumnRange {
       return (c1 < 0);
     } else if (valueType instanceof DateType) {
       return Date.valueOf(minVal).before(Date.valueOf(point));
-    } else {
+    } else if (valueType instanceof StringType) {
       var c = minVal.compareTo(point);
       return (c < 0);
-    }
+    } else throw new TypeNotSupportedException(valueType);
   }
 
+  // not used currently
   @SkipCoverageGenerated
   private Boolean typedGreaterThan(String point) {
     if (valueType instanceof IntegerType) {
@@ -116,11 +118,11 @@ public class ColumnRange {
     }
   }
 
-  public Boolean contains(String point) {
+  public Boolean contains(String point) throws TypeNotSupportedException {
     return typedContains(point);
   }
 
-  public Boolean canBeLess(String point) {
+  public Boolean canBeLess(String point) throws TypeNotSupportedException {
     return typedLessThan(point);
   }
 
