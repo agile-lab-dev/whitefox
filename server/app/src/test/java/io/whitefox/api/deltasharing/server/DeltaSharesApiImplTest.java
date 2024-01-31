@@ -404,10 +404,10 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
 
     assertEquals(
         deltaTable1Protocol,
-        objectMapper.reader().readValue(responseBodyLines[0], ProtocolObject.class));
+        objectMapper.reader().readValue(responseBodyLines[0], ParquetProtocol.class));
     assertEquals(
         deltaTable1Metadata,
-        objectMapper.reader().readValue(responseBodyLines[1], MetadataObject.class));
+        objectMapper.reader().readValue(responseBodyLines[1], ParquetMetadata.class));
     var files = Arrays.stream(responseBodyLines)
         .skip(2)
         .map(line -> {

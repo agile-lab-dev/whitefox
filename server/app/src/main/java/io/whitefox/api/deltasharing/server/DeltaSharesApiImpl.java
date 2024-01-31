@@ -45,6 +45,7 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
 
   @Override
   public Response getShare(String share) {
+    // TODO split core and http models
     return wrapExceptions(
         () ->
             optionalToNotFound(shareService.getShare(share), s -> Response.ok(s).build()),
