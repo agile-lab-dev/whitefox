@@ -18,16 +18,21 @@ public class IcebergTableLoader implements TableLoader {
   public IcebergSharedTable loadTable(SharedTable sharedTable) {
     if (sharedTable.internalTable().properties() instanceof InternalTable.IcebergTableProperties) {
       var metastore = getMetastore(sharedTable.internalTable());
+      var storage = sharedTable.internalTable().provider().storage();
       var tableId = getTableIdentifier(sharedTable.internalTable());
       if (metastore.type() == MetastoreType.GLUE) {
-        return IcebergSharedTable.of(icebergCatalogHandler.loadTableWithGlueCatalog(
-            metastore, sharedTable.internalTable().provider().storage(), tableId));
+        return IcebergSharedTable.of(
+            icebergCatalogHandler.loadTableWithGlueCatalog(
+                metastore, sharedTable.internalTable().provider().storage(), tableId),
+            sharedTable);
       } else if (metastore.type() == MetastoreType.HADOOP) {
-        return IcebergSharedTable.of(icebergCatalogHandler.loadTableWithHadoopCatalog(
-            metastore, sharedTable.internalTable().provider().storage(), tableId));
+        return IcebergSharedTable.of(
+            icebergCatalogHandler.loadTableWithHadoopCatalog(
+                metastore, sharedTable.internalTable().provider().storage(), tableId),
+            sharedTable);
       } else {
-        throw new RuntimeException(String.format(
-            "Metastore type: [%s] not compatible with Iceberg table", metastore.type()));
+        throw new RuntimeException(
+            String.format("Unsupported metastore type: [%s]", metastore.type()));
       }
     } else {
       throw new IllegalArgumentException(

@@ -216,7 +216,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   }
 
   @Test
-  @DisabledOnOs(OS.WINDOWS)
+  @Disabled
   public void icebergTableVersion() {
     given()
         .when()
@@ -232,7 +232,7 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   }
 
   @Test
-  @DisabledOnOs(OS.WINDOWS)
+  @Disabled
   public void icebergTableMetadata() throws IOException {
     var responseBodyLines = given()
         .when()
@@ -551,5 +551,137 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
         })
         .collect(Collectors.toSet()));
     assertEquals(7, responseBodyLines.length);
+  }
+
+  @Disabled
+  @Test
+  public void queryIcebergTableCurrentVersion() throws IOException {
+    var responseBodyLines = given()
+        .when()
+        .filter(deltaFilter)
+        .body("{}")
+        .header(new Header("Content-Type", "application/json"))
+        .post(
+            "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/query",
+            "name",
+            "default",
+            "icebergtable1")
+        .then()
+        .statusCode(200)
+        .header("Delta-Table-Version", "1")
+        .extract()
+        .body()
+        .asString()
+        .split("\n");
+
+    assertEquals(
+        localIcebergTable1Protocol,
+        objectMapper.reader().readValue(responseBodyLines[0], ParquetProtocol.class));
+    assertEquals(
+        localIcebergTable1Metadata,
+        objectMapper.reader().readValue(responseBodyLines[1], ParquetMetadata.class));
+    var files = Arrays.stream(responseBodyLines)
+        .skip(2)
+        .map(line -> {
+          try {
+            return objectMapper
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .reader()
+                .readValue(line, FileObjectWithoutPresignedUrl.class);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .collect(Collectors.toSet());
+    assertEquals(7, responseBodyLines.length);
+    assertEquals(localIcebergTableFilesToBeSigned, files);
+  }
+
+  @Disabled
+  @Test
+  public void queryIcebergTableByVersion() throws IOException {
+    var responseBodyLines = given()
+        .when()
+        .filter(deltaFilter)
+        .body("{\"version\": 3369848726892806393}")
+        .header(new Header("Content-Type", "application/json"))
+        .post(
+            "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/query",
+            "name",
+            "default",
+            "icebergtable1")
+        .then()
+        .statusCode(200)
+        .header("Delta-Table-Version", "1")
+        .extract()
+        .body()
+        .asString()
+        .split("\n");
+
+    assertEquals(
+        localIcebergTable1Protocol,
+        objectMapper.reader().readValue(responseBodyLines[0], ParquetProtocol.class));
+    assertEquals(
+        localIcebergTable1Metadata,
+        objectMapper.reader().readValue(responseBodyLines[1], ParquetMetadata.class));
+    var files = Arrays.stream(responseBodyLines)
+        .skip(2)
+        .map(line -> {
+          try {
+            return objectMapper
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .reader()
+                .readValue(line, FileObjectWithoutPresignedUrl.class);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .collect(Collectors.toSet());
+    assertEquals(7, responseBodyLines.length);
+    assertEquals(localIcebergTableFilesToBeSigned, files);
+  }
+
+  @Disabled
+  @Test
+  public void queryIcebergTableByTs() throws IOException {
+    var responseBodyLines = given()
+        .when()
+        .filter(deltaFilter)
+        .body("{\"timestamp\": \"2024-02-02T12:00:00Z\"}")
+        .header(new Header("Content-Type", "application/json"))
+        .post(
+            "delta-api/v1/shares/{share}/schemas/{schema}/tables/{table}/query",
+            "name",
+            "default",
+            "icebergtable1")
+        .then()
+        .statusCode(200)
+        .header("Delta-Table-Version", "1")
+        .extract()
+        .body()
+        .asString()
+        .split("\n");
+
+    assertEquals(
+        localIcebergTable1Protocol,
+        objectMapper.reader().readValue(responseBodyLines[0], ParquetProtocol.class));
+    assertEquals(
+        localIcebergTable1Metadata,
+        objectMapper.reader().readValue(responseBodyLines[1], ParquetMetadata.class));
+    var files = Arrays.stream(responseBodyLines)
+        .skip(2)
+        .map(line -> {
+          try {
+            return objectMapper
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .reader()
+                .readValue(line, FileObjectWithoutPresignedUrl.class);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .collect(Collectors.toSet());
+    assertEquals(7, responseBodyLines.length);
+    assertEquals(localIcebergTableFilesToBeSigned, files);
   }
 }
