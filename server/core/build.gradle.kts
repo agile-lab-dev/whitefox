@@ -27,16 +27,16 @@ dependencies {
     testFixturesImplementation(String.format("org.eclipse.microprofile.config:microprofile-config-api:%s", microprofileConfigVersion))
 
     // DELTA
-    implementation("io.delta:delta-standalone_2.13:3.0.0")
+    implementation("io.delta:delta-standalone_2.13:3.1.0")
     implementation(String.format("org.apache.hadoop:hadoop-common:%s", hadoopVersion))
 
     //ICEBERG
     implementation("org.apache.iceberg:iceberg-api:1.4.3")
     implementation("org.apache.iceberg:iceberg-core:1.4.3")
     implementation("org.apache.iceberg:iceberg-aws:1.4.3")
-    implementation("software.amazon.awssdk:glue:2.23.12")
-    implementation("software.amazon.awssdk:sts:2.23.12")
-    implementation("software.amazon.awssdk:s3:2.23.12")
+    implementation("software.amazon.awssdk:glue:2.23.14")
+    implementation("software.amazon.awssdk:sts:2.23.14")
+    implementation("software.amazon.awssdk:s3:2.23.14")
 
     //AWS
     compileOnly(String.format("com.amazonaws:aws-java-sdk-bom:%s", awsSdkVersion))
