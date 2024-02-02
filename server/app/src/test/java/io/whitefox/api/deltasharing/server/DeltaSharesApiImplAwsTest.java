@@ -91,7 +91,7 @@ public class DeltaSharesApiImplAwsTest implements OpenApiValidatorUtils {
                         "s3share",
                         s3IcebergTable1(s3TestConfig, awsGlueTestConfig))),
                 "s3share")),
-        new Principal("Mr fox"),
+        new Principal("Mr. Fox"),
         0L));
   }
 
