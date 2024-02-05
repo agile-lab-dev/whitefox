@@ -48,6 +48,7 @@ dependencies {
     testImplementation("io.quarkus:quarkus-arc")
     testImplementation(String.format("org.hamcrest:hamcrest:%s", hamcrestVersion))
     testImplementation(project(":server:persistence:memory"))
+    testImplementation(project(":server:persistence:jdbc"))
 }
 
 // endregion

@@ -16,6 +16,7 @@ dependencies {
     // INTERNAL
     implementation(project(":server:core"))
     implementation(project(":server:persistence:memory"))
+    implementation(project(":server:persistence:jdbc"))
 
     // QUARKUS
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
