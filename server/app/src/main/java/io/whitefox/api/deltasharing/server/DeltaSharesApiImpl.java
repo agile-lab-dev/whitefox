@@ -82,7 +82,7 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
         () -> {
           var startingTimestamp = parseTimestamp(startingTimestampStr);
           var clientCapabilities =
-                  clientCapabilitiesMapper.parseDeltaSharingCapabilities(deltaSharingCapabilities);
+              clientCapabilitiesMapper.parseDeltaSharingCapabilities(deltaSharingCapabilities);
           return optionalToNotFound(
               deltaSharesService.getTableMetadata(
                   share, schema, table, startingTimestamp, clientCapabilities),

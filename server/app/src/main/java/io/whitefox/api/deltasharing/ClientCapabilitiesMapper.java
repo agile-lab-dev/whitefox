@@ -8,7 +8,6 @@ import io.whitefox.core.services.capabilities.ReaderFeatures;
 import io.whitefox.core.services.capabilities.ResponseFormat;
 import io.whitefox.core.services.exceptions.UnknownResponseFormat;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Singleton;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
