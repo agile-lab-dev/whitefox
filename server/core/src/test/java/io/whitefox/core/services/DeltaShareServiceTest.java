@@ -205,11 +205,12 @@ public class DeltaShareServiceTest {
     StorageManager storageManager = new InMemoryStorageManager(shares);
     DeltaSharesService deltaSharesService =
         new DeltaSharesServiceImpl(storageManager, 100, tableLoaderFactory, fileSignerFactory);
-    var tableMetadata = deltaSharesService.getTableMetadata(
+    var tableMetadataResponse = deltaSharesService.getTableMetadata(
         "name", "default", "table1", Optional.empty(), ClientCapabilities.parquet());
-    Assertions.assertTrue(tableMetadata.isPresent());
+    Assertions.assertTrue(tableMetadataResponse.isPresent());
     Assertions.assertEquals(
-        "56d48189-cdbc-44f2-9b0e-2bded4c79ed7", tableMetadata.get().id());
+        "56d48189-cdbc-44f2-9b0e-2bded4c79ed7",
+        tableMetadataResponse.get().metadata().id());
   }
 
   @Test
@@ -256,8 +257,7 @@ public class DeltaShareServiceTest {
         "default",
         "partitioned-delta-table",
         new ReadTableRequest.ReadTableCurrentVersion(
-            Optional.empty(), Optional.empty(), Optional.empty()),
-        ClientCapabilities.parquet());
+            Optional.empty(), Optional.empty(), Optional.empty(), ClientCapabilities.parquet()));
     Assertions.assertEquals(9, resultTable.files().size());
   }
 
@@ -278,7 +278,6 @@ public class DeltaShareServiceTest {
         new DeltaSharesServiceImpl(storageManager, 100, tableLoaderFactory, fileSignerFactory);
     Assertions.assertThrows(
         TableNotFound.class,
-        () -> deltaSharesService.queryTable(
-            "name", "default", "tableNotFound", null, ClientCapabilities.parquet()));
+        () -> deltaSharesService.queryTable("name", "default", "tableNotFound", null));
   }
 }

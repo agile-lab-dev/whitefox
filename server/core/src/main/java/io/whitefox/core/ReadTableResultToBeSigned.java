@@ -1,5 +1,6 @@
 package io.whitefox.core;
 
+import io.whitefox.core.services.capabilities.ResponseFormat;
 import java.util.List;
 import lombok.Value;
 
@@ -7,6 +8,7 @@ import lombok.Value;
 public class ReadTableResultToBeSigned {
   Protocol protocol;
   Metadata metadata;
-  List<TableFileToBeSigned> other;
+  List<TableFileToBeSigned> filesToBeSigned;
   long version;
+  ResponseFormat responseFormat;
 }

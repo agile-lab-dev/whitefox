@@ -1,9 +1,7 @@
 package io.whitefox.core.services;
 
-import io.whitefox.core.Metadata;
-import io.whitefox.core.ReadTableRequest;
-import io.whitefox.core.ReadTableResultToBeSigned;
-import io.whitefox.core.TableSchema;
+import io.whitefox.core.*;
+import io.whitefox.core.services.capabilities.ClientCapabilities;
 import io.whitefox.core.services.capabilities.ResponseFormat;
 import java.sql.Timestamp;
 import java.util.Optional;
@@ -33,16 +31,12 @@ public class IcebergSharedTable implements InternalSharedTable {
     return new IcebergSharedTable(icebergTable, new TableSchemaConverter());
   }
 
-  public Optional<Metadata> getMetadata(Optional<Timestamp> startingTimestamp) {
-    return getSnapshot(startingTimestamp).map(this::getMetadataFromSnapshot);
-  }
-
   private Metadata getMetadataFromSnapshot(Snapshot snapshot) {
     return new Metadata(
         String.valueOf(snapshot.snapshotId()),
         Optional.of(icebergTable.name()),
         Optional.empty(),
-        ResponseFormat.parquet,
+        FileFormat.parquet,
         new TableSchema(tableSchemaConverter.convertIcebergSchemaToWhitefox(
             icebergTable.schema().asStruct())),
         icebergTable.spec().fields().stream()
@@ -79,5 +73,12 @@ public class IcebergSharedTable implements InternalSharedTable {
   @Override
   public ReadTableResultToBeSigned queryTable(ReadTableRequest readTableRequest) {
     throw new NotImplementedException();
+  }
+
+  @Override
+  public Optional<MetadataResponse> getMetadata(
+      Optional<Timestamp> startingTimestamp, ClientCapabilities clientCapabilities) {
+    return getSnapshot(startingTimestamp)
+        .map(s -> new MetadataResponse(getMetadataFromSnapshot(s), ResponseFormat.parquet));
   }
 }

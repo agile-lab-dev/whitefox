@@ -17,42 +17,42 @@ public class ClientCapabilitiesMapperTest implements DeltaHeaders {
   @Test
   void parseSimpleResponseFormatDelta() {
     Assertions.assertEquals(
-        ResponseFormat.delta,
-        mapper.parseDeltaSharingCapabilities(responseFormatDelta).responseFormat());
+        Set.of(ResponseFormat.delta, ResponseFormat.parquet),
+        mapper.parseDeltaSharingCapabilities(responseFormatDelta).responseFormats());
   }
 
   @Test
   void parseSimpleResponseFormatParquet() {
     Assertions.assertEquals(
-        ResponseFormat.parquet,
-        mapper.parseDeltaSharingCapabilities("responseformat=PaRquEt").responseFormat());
+        Set.of(ResponseFormat.parquet),
+        mapper.parseDeltaSharingCapabilities("responseformat=PaRquEt").responseFormats());
   }
 
   @Test
   void failToParseUnknownResponseFormatAndFail() {
     Assertions.assertThrows(
         UnknownResponseFormat.class,
-        () -> mapper.parseDeltaSharingCapabilities("responseformat=iceberg").responseFormat());
+        () -> mapper.parseDeltaSharingCapabilities("responseformat=iceberg").responseFormats());
   }
 
   @Test
   void failToParseUnknownResponseFormatAndReturnOthers() {
     Assertions.assertEquals(
-        ResponseFormat.delta,
+        Set.of(ResponseFormat.delta, ResponseFormat.parquet),
         mapper
             .parseDeltaSharingCapabilities("responseformat=iceberg,parquet,delta")
-            .responseFormat());
+            .responseFormats());
   }
 
   @Test
   void noCapabilitiesEqualsDefault() {
     Assertions.assertEquals(
-        ResponseFormat.parquet,
-        mapper.parseDeltaSharingCapabilities((String) null).responseFormat());
+        Set.of(ResponseFormat.parquet),
+        mapper.parseDeltaSharingCapabilities((String) null).responseFormats());
     Assertions.assertEquals(
         Set.of(), mapper.parseDeltaSharingCapabilities((String) null).readerFeatures());
     Assertions.assertEquals(
-        ResponseFormat.parquet, mapper.parseDeltaSharingCapabilities("").responseFormat());
+        Set.of(ResponseFormat.parquet), mapper.parseDeltaSharingCapabilities("").responseFormats());
     Assertions.assertEquals(Set.of(), mapper.parseDeltaSharingCapabilities("").readerFeatures());
   }
 
@@ -103,7 +103,8 @@ public class ClientCapabilitiesMapperTest implements DeltaHeaders {
     var responseFormat = "responseformat=iceberg,parquet,delta";
     var capabilities = mapper.parseDeltaSharingCapabilities(
         String.format("%s;%s", readerFeatures, responseFormat));
-    Assertions.assertEquals(ResponseFormat.delta, capabilities.responseFormat());
+    Assertions.assertEquals(
+        Set.of(ResponseFormat.delta, ResponseFormat.parquet), capabilities.responseFormats());
     Assertions.assertEquals(
         Set.of(ReaderFeatures.COLUMN_MAPPING, ReaderFeatures.DOMAIN_METADATA),
         capabilities.readerFeatures());
