@@ -186,9 +186,4 @@ public class DeltaSharedTable implements InternalSharedTable {
     // remove all "/" at the end of the path
     return location.replaceAll("/+$", "");
   }
-
-  public static class DeltaShareTableFormat {
-    public static final String RESPONSE_FORMAT_PARQUET = "parquet";
-    public static final String RESPONSE_FORMAT_DELTA = "delta";
-  }
 }
