@@ -8,9 +8,11 @@ import static org.wildfly.common.Assert.assertTrue;
 import io.whitefox.core.Protocol;
 import io.whitefox.core.ReadTableRequest;
 import io.whitefox.core.SharedTable;
+import io.whitefox.core.services.capabilities.ClientCapabilities;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -31,9 +33,11 @@ public class DeltaSharedTableTest {
   void getTableMetadata() {
     var PTable = new SharedTable("delta-table", "default", "share1", deltaTable("delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
-    var metadata = DTable.getMetadata(Optional.empty());
-    assertTrue(metadata.isPresent());
-    assertEquals("56d48189-cdbc-44f2-9b0e-2bded4c79ed7", metadata.get().id());
+    var metadataResponse = DTable.getMetadata(Optional.empty(), ClientCapabilities.parquet());
+    assertTrue(metadataResponse.isPresent());
+    assertEquals(
+        "56d48189-cdbc-44f2-9b0e-2bded4c79ed7",
+        metadataResponse.get().metadata().id());
   }
 
   @Test
@@ -81,10 +85,10 @@ public class DeltaSharedTableTest {
         "partitioned-delta-table", "default", "share1", deltaTable("partitioned-delta-table"));
     var DTable = DeltaSharedTable.of(PTable);
     var request = new ReadTableRequest.ReadTableCurrentVersion(
-        Optional.empty(), Optional.empty(), Optional.empty());
+        Optional.empty(), Optional.empty(), Optional.empty(), ClientCapabilities.delta(Set.of()));
     var response = DTable.queryTable(request);
     assertEquals(response.protocol(), new Protocol(Optional.of(1)));
-    assertEquals(response.other().size(), 9);
+    assertEquals(response.filesToBeSigned().size(), 9);
   }
 
   @Test
@@ -105,9 +109,12 @@ public class DeltaSharedTableTest {
 
     predicatesAndExpectedResult.forEach(p -> {
       var request = new ReadTableRequest.ReadTableCurrentVersion(
-          Optional.of(p.getLeft()), Optional.empty(), Optional.empty());
+          Optional.of(p.getLeft()),
+          Optional.empty(),
+          Optional.empty(),
+          ClientCapabilities.delta(Set.of()));
       var response = DTable.queryTable(request);
-      assertEquals(p.getRight(), response.other().size());
+      assertEquals(p.getRight(), response.filesToBeSigned().size());
     });
   }
 
@@ -119,9 +126,12 @@ public class DeltaSharedTableTest {
     var PTable = new SharedTable(tableName, "default", "share1", deltaTable(tableName));
     var DTable = DeltaSharedTable.of(PTable);
     var request = new ReadTableRequest.ReadTableCurrentVersion(
-        Optional.of(predicates), Optional.empty(), Optional.empty());
+        Optional.of(predicates),
+        Optional.empty(),
+        Optional.empty(),
+        ClientCapabilities.delta(Set.of()));
     var response = DTable.queryTable(request);
-    assertEquals(1, response.other().size());
+    assertEquals(1, response.filesToBeSigned().size());
   }
 
   @Test
@@ -210,9 +220,12 @@ public class DeltaSharedTableTest {
 
     predicatesAndExpectedResult.forEach(p -> {
       var request = new ReadTableRequest.ReadTableCurrentVersion(
-          Optional.empty(), Optional.of(p.getLeft()), Optional.empty());
+          Optional.empty(),
+          Optional.of(p.getLeft()),
+          Optional.empty(),
+          ClientCapabilities.delta(Set.of()));
       var response = DTable.queryTable(request);
-      assertEquals(p.getRight(), response.other().size());
+      assertEquals(p.getRight(), response.filesToBeSigned().size());
     });
   }
 }

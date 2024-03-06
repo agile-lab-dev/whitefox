@@ -11,6 +11,7 @@ import io.whitefox.api.server.CommonMappers;
 import io.whitefox.core.*;
 import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
+import io.whitefox.core.services.capabilities.ClientCapabilities;
 import io.whitefox.core.services.capabilities.ResponseFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,7 +30,8 @@ public class DeltaMappers {
         .share(schema.share());
   }
 
-  public static ReadTableRequest api2ReadTableRequest(QueryRequest request) {
+  public static ReadTableRequest api2ReadTableRequest(
+      QueryRequest request, ClientCapabilities clientCapabilities) {
     if (request.getStartingVersion() != null && request.getEndingVersion() != null) {
       throw new IllegalArgumentException("The startingVersion and endingVersion are not supported");
     } else if (request.getStartingVersion() != null) {
@@ -43,18 +45,21 @@ public class DeltaMappers {
           Optional.ofNullable(request.getPredicateHints()),
           Optional.ofNullable(request.getJsonPredicateHints()),
           Optional.ofNullable(request.getLimitHint()),
-          request.getVersion());
+          request.getVersion(),
+          clientCapabilities);
     } else if (request.getVersion() == null && request.getTimestamp() != null) {
       return new ReadTableRequest.ReadTableAsOfTimestamp(
           Optional.ofNullable(request.getPredicateHints()),
-          Optional.ofNullable(request.getJsonPredicateHints()),
           Optional.ofNullable(request.getLimitHint()),
-          CommonMappers.parseTimestamp(request.getTimestamp()));
+          Optional.ofNullable(request.getJsonPredicateHints()),
+          CommonMappers.parseTimestamp(request.getTimestamp()),
+          clientCapabilities);
     } else if (request.getVersion() == null && request.getTimestamp() == null) {
       return new ReadTableRequest.ReadTableCurrentVersion(
           Optional.ofNullable(request.getPredicateHints()),
           Optional.ofNullable(request.getJsonPredicateHints()),
-          Optional.ofNullable(request.getLimitHint()));
+          Optional.ofNullable(request.getLimitHint()),
+          clientCapabilities);
     } else {
       throw new IllegalArgumentException("Cannot specify both version and timestamp");
     }
@@ -83,11 +88,9 @@ public class DeltaMappers {
                 .numFiles(metadata.numFiles())
                 .build())
             .build();
-      case delta:
-        throw new IllegalArgumentException("Delta response format is not supported");
       default:
         throw new IllegalArgumentException(
-            String.format("%s response format is not supported", metadata.format()));
+            String.format("%s file format is not supported", metadata.format()));
     }
   }
 
@@ -110,10 +113,12 @@ public class DeltaMappers {
         .build();
   }
 
-  public static TableReferenceAndReadRequest api2TableReferenceAndReadRequest(
-      QueryRequest request, String share, String schema, String table) {
-    return new TableReferenceAndReadRequest(share, schema, table, api2ReadTableRequest(request));
-  }
+  //  public static TableReferenceAndReadRequest api2TableReferenceAndReadRequest(
+  //      QueryRequest request, String share, String schema, String table, ClientCapabilities
+  // clientCapabilities) {
+  //    return new TableReferenceAndReadRequest(share, schema, table, api2ReadTableRequest(request,
+  // clientCapabilities));
+  //  }
 
   public static io.whitefox.api.deltasharing.model.v1.generated.Table table2api(
       SharedTable sharedTable) {

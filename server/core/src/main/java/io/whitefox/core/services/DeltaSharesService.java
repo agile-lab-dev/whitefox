@@ -1,7 +1,6 @@
 package io.whitefox.core.services;
 
 import io.whitefox.core.*;
-import io.whitefox.core.Metadata;
 import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
 import io.whitefox.core.SharedTable;
@@ -18,7 +17,7 @@ public interface DeltaSharesService {
   ContentAndToken<List<Share>> listShares(
       Optional<ContentAndToken.Token> nextPageToken, Optional<Integer> maxResults);
 
-  Optional<Metadata> getTableMetadata(
+  Optional<MetadataResponse> getTableMetadata(
       String share,
       String schema,
       String table,
@@ -38,9 +37,5 @@ public interface DeltaSharesService {
       String share, Optional<ContentAndToken.Token> token, Optional<Integer> maxResults);
 
   ReadTableResult queryTable(
-      String share,
-      String schema,
-      String table,
-      ReadTableRequest queryRequest,
-      ClientCapabilities clientCapabilities);
+      String share, String schema, String table, ReadTableRequest queryRequest);
 }

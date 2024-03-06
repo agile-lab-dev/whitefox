@@ -90,12 +90,12 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
                   deltaSharesService.getTableVersion(share, schema, table, startingTimestamp),
                   v -> Response.ok(
                           tableResponseSerializer.serialize(
-                              DeltaMappers.toTableResponseMetadata(m)),
+                              DeltaMappers.toTableResponseMetadata(m.metadata())),
                           ndjsonMediaType)
                       .header(DELTA_TABLE_VERSION_HEADER, String.valueOf(v))
                       .header(
                           DELTA_SHARE_CAPABILITIES_HEADER,
-                          DeltaMappers.toResponseFormatHeader(m.format()))
+                          DeltaMappers.toResponseFormatHeader(m.responseFormat()))
                       .build()));
         },
         exceptionToResponse);
@@ -196,12 +196,13 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
       String deltaSharingCapabilities) {
     return wrapExceptions(
         () -> {
+          var clientCapabilities =
+              clientCapabilitiesMapper.parseDeltaSharingCapabilities(deltaSharingCapabilities);
           var readResult = deltaSharesService.queryTable(
               share,
               schema,
               table,
-              DeltaMappers.api2ReadTableRequest(queryRequest),
-              clientCapabilitiesMapper.parseDeltaSharingCapabilities(deltaSharingCapabilities));
+              DeltaMappers.api2ReadTableRequest(queryRequest, clientCapabilities));
           var serializedReadResult =
               tableQueryResponseSerializer.serialize(DeltaMappers.readTableResult2api(readResult));
           return Response.ok(serializedReadResult, ndjsonMediaType)

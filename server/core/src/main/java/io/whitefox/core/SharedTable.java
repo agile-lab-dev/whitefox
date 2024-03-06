@@ -59,4 +59,8 @@ public final class SharedTable {
         + share + '\'' + ", internalTable="
         + internalTable + '}';
   }
+
+  public String description() {
+    return "name='" + name + '\'' + ", schema='" + schema + '\'' + ", share='" + share + '\'';
+  }
 }

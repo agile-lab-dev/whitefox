@@ -6,7 +6,13 @@ import java.util.Set;
 public interface ClientCapabilities {
   Set<ReaderFeatures> readerFeatures();
 
-  ResponseFormat responseFormat();
+  Set<ResponseFormat> responseFormats();
+
+  /**
+   * This is seen from the client perspective, i.e. a parquet client is not compatible with a delta response
+   * while the other way around is compatible
+   */
+  boolean isCompatibleWith(ResponseFormat other);
 
   ParquetClientCapabilities PARQUET_INSTANCE = new ParquetClientCapabilities();
 
@@ -27,12 +33,17 @@ public interface ClientCapabilities {
     }
 
     @Override
-    public ResponseFormat responseFormat() {
-      return ResponseFormat.delta;
+    public Set<ResponseFormat> responseFormats() {
+      return Set.of(ResponseFormat.parquet, ResponseFormat.delta);
     }
 
     private DeltaClientCapabilities(Set<ReaderFeatures> readerFeatures) {
       this.readerFeatures = Collections.unmodifiableSet(readerFeatures);
+    }
+
+    @Override
+    public boolean isCompatibleWith(ResponseFormat other) {
+      return responseFormats().contains(other);
     }
   }
 
@@ -46,8 +57,13 @@ public interface ClientCapabilities {
     }
 
     @Override
-    public ResponseFormat responseFormat() {
-      return ResponseFormat.parquet;
+    public Set<ResponseFormat> responseFormats() {
+      return Set.of(ResponseFormat.parquet);
+    }
+
+    @Override
+    public boolean isCompatibleWith(ResponseFormat other) {
+      return responseFormats().contains(other);
     }
   }
 }

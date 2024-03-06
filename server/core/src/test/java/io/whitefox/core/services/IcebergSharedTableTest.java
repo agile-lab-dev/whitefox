@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.wildfly.common.Assert.assertTrue;
 
 import io.whitefox.core.SharedTable;
+import io.whitefox.core.services.capabilities.ClientCapabilities;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -25,9 +26,9 @@ public class IcebergSharedTableTest {
         "share1",
         icebergTableWithHadoopCatalog("test_db", "icebergtable1"));
     var DTable = icebergTableLoader.loadTable(PTable);
-    var metadata = DTable.getMetadata(Optional.empty());
-    assertTrue(metadata.isPresent());
-    assertEquals("3369848726892806393", metadata.get().id());
+    var metadataResponse = DTable.getMetadata(Optional.empty(), ClientCapabilities.parquet());
+    assertTrue(metadataResponse.isPresent());
+    assertEquals("3369848726892806393", metadataResponse.get().metadata().id());
   }
 
   @Test
@@ -38,9 +39,10 @@ public class IcebergSharedTableTest {
         "share1",
         icebergTableWithHadoopCatalog("test_db", "icebergtable2"));
     var DTable = icebergTableLoader.loadTable(PTable);
-    var metadata = DTable.getMetadata(TestDateUtils.parseTimestamp("2024-01-25T01:32:15+01:00"));
-    assertTrue(metadata.isPresent());
-    assertEquals("2174306913745765008", metadata.get().id());
+    var metadataResponse = DTable.getMetadata(
+        TestDateUtils.parseTimestamp("2024-01-25T01:32:15+01:00"), ClientCapabilities.parquet());
+    assertTrue(metadataResponse.isPresent());
+    assertEquals("2174306913745765008", metadataResponse.get().metadata().id());
   }
 
   @Test

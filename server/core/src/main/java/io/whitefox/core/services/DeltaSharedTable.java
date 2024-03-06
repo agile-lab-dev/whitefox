@@ -6,28 +6,33 @@ import static io.whitefox.core.PredicateUtils.evaluateSqlPredicate;
 import io.delta.standalone.DeltaLog;
 import io.delta.standalone.Snapshot;
 import io.delta.standalone.actions.AddFile;
+import io.delta.standalone.internal.DeltaLogImpl;
+import io.delta.standalone.internal.SnapshotImpl;
 import io.whitefox.core.*;
 import io.whitefox.core.Metadata;
 import io.whitefox.core.TableSchema;
+import io.whitefox.core.services.capabilities.ClientCapabilities;
 import io.whitefox.core.services.capabilities.ResponseFormat;
+import io.whitefox.core.services.exceptions.IncompatibleTableWithClient;
 import io.whitefox.core.types.predicates.PredicateException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 
 public class DeltaSharedTable implements InternalSharedTable {
 
   private final Logger logger = Logger.getLogger(this.getClass());
 
-  private final DeltaLog deltaLog;
+  private final DeltaLogImpl deltaLog;
   private final TableSchemaConverter tableSchemaConverter;
   private final SharedTable tableDetails;
   private final String location;
 
   private DeltaSharedTable(
-      DeltaLog deltaLog,
+      DeltaLogImpl deltaLog,
       TableSchemaConverter tableSchemaConverter,
       SharedTable sharedTable,
       String location) {
@@ -53,7 +58,7 @@ public class DeltaSharedTable implements InternalSharedTable {
         throw new IllegalArgumentException(
             String.format("Cannot find a delta table at %s", dataPath));
       }
-      return new DeltaSharedTable(dt, tableSchemaConverter, sharedTable, dataPath);
+      return new DeltaSharedTable((DeltaLogImpl) dt, tableSchemaConverter, sharedTable, dataPath);
     } else {
       throw new IllegalArgumentException(
           String.format("%s is not a delta table", sharedTable.name()));
@@ -64,8 +69,13 @@ public class DeltaSharedTable implements InternalSharedTable {
     return of(sharedTable, TableSchemaConverter.INSTANCE, new HadoopConfigBuilder());
   }
 
-  public Optional<Metadata> getMetadata(Optional<Timestamp> startingTimestamp) {
-    return getSnapshot(startingTimestamp).map(this::metadataFromSnapshot);
+  @Override
+  public Optional<MetadataResponse> getMetadata(
+      Optional<Timestamp> startingTimestamp, ClientCapabilities clientCapabilities) {
+    return getSnapshot(startingTimestamp).map(snapshot -> {
+      final ResponseFormat responseFormat = chooseResponseFormat(snapshot, clientCapabilities);
+      return new MetadataResponse(metadataFromSnapshot(snapshot), responseFormat);
+    });
   }
 
   private Metadata metadataFromSnapshot(Snapshot snapshot) {
@@ -73,7 +83,7 @@ public class DeltaSharedTable implements InternalSharedTable {
         snapshot.getMetadata().getId(),
         Optional.of(tableDetails.name()),
         Optional.ofNullable(snapshot.getMetadata().getDescription()),
-        ResponseFormat.parquet,
+        FileFormat.parquet,
         new TableSchema(tableSchemaConverter.convertDeltaSchemaToWhitefox(
             snapshot.getMetadata().getSchema())),
         snapshot.getMetadata().getPartitionColumns(),
@@ -121,60 +131,82 @@ public class DeltaSharedTable implements InternalSharedTable {
     }
   }
 
+  private ResponseFormat chooseResponseFormat(
+      SnapshotImpl snapshotImpl, ClientCapabilities clientCapabilities) {
+    return _chooseResponseFormat(snapshotImpl, clientCapabilities)
+        .orElseThrow(() -> new IncompatibleTableWithClient(String.format(
+            "Table %s cannot be read by client with capabilities %s",
+            tableDetails.description(), clientCapabilities)));
+  }
+
+  private Optional<ResponseFormat> _chooseResponseFormat(
+      SnapshotImpl snapshotImpl, ClientCapabilities clientCapabilities) {
+    if (snapshotImpl.protocol().getMinReaderVersion() == 1
+        && clientCapabilities.isCompatibleWith(ResponseFormat.parquet)) {
+      return Optional.of(ResponseFormat.parquet);
+    } else if (clientCapabilities.isCompatibleWith(ResponseFormat.delta)) {
+      return Optional.of(ResponseFormat.delta);
+    } else {
+      return Optional.empty();
+    }
+  }
+
   public ReadTableResultToBeSigned queryTable(ReadTableRequest readTableRequest) {
-    Optional<String> predicates;
-    Optional<List<String>> sqlPredicates;
-    Snapshot snapshot;
+    final Optional<String> predicates = readTableRequest.jsonPredicateHints();
+    final Optional<List<String>> sqlPredicates = readTableRequest.predicateHints();
+    SnapshotImpl snapshot;
     if (readTableRequest instanceof ReadTableRequest.ReadTableCurrentVersion) {
       snapshot = deltaLog.snapshot();
-      predicates =
-          ((ReadTableRequest.ReadTableCurrentVersion) readTableRequest).jsonPredicateHints();
-      sqlPredicates =
-          ((ReadTableRequest.ReadTableCurrentVersion) readTableRequest).predicateHints();
     } else if (readTableRequest instanceof ReadTableRequest.ReadTableAsOfTimestamp) {
       snapshot = deltaLog.getSnapshotForTimestampAsOf(
           ((ReadTableRequest.ReadTableAsOfTimestamp) readTableRequest).timestamp());
-      predicates =
-          ((ReadTableRequest.ReadTableAsOfTimestamp) readTableRequest).jsonPredicateHints();
-      sqlPredicates = ((ReadTableRequest.ReadTableAsOfTimestamp) readTableRequest).predicateHints();
     } else if (readTableRequest instanceof ReadTableRequest.ReadTableVersion) {
       snapshot = deltaLog.getSnapshotForVersionAsOf(
           ((ReadTableRequest.ReadTableVersion) readTableRequest).version());
-      predicates = ((ReadTableRequest.ReadTableVersion) readTableRequest).jsonPredicateHints();
-      sqlPredicates = ((ReadTableRequest.ReadTableVersion) readTableRequest).predicateHints();
     } else {
       throw new IllegalArgumentException("Unknown ReadTableRequest type: " + readTableRequest);
     }
-    var metadata = metadataFromSnapshot(snapshot);
-    return new ReadTableResultToBeSigned(
-        new Protocol(Optional.of(1)),
-        metadata,
-        snapshot.getAllFiles().stream()
-            .filter(f -> filterFilesBasedOnJsonPredicates(predicates, f))
-            .filter(f -> filterFilesBasedOnSqlPredicates(sqlPredicates, f, metadata))
-            .map(f -> new TableFileToBeSigned(
-                location() + "/" + f.getPath(),
-                f.getSize(),
-                snapshot.getVersion(),
-                snapshot.getMetadata().getCreatedTime(),
-                f.getStats(),
-                f.getPartitionValues()))
-            .collect(Collectors.toList()),
-        snapshot.getVersion());
+
+    final ResponseFormat responseFormat =
+        chooseResponseFormat(snapshot, readTableRequest.clientCapabilities());
+    if (ResponseFormat.parquet == responseFormat) {
+      final var metadata = metadataFromSnapshot(snapshot);
+      return new ReadTableResultToBeSigned(
+          new Protocol(Optional.of(1)),
+          metadata,
+          snapshot.getAllFiles().stream()
+              .filter(f -> filterFilesBasedOnJsonPredicates(predicates, f))
+              .filter(f -> filterFilesBasedOnSqlPredicates(sqlPredicates, f, metadata))
+              .map(f -> new TableFileToBeSigned(
+                  location() + "/" + f.getPath(),
+                  f.getSize(),
+                  snapshot.getVersion(),
+                  snapshot.getMetadata().getCreatedTime(),
+                  f.getStats(),
+                  f.getPartitionValues()))
+              .collect(Collectors.toList()),
+          snapshot.getVersion(),
+          responseFormat);
+    } else {
+      throw new NotImplementedException(String.format(
+          "Delta protocol is currently not implemented, "
+              + "table %s can't be read by the current version of whitefox",
+          tableDetails.description()));
+    }
   }
 
-  private Optional<Snapshot> getSnapshot(Optional<Timestamp> startingTimestamp) {
+  private Optional<SnapshotImpl> getSnapshot(Optional<Timestamp> startingTimestamp) {
     return startingTimestamp
         .map(Timestamp::getTime)
         .map(this::getSnapshotForTimestampAsOf)
         .orElse(Optional.of(getSnapshot()));
   }
 
-  private Snapshot getSnapshot() {
+  private SnapshotImpl getSnapshot() {
     return deltaLog.snapshot();
   }
 
-  private Optional<Snapshot> getSnapshotForTimestampAsOf(long l) {
+  private Optional<SnapshotImpl> getSnapshotForTimestampAsOf(long l) {
     try {
       return Optional.of(deltaLog.getSnapshotForTimestampAsOf(l));
     } catch (IllegalArgumentException iea) {

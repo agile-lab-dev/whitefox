@@ -8,6 +8,7 @@ import static org.wildfly.common.Assert.assertTrue;
 import io.whitefox.AwsGlueTestConfig;
 import io.whitefox.S3TestConfig;
 import io.whitefox.core.SharedTable;
+import io.whitefox.core.services.capabilities.ClientCapabilities;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -30,9 +31,9 @@ public class IcebergAwsSharedTableTest {
         s3IcebergTableWithAwsGlueCatalog(
             s3TestConfig, awsGlueTestConfig, "test_glue_db", "icebergtable1"));
     var DTable = icebergTableLoader.loadTable(PTable);
-    var metadata = DTable.getMetadata(Optional.empty());
-    assertTrue(metadata.isPresent());
-    assertEquals("7819530050735196523", metadata.get().id());
+    var metadataResponse = DTable.getMetadata(Optional.empty(), ClientCapabilities.parquet());
+    assertTrue(metadataResponse.isPresent());
+    assertEquals("7819530050735196523", metadataResponse.get().metadata().id());
   }
 
   @Test
