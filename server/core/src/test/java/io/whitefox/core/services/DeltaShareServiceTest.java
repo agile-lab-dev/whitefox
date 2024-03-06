@@ -7,13 +7,13 @@ import io.whitefox.core.Schema;
 import io.whitefox.core.Share;
 import io.whitefox.core.SharedTable;
 import io.whitefox.core.services.capabilities.ClientCapabilities;
+import io.whitefox.core.services.capabilities.ReaderFeatures;
 import io.whitefox.core.services.exceptions.TableNotFound;
 import io.whitefox.persistence.StorageManager;
 import io.whitefox.persistence.memory.InMemoryStorageManager;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
+
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -280,4 +280,65 @@ public class DeltaShareServiceTest {
         TableNotFound.class,
         () -> deltaSharesService.queryTable("name", "default", "tableNotFound", null));
   }
+
+  @Test
+  @DisabledOnOs(OS.WINDOWS)
+  public void queryParquetTableWithDeltaCapabilities() {
+    var shares = List.of(createShare(
+            "name",
+            "key",
+            Map.of(
+                    "default",
+                    new Schema(
+                            "default",
+                            List.of(new SharedTable(
+                                    "partitioned-delta-table",
+                                    "default",
+                                    "name",
+                                    DeltaTestUtils.deltaTable("partitioned-delta-table"))),
+                            "name"))));
+    StorageManager storageManager = new InMemoryStorageManager(shares);
+    DeltaSharesService deltaSharesService =
+            new DeltaSharesServiceImpl(storageManager, 100, tableLoaderFactory, fileSignerFactory);
+    var resultTable = deltaSharesService.queryTable(
+            "name",
+            "default",
+            "partitioned-delta-table",
+            new ReadTableRequest.ReadTableCurrentVersion(
+                    Optional.empty(), Optional.empty(), Optional.empty(),
+                    ClientCapabilities.delta(Set.of(ReaderFeatures.CHECK_CONSTRAINTS))));
+    Assertions.assertEquals(9, resultTable.files().size());
+  }
+
+  @Test
+  @DisabledOnOs(OS.WINDOWS)
+  public void queryDeltaTableWithoutDeltaCapabilities() {
+    var shares = List.of(createShare(
+            "name",
+            "key",
+            Map.of(
+                    "default",
+                    new Schema(
+                            "default",
+                            List.of(new SharedTable(
+                                    "delta-table-v2",
+                                    "default",
+                                    "name",
+                                    DeltaTestUtils.deltaTable("delta-table-v2"))),
+                            "name"))));
+    StorageManager storageManager = new InMemoryStorageManager(shares);
+    DeltaSharesService deltaSharesService =
+            new DeltaSharesServiceImpl(storageManager, 100, tableLoaderFactory, fileSignerFactory);
+    Assertions.assertThrows(IllegalArgumentException.class, () ->
+    deltaSharesService.queryTable(
+            "name",
+            "default",
+            "delta-table-v2",
+            new ReadTableRequest.ReadTableCurrentVersion(
+                    Optional.empty(), Optional.empty(), Optional.empty(),
+                    ClientCapabilities.parquet()))
+    );
+
+  }
+
 }
