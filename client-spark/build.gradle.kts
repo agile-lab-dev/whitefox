@@ -9,6 +9,7 @@ plugins {
 repositories {
     mavenCentral()
 }
+val hadoopVersion: String by project
 
 dependencies {
     // OPENAPI
@@ -18,7 +19,7 @@ dependencies {
     testImplementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
 
     // DELTA
-    testImplementation("org.apache.hadoop:hadoop-common:3.4.0")
+    testImplementation(String.format("org.apache.hadoop:hadoop-common:%s", hadoopVersion))
     testImplementation("io.delta:delta-sharing-spark_2.13:3.1.0")
 
     //SPARK
