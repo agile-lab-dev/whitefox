@@ -9,25 +9,26 @@ plugins {
 repositories {
     mavenCentral()
 }
-val hadoopVersion: String by project
 
 dependencies {
+    implementation(platform(project(":whitefox-platform")))
+
     // OPENAPI
-    implementation("org.eclipse.microprofile.openapi:microprofile-openapi-api:3.1.1")
-    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+    implementation("org.eclipse.microprofile.openapi:microprofile-openapi-api")
+    implementation("org.openapitools:jackson-databind-nullable")
     testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    testImplementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
+    testImplementation("jakarta.annotation:jakarta.annotation-api")
 
     // DELTA
-    testImplementation(String.format("org.apache.hadoop:hadoop-common:%s", hadoopVersion))
-    testImplementation("io.delta:delta-sharing-spark_2.13:3.1.0")
+    testImplementation("org.apache.hadoop:hadoop-common")
+    testImplementation("io.delta:delta-sharing-spark_2.13")
 
     //SPARK
-    testImplementation("org.apache.spark:spark-sql_2.13:3.5.1")
+    testImplementation( "org.apache.spark:spark-sql_2.13")
     testImplementation("com.github.mrpowers:spark-fast-tests_2.13:1.3.0")
 
     //JUNIT
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
 
