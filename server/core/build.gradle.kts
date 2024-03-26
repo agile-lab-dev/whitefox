@@ -31,14 +31,17 @@ dependencies {
     implementation("org.apache.iceberg:iceberg-api")
     implementation("org.apache.iceberg:iceberg-core")
     implementation("org.apache.iceberg:iceberg-aws")
-    implementation("software.amazon.awssdk:glue")
-    implementation("software.amazon.awssdk:sts")
-    implementation("software.amazon.awssdk:s3")
 
     //AWS
     compileOnly("software.amazon.awssdk:bom")
-    compileOnly("software.amazon.awssdk:s3")
-    implementation("org.apache.hadoop:hadoop-aws")
+    implementation("software.amazon.awssdk:glue")
+    implementation("software.amazon.awssdk:sts")
+    implementation("software.amazon.awssdk:s3")
+    implementation("software.amazon.awssdk:utils")
+    implementation("software.amazon.awssdk:url-connection-client")
+    implementation("org.apache.hadoop:hadoop-aws") {
+        exclude(group = "org.apache.hadoop", module = "hadoop-aws")
+    }
 
     //PREDICATE PARSER
     implementation("com.github.jsqlparser:jsqlparser")
