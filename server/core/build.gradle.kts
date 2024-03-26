@@ -40,7 +40,7 @@ dependencies {
     implementation("software.amazon.awssdk:utils")
     implementation("software.amazon.awssdk:url-connection-client")
     implementation("org.apache.hadoop:hadoop-aws") {
-        exclude(group = "org.apache.hadoop", module = "hadoop-aws")
+        exclude(group = "software.amazon.awssdk", module = "bundle")
     }
 
     //PREDICATE PARSER
