@@ -15,7 +15,7 @@ dependencies {
         api("org.openapi4j:openapi-operation-restassured:1.0.7")
         api("org.junit.jupiter:junit-jupiter:5.10.2")
         api("org.apache.hadoop:hadoop-common:3.4.0")
-        api("org.apache.hadoop:hadoop-aws:3.3.6")
+        api("org.apache.hadoop:hadoop-aws:3.4.0")
         api("io.delta:delta-standalone_2.13:3.1.0")
         api("io.delta:delta-sharing-spark_2.13:3.1.0")
         api("org.apache.spark:spark-sql_2.13:3.5.1")
