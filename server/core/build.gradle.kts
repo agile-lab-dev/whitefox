@@ -24,7 +24,8 @@ dependencies {
     testFixturesImplementation("org.eclipse.microprofile.config:microprofile-config-api")
 
     // DELTA
-    implementation("io.delta:delta-standalone_2.13")
+    implementation("io.delta:delta-kernel-api:3.1.0")
+    implementation("io.delta:delta-kernel-defaults:3.1.0")
     implementation("org.apache.hadoop:hadoop-common")
 
     //ICEBERG

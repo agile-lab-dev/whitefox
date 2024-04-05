@@ -2,7 +2,6 @@ package io.whitefox.core;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.delta.standalone.actions.AddFile;
 import io.whitefox.core.types.DataType;
 import io.whitefox.core.types.predicates.*;
 import java.util.List;
