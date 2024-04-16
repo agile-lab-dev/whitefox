@@ -1,14 +1,8 @@
 package io.whitefox.core.services;
 
 import io.whitefox.core.*;
-import io.whitefox.core.Metadata;
-import io.whitefox.core.ReadTableRequest;
-import io.whitefox.core.ReadTableResultToBeSigned;
-import io.whitefox.core.TableSchema;
 import io.whitefox.core.services.capabilities.ResponseFormat;
-import java.nio.ByteBuffer;
 import java.sql.Timestamp;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -23,27 +17,44 @@ public class IcebergSharedTable implements InternalSharedTable {
   private final TableSchemaConverter tableSchemaConverter;
   private final SharedTable tableDetails;
   private final FileIOFactory fileIOFactory;
+  private final IcebergFileStatsBuilder icebergFileStatsBuilder;
 
   private IcebergSharedTable(
       Table icebergTable,
       TableSchemaConverter tableSchemaConverter,
       SharedTable tableDetails,
-      FileIOFactory fileIOFactory) {
+      FileIOFactory fileIOFactory,
+      IcebergFileStatsBuilder icebergFileStatsBuilder) {
     this.icebergTable = icebergTable;
     this.tableSchemaConverter = tableSchemaConverter;
     this.tableDetails = tableDetails;
     this.fileIOFactory = fileIOFactory;
+    this.icebergFileStatsBuilder = icebergFileStatsBuilder;
   }
 
   public static IcebergSharedTable of(
-      Table icebergTable, SharedTable tableDetails, TableSchemaConverter tableSchemaConverter) {
+      Table icebergTable,
+      SharedTable tableDetails,
+      TableSchemaConverter tableSchemaConverter,
+      IcebergFileStatsBuilder icebergFileStatsBuilder) {
     return new IcebergSharedTable(
-        icebergTable, tableSchemaConverter, tableDetails, new FileIOFactoryImpl());
+        icebergTable,
+        tableSchemaConverter,
+        tableDetails,
+        new FileIOFactoryImpl(),
+        icebergFileStatsBuilder);
   }
 
-  public static IcebergSharedTable of(Table icebergTable, SharedTable tableDetails) {
+  public static IcebergSharedTable of(
+      Table icebergTable,
+      SharedTable tableDetails,
+      IcebergFileStatsBuilder icebergFileStatsBuilder) {
     return new IcebergSharedTable(
-        icebergTable, new TableSchemaConverter(), tableDetails, new FileIOFactoryImpl());
+        icebergTable,
+        new TableSchemaConverter(),
+        tableDetails,
+        new FileIOFactoryImpl(),
+        icebergFileStatsBuilder);
   }
 
   public Optional<Metadata> getMetadata(Optional<Timestamp> startingTimestamp) {
@@ -114,48 +125,21 @@ public class IcebergSharedTable implements InternalSharedTable {
           new Protocol(Optional.of(1)),
           getMetadataFromSnapshot(snapshot),
           StreamSupport.stream(snapshot.addedDataFiles(s3FileIO).spliterator(), false)
-              .map(
-                  dataFile -> new TableFileToBeSigned(
-                      dataFile.path().toString(),
-                      dataFile.fileSizeInBytes(),
-                      snapshot.sequenceNumber(),
-                      Optional.of(snapshot.timestampMillis()),
-                      buildStats(
-                          dataFile.recordCount(),
-                          dataFile.lowerBounds(),
-                          dataFile.upperBounds(),
-                          dataFile.nullValueCounts()), // TODO understand how to build stats
-                      Map.of()) // TODO understand how to retrieve partition values
-                  )
+              .map(dataFile -> new TableFileToBeSigned(
+                  dataFile.path().toString(),
+                  dataFile.fileSizeInBytes(),
+                  snapshot.sequenceNumber(),
+                  Optional.of(snapshot.timestampMillis()),
+                  icebergFileStatsBuilder.buildStats(
+                      icebergTable.schema(),
+                      dataFile.recordCount(),
+                      dataFile.lowerBounds(),
+                      dataFile.upperBounds(),
+                      dataFile.nullValueCounts()),
+                  icebergFileStatsBuilder.buildPartitionValues(
+                      icebergTable.spec().partitionType().fields(), dataFile.partition())))
               .collect(Collectors.toList()),
           snapshot.sequenceNumber());
     }
-  }
-
-  // TODO: find a way to handle the ByteBuffer values in a general way
-  // TODO: find a way to retrieve the column names (to be consistent with delta)
-  // TODO: factor out this code in a dedicated IcebergSharedTableStatsBuilder utility class
-  private String buildStats(
-      long recordCount,
-      Map<Integer, ByteBuffer> lowerBounds,
-      Map<Integer, ByteBuffer> upperBounds,
-      Map<Integer, Long> nullValueCounts) {
-    var minValues = lowerBounds.entrySet().stream()
-        .map(e -> String.format(
-            "\"%s\":%s", e.getKey().toString(), e.getValue().asIntBuffer().get()))
-        .reduce((x, y) -> String.format("%s,%s", x, y))
-        .orElse("");
-    var maxValues = upperBounds.entrySet().stream()
-        .map(e -> String.format(
-            "\"%s\":%s", e.getKey().toString(), e.getValue().asIntBuffer().get()))
-        .reduce((x, y) -> String.format("%s,%s", x, y))
-        .orElse("");
-    var nullCount = nullValueCounts.entrySet().stream()
-        .map(e -> String.format("\"%s\":%d", e.getKey().toString(), e.getValue()))
-        .reduce((x, y) -> String.format("%s,%s", x, y))
-        .orElse("");
-    return String.format(
-        "{\"numRecords\":%d,\"minValues\":{%s},\"maxValues\":{%s},\"nullCount\":{%s}}",
-        recordCount, minValues, maxValues, nullCount);
   }
 }

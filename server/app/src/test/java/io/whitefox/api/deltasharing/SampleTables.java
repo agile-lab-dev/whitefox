@@ -95,7 +95,7 @@ public class SampleTables {
               .partitionValues(Map.of())
               .size(419L)
               .stats(
-                  "{\"numRecords\":1,\"minValues\":{\"1\":50331648},\"maxValues\":{\"1\":50331648},\"nullCount\":{\"1\":0}}")
+                  "{\"numRecords\":1,\"minValues\":{\"id\":3},\"maxValues\":{\"id\":3},\"nullCount\":{\"id\":0}}")
               .version(1L)
               .timestamp(1705667209813L)),
       new FileObjectWithoutPresignedUrl()
@@ -103,7 +103,15 @@ public class SampleTables {
               .partitionValues(Map.of())
               .size(419L)
               .stats(
-                  "{\"numRecords\":1,\"minValues\":{\"1\":67108864},\"maxValues\":{\"1\":67108864},\"nullCount\":{\"1\":0}}")
+                  "{\"numRecords\":1,\"minValues\":{\"id\":2},\"maxValues\":{\"id\":2},\"nullCount\":{\"id\":0}}")
+              .version(1L)
+              .timestamp(1705667209813L)),
+      new FileObjectWithoutPresignedUrl()
+          ._file(new FileObjectFileWithoutPresignedUrl()
+              .partitionValues(Map.of())
+              .size(419L)
+              .stats(
+                  "{\"numRecords\":1,\"minValues\":{\"id\":1},\"maxValues\":{\"id\":1},\"nullCount\":{\"id\":0}}")
               .version(1L)
               .timestamp(1705667209813L)),
       new FileObjectWithoutPresignedUrl()
@@ -111,7 +119,7 @@ public class SampleTables {
               .partitionValues(Map.of())
               .size(418L)
               .stats(
-                  "{\"numRecords\":1,\"minValues\":{\"1\":0},\"maxValues\":{\"1\":0},\"nullCount\":{\"1\":0}}")
+                  "{\"numRecords\":1,\"minValues\":{\"id\":0},\"maxValues\":{\"id\":0},\"nullCount\":{\"id\":0}}")
               .version(1L)
               .timestamp(1705667209813L)),
       new FileObjectWithoutPresignedUrl()
@@ -119,15 +127,7 @@ public class SampleTables {
               .partitionValues(Map.of())
               .size(419L)
               .stats(
-                  "{\"numRecords\":1,\"minValues\":{\"1\":33554432},\"maxValues\":{\"1\":33554432},\"nullCount\":{\"1\":0}}")
-              .version(1L)
-              .timestamp(1705667209813L)),
-      new FileObjectWithoutPresignedUrl()
-          ._file(new FileObjectFileWithoutPresignedUrl()
-              .partitionValues(Map.of())
-              .size(419L)
-              .stats(
-                  "{\"numRecords\":1,\"minValues\":{\"1\":16777216},\"maxValues\":{\"1\":16777216},\"nullCount\":{\"1\":0}}")
+                  "{\"numRecords\":1,\"minValues\":{\"id\":4},\"maxValues\":{\"id\":4},\"nullCount\":{\"id\":0}}")
               .version(1L)
               .timestamp(1705667209813L)));
 
@@ -276,7 +276,7 @@ public class SampleTables {
                   .partitionValues(Map.of())
                   .size(419L)
                   .stats(
-                      "{\"numRecords\":1,\"minValues\":{\"1\":50331648},\"maxValues\":{\"1\":50331648},\"nullCount\":{\"1\":0}}")
+                      "{\"numRecords\":1,\"minValues\":{\"id\":4},\"maxValues\":{\"id\":4},\"nullCount\":{\"id\":0}}")
                   .version(1L)
                   .timestamp(1705948389052L)),
           new FileObjectWithoutPresignedUrl()
@@ -284,7 +284,15 @@ public class SampleTables {
                   .partitionValues(Map.of())
                   .size(419L)
                   .stats(
-                      "{\"numRecords\":1,\"minValues\":{\"1\":67108864},\"maxValues\":{\"1\":67108864},\"nullCount\":{\"1\":0}}")
+                      "{\"numRecords\":1,\"minValues\":{\"id\":3},\"maxValues\":{\"id\":3},\"nullCount\":{\"id\":0}}")
+                  .version(1L)
+                  .timestamp(1705948389052L)),
+          new FileObjectWithoutPresignedUrl()
+              ._file(new FileObjectFileWithoutPresignedUrl()
+                  .partitionValues(Map.of())
+                  .size(419L)
+                  .stats(
+                      "{\"numRecords\":1,\"minValues\":{\"id\":2},\"maxValues\":{\"id\":2},\"nullCount\":{\"id\":0}}")
                   .version(1L)
                   .timestamp(1705948389052L)),
           new FileObjectWithoutPresignedUrl()
@@ -292,7 +300,7 @@ public class SampleTables {
                   .partitionValues(Map.of())
                   .size(418L)
                   .stats(
-                      "{\"numRecords\":1,\"minValues\":{\"1\":0},\"maxValues\":{\"1\":0},\"nullCount\":{\"1\":0}}")
+                      "{\"numRecords\":1,\"minValues\":{\"id\":0},\"maxValues\":{\"id\":0},\"nullCount\":{\"id\":0}}")
                   .version(1L)
                   .timestamp(1705948389052L)),
           new FileObjectWithoutPresignedUrl()
@@ -300,15 +308,7 @@ public class SampleTables {
                   .partitionValues(Map.of())
                   .size(419L)
                   .stats(
-                      "{\"numRecords\":1,\"minValues\":{\"1\":33554432},\"maxValues\":{\"1\":33554432},\"nullCount\":{\"1\":0}}")
-                  .version(1L)
-                  .timestamp(1705948389052L)),
-          new FileObjectWithoutPresignedUrl()
-              ._file(new FileObjectFileWithoutPresignedUrl()
-                  .partitionValues(Map.of())
-                  .size(419L)
-                  .stats(
-                      "{\"numRecords\":1,\"minValues\":{\"1\":16777216},\"maxValues\":{\"1\":16777216},\"nullCount\":{\"1\":0}}")
+                      "{\"numRecords\":1,\"minValues\":{\"id\":1},\"maxValues\":{\"id\":1},\"nullCount\":{\"id\":0}}")
                   .version(1L)
                   .timestamp(1705948389052L)));
   public static final Set<FileObjectWithoutPresignedUrl> s3DeltaTable1FilesWithoutPresignedUrl =

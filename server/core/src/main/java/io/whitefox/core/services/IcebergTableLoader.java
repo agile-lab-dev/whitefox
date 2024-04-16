@@ -1,9 +1,7 @@
 package io.whitefox.core.services;
 
-import io.whitefox.core.InternalTable;
-import io.whitefox.core.Metastore;
-import io.whitefox.core.MetastoreType;
-import io.whitefox.core.SharedTable;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.whitefox.core.*;
 import org.apache.iceberg.catalog.TableIdentifier;
 
 public class IcebergTableLoader implements TableLoader {
@@ -24,12 +22,14 @@ public class IcebergTableLoader implements TableLoader {
         return IcebergSharedTable.of(
             icebergCatalogHandler.loadTableWithGlueCatalog(
                 metastore, sharedTable.internalTable().provider().storage(), tableId),
-            sharedTable);
+            sharedTable,
+            new IcebergFileStatsBuilder(new ObjectMapper().writer()));
       } else if (metastore.type() == MetastoreType.HADOOP) {
         return IcebergSharedTable.of(
             icebergCatalogHandler.loadTableWithHadoopCatalog(
                 metastore, sharedTable.internalTable().provider().storage(), tableId),
-            sharedTable);
+            sharedTable,
+            new IcebergFileStatsBuilder(new ObjectMapper().writer()));
       } else {
         throw new RuntimeException(
             String.format("Unsupported metastore type: [%s]", metastore.type()));
