@@ -23,13 +23,15 @@ public class IcebergTableLoader implements TableLoader {
             icebergCatalogHandler.loadTableWithGlueCatalog(
                 metastore, sharedTable.internalTable().provider().storage(), tableId),
             sharedTable,
-            new IcebergFileStatsBuilder(new ObjectMapper().writer()));
+            new IcebergFileStatsBuilder(new ObjectMapper().writer()),
+            new IcebergPartitionValuesBuilder());
       } else if (metastore.type() == MetastoreType.HADOOP) {
         return IcebergSharedTable.of(
             icebergCatalogHandler.loadTableWithHadoopCatalog(
                 metastore, sharedTable.internalTable().provider().storage(), tableId),
             sharedTable,
-            new IcebergFileStatsBuilder(new ObjectMapper().writer()));
+            new IcebergFileStatsBuilder(new ObjectMapper().writer()),
+            new IcebergPartitionValuesBuilder());
       } else {
         throw new RuntimeException(
             String.format("Unsupported metastore type: [%s]", metastore.type()));

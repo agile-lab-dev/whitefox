@@ -18,43 +18,50 @@ public class IcebergSharedTable implements InternalSharedTable {
   private final SharedTable tableDetails;
   private final FileIOFactory fileIOFactory;
   private final IcebergFileStatsBuilder icebergFileStatsBuilder;
+  private final IcebergPartitionValuesBuilder icebergPartitionValuesBuilder;
 
   private IcebergSharedTable(
       Table icebergTable,
       TableSchemaConverter tableSchemaConverter,
       SharedTable tableDetails,
       FileIOFactory fileIOFactory,
-      IcebergFileStatsBuilder icebergFileStatsBuilder) {
+      IcebergFileStatsBuilder icebergFileStatsBuilder,
+      IcebergPartitionValuesBuilder icebergPartitionValuesBuilder) {
     this.icebergTable = icebergTable;
     this.tableSchemaConverter = tableSchemaConverter;
     this.tableDetails = tableDetails;
     this.fileIOFactory = fileIOFactory;
     this.icebergFileStatsBuilder = icebergFileStatsBuilder;
+    this.icebergPartitionValuesBuilder = icebergPartitionValuesBuilder;
   }
 
   public static IcebergSharedTable of(
       Table icebergTable,
       SharedTable tableDetails,
       TableSchemaConverter tableSchemaConverter,
-      IcebergFileStatsBuilder icebergFileStatsBuilder) {
+      IcebergFileStatsBuilder icebergFileStatsBuilder,
+      IcebergPartitionValuesBuilder icebergPartitionValuesBuilder) {
     return new IcebergSharedTable(
         icebergTable,
         tableSchemaConverter,
         tableDetails,
         new FileIOFactoryImpl(),
-        icebergFileStatsBuilder);
+        icebergFileStatsBuilder,
+        icebergPartitionValuesBuilder);
   }
 
   public static IcebergSharedTable of(
       Table icebergTable,
       SharedTable tableDetails,
-      IcebergFileStatsBuilder icebergFileStatsBuilder) {
+      IcebergFileStatsBuilder icebergFileStatsBuilder,
+      IcebergPartitionValuesBuilder icebergPartitionValuesBuilder) {
     return new IcebergSharedTable(
         icebergTable,
         new TableSchemaConverter(),
         tableDetails,
         new FileIOFactoryImpl(),
-        icebergFileStatsBuilder);
+        icebergFileStatsBuilder,
+        icebergPartitionValuesBuilder);
   }
 
   public Optional<Metadata> getMetadata(Optional<Timestamp> startingTimestamp) {
@@ -136,7 +143,7 @@ public class IcebergSharedTable implements InternalSharedTable {
                       dataFile.lowerBounds(),
                       dataFile.upperBounds(),
                       dataFile.nullValueCounts()),
-                  icebergFileStatsBuilder.buildPartitionValues(
+                  icebergPartitionValuesBuilder.buildPartitionValues(
                       icebergTable.spec().partitionType().fields(), dataFile.partition())))
               .collect(Collectors.toList()),
           snapshot.sequenceNumber());
