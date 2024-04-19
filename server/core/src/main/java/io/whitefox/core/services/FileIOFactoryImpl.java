@@ -14,7 +14,6 @@ import org.apache.iceberg.io.ResolvingFileIO;
 public class FileIOFactoryImpl implements FileIOFactory {
 
   @Override
-  // TODO add tests to restore coverage from 0.70 to 0.72
   public FileIO newFileIO(Storage storage) {
     storage.properties().validateTypeAndUri(storage.type(), storage.uri());
     var propsAndConfs = buildPropsFromStorage(storage);
