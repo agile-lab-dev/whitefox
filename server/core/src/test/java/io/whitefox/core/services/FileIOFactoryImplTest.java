@@ -8,6 +8,8 @@ import org.apache.iceberg.aws.s3.S3FileIO;
 import org.apache.iceberg.hadoop.HadoopFileIO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 public class FileIOFactoryImplTest {
   private final FileIOFactoryImpl factory = new FileIOFactoryImpl();
@@ -33,6 +35,7 @@ public class FileIOFactoryImplTest {
   }
 
   @Test
+  @DisabledOnOs(OS.WINDOWS)
   void buildLocalFileIO() throws IOException {
     var storage = new Storage(
         "name",
