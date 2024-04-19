@@ -215,6 +215,12 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
         objectMapper.reader().readValue(responseBodyLines[1], ParquetMetadata.class));
   }
 
+  /**
+   * This test is disabled because we statically generate iceberg tables and then test against them.
+   * Unfortunately iceberg table metadata contains the files full path, not a relative one, therefore if we generate it
+   * on someone laptop it will not be able to find it during CI or on another person laptop.
+   * This code is still tested against s3 so we're still covered.
+   */
   @Test
   @Disabled
   public void icebergTableVersion() {
@@ -231,6 +237,12 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
         .header("Delta-Table-Version", "1");
   }
 
+  /**
+   * This test is disabled because we statically generate iceberg tables and then test against them.
+   * Unfortunately iceberg table metadata contains the files full path, not a relative one, therefore if we generate it
+   * on someone laptop it will not be able to find it during CI or on another person laptop.
+   * This code is still tested against s3 so we're still covered.
+   */
   @Test
   @Disabled
   public void icebergTableMetadata() throws IOException {
@@ -553,6 +565,12 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
     assertEquals(7, responseBodyLines.length);
   }
 
+  /**
+   * This test is disabled because we statically generate iceberg tables and then test against them.
+   * Unfortunately iceberg table metadata contains the files full path, not a relative one, therefore if we generate it
+   * on someone laptop it will not be able to find it during CI or on another person laptop.
+   * This code is still tested against s3 so we're still covered.
+   */
   @Disabled
   @Test
   public void queryIcebergTableCurrentVersion() throws IOException {
@@ -597,6 +615,12 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
     assertEquals(localIcebergTableFilesToBeSigned, files);
   }
 
+  /**
+   * This test is disabled because we statically generate iceberg tables and then test against them.
+   * Unfortunately iceberg table metadata contains the files full path, not a relative one, therefore if we generate it
+   * on someone laptop it will not be able to find it during CI or on another person laptop.
+   * This code is still tested against s3 so we're still covered.
+   */
   @Disabled
   @Test
   public void queryIcebergTableByVersion() throws IOException {

@@ -121,13 +121,8 @@ public class IcebergSharedTable implements InternalSharedTable {
     } else {
       throw new IllegalArgumentException("Unknown ReadTableRequest type: " + readTableRequest);
     }
-    try (var s3FileIO = fileIOFactory.newFileIO(
-        tableDetails.internalTable().provider().storage(),
-        tableDetails
-            .internalTable()
-            .provider()
-            .metastore()
-            .orElseThrow(() -> new RuntimeException("metastore not found")))) {
+    try (var s3FileIO =
+        fileIOFactory.newFileIO(tableDetails.internalTable().provider().storage())) {
       return new ReadTableResultToBeSigned(
           new Protocol(Optional.of(1)),
           getMetadataFromSnapshot(snapshot),
