@@ -13,6 +13,9 @@ plugins {
 repositories {
     mavenCentral()
     mavenLocal()
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/iodelta-1137")
+    }
 }
 
 // region java compile
