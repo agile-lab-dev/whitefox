@@ -59,10 +59,10 @@ jobs:
       - name: Build and push container image
         if: runner.os == 'Linux'
         shell: bash
+        env:
+          QUARKUS_CONTAINER_IMAGE_PUSH: "true"
         run: |
-              # if [[ "${{github.ref}}" == "refs/heads/main" ]]; then
-              export QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS="latest"
-              export QUARKUS_CONTAINER_IMAGE_PUSH="true"
-              # fi
+              if [[ "${{github.ref}}" == "refs/heads/main" ]]; then
+                export QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS="latest"
+              fi
               ./gradlew server:app:build --no-daemon -Dquarkus.container-image.build=true
-              # docker image push -a ghcr.io/agile-lab-dev/io.whitefox.server 
