@@ -51,6 +51,7 @@ dependencies {
     testImplementation("io.quarkus:quarkus-arc")
     testImplementation("org.hamcrest:hamcrest")
     testImplementation(project(":server:persistence:memory"))
+    testImplementation(project(":server:persistence:jdbc"))
 }
 
 // endregion
