@@ -5,6 +5,7 @@ import io.whitefox.api.deltasharing.model.v1.generated.CommonErrorResponse;
 import io.whitefox.core.Principal;
 import io.whitefox.core.services.exceptions.AlreadyExists;
 import io.whitefox.core.services.exceptions.NotFound;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.core.Response;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
@@ -45,6 +46,12 @@ public interface ApiUtils extends DeltaHeaders {
               .errorCode("BAD REQUEST - timestamp provided is not formatted correctly")
               .message(ExceptionUtil.generateStackTrace(t)))
           .build();
+    } else if (t instanceof ForbiddenException) {
+      return Response.status(Response.Status.FORBIDDEN)
+          .entity(new CommonErrorResponse()
+              .errorCode("FORBIDDEN ACCESS")
+              .message(ExceptionUtil.generateStackTrace(t)))
+          .build();
     } else {
       return Response.status(Response.Status.BAD_GATEWAY)
           .entity(new CommonErrorResponse()
@@ -65,6 +72,12 @@ public interface ApiUtils extends DeltaHeaders {
   default Response notFoundResponse() {
     return Response.status(Response.Status.NOT_FOUND)
         .entity(new CommonErrorResponse().errorCode("1").message("NOT FOUND"))
+        .build();
+  }
+
+  default Response forbiddenResponse() {
+    return Response.status(Response.Status.FORBIDDEN)
+        .entity(new CommonErrorResponse().errorCode("2").message("UNAUTHORIZED ACCESS"))
         .build();
   }
 

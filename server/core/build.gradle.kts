@@ -16,9 +16,9 @@ dependencies {
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     // QUARKUS
     compileOnly("jakarta.enterprise:jakarta.enterprise.cdi-api")
-    compileOnly("jakarta.ws.rs:jakarta.ws.rs-api")
+    implementation("jakarta.ws.rs:jakarta.ws.rs-api")
     compileOnly("org.eclipse.microprofile.config:microprofile-config-api")
-
+    implementation("org.glassfish.jersey.core:jersey-common:3.1.2")
 
     testFixturesImplementation("jakarta.inject:jakarta.inject-api")
     testFixturesImplementation("org.eclipse.microprofile.config:microprofile-config-api")
