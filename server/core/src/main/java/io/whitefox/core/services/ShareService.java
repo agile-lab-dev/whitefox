@@ -5,6 +5,7 @@ import io.whitefox.core.actions.CreateShare;
 import io.whitefox.core.services.exceptions.*;
 import io.whitefox.persistence.StorageManager;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +23,7 @@ public class ShareService {
 
   private final Clock clock;
 
+  @Inject
   public ShareService(StorageManager storageManager, ProviderService providerService, Clock clock) {
     this.storageManager = storageManager;
     this.providerService = providerService;
