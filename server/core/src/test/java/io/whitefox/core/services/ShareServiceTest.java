@@ -23,6 +23,9 @@ public class ShareServiceTest {
   Principal testPrincipal = new Principal("Mr. Fox");
   Clock testClock = Clock.fixed(Instant.ofEpochMilli(7), ZoneOffset.UTC);
 
+  WhitefoxAuthorization whitefoxAuthorization =
+      new WhitefoxAuthorization.WhitefoxSimpleAuthorization();
+
   @Test
   void createShare() {
     var storage = new InMemoryStorageManager();
@@ -35,7 +38,7 @@ public class ShareServiceTest {
             "share1",
             Collections.emptyMap(),
             Optional.empty(),
-            Set.of(),
+            Set.of(testPrincipal),
             7,
             testPrincipal,
             7,
@@ -67,7 +70,11 @@ public class ShareServiceTest {
             "share1",
             Collections.emptyMap(),
             Optional.empty(),
-            Set.of(new Principal("Antonio"), new Principal("Marco"), new Principal("Aleksandar")),
+            Set.of(
+                new Principal("Mr. Fox"),
+                new Principal("Antonio"),
+                new Principal("Marco"),
+                new Principal("Aleksandar")),
             7,
             testPrincipal,
             7,
@@ -88,7 +95,11 @@ public class ShareServiceTest {
         "share1",
         Collections.emptyMap(),
         Optional.empty(),
-        Set.of(new Principal("Antonio"), new Principal("Marco"), new Principal("Aleksandar")),
+        Set.of(
+            new Principal("Mr. Fox"),
+            new Principal("Antonio"),
+            new Principal("Marco"),
+            new Principal("Aleksandar")),
         7,
         testPrincipal,
         7,
@@ -140,7 +151,7 @@ public class ShareServiceTest {
             "share1",
             Map.of("schema1", new Schema("schema1", Collections.emptyList(), "share1")),
             Optional.empty(),
-            Set.of(),
+            Set.of(testPrincipal),
             7,
             testPrincipal,
             7,
@@ -176,7 +187,7 @@ public class ShareServiceTest {
                 "schema2",
                 new Schema("schema2", Collections.emptyList(), "share1")),
             Optional.empty(),
-            Set.of(),
+            Set.of(testPrincipal),
             7,
             testPrincipal,
             7,
@@ -229,8 +240,9 @@ public class ShareServiceTest {
             storage,
             100,
             new TableLoaderFactoryImpl(),
-            new FileSignerFactoryImpl(new S3ClientFactoryImpl()))
-        .listTablesOfShare("share1", Optional.empty(), Optional.empty())
+            new FileSignerFactoryImpl(new S3ClientFactoryImpl()),
+            whitefoxAuthorization)
+        .listTablesOfShare("share1", Optional.empty(), Optional.empty(), testPrincipal)
         .get()
         .getContent();
     assertEquals(1, tablesFromDeltaService.size());
@@ -286,7 +298,7 @@ public class ShareServiceTest {
                 "schema2",
                 new Schema("schema2", Collections.emptyList(), "share1")),
             Optional.empty(),
-            Set.of(),
+            Set.of(testPrincipal),
             7,
             testPrincipal,
             7,
@@ -354,7 +366,7 @@ public class ShareServiceTest {
 
   private CreateShare emptyCreateShare() {
     return new CreateShare(
-        "share1", Optional.empty(), Collections.emptyList(), Collections.emptyList());
+        "share1", Optional.empty(), List.of(new Principal("Mr. Fox")), Collections.emptyList());
   }
 
   private ProviderService newProviderService(StorageManager storage, Clock testClock) {

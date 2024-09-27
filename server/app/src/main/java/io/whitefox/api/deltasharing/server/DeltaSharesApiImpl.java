@@ -5,10 +5,7 @@ import static io.whitefox.api.server.CommonMappers.mapList;
 import io.whitefox.api.deltasharing.ClientCapabilitiesMapper;
 import io.whitefox.api.deltasharing.DeltaMappers;
 import io.whitefox.api.deltasharing.encoders.DeltaPageTokenEncoder;
-import io.whitefox.api.deltasharing.model.v1.generated.ListSchemasResponse;
-import io.whitefox.api.deltasharing.model.v1.generated.ListShareResponse;
-import io.whitefox.api.deltasharing.model.v1.generated.ListTablesResponse;
-import io.whitefox.api.deltasharing.model.v1.generated.QueryRequest;
+import io.whitefox.api.deltasharing.model.v1.generated.*;
 import io.whitefox.api.deltasharing.serializers.TableMetadataSerializer;
 import io.whitefox.api.deltasharing.serializers.TableQueryResponseSerializer;
 import io.whitefox.api.deltasharing.server.v1.generated.DeltaApiApi;
@@ -51,8 +48,10 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
   @Override
   public Response getShare(String share) {
     return wrapExceptions(
-        () ->
-            optionalToNotFound(shareService.getShare(share), s -> Response.ok(s).build()),
+        () -> optionalToNotFound(shareService.getShare(share), s -> {
+          var resultShare = new Share().name(s.name()).id(s.id());
+          return Response.ok(resultShare).build();
+        }),
         exceptionToResponse);
   }
 
@@ -85,9 +84,15 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
               clientCapabilitiesMapper.parseDeltaSharingCapabilities(deltaSharingCapabilities);
           return optionalToNotFound(
               deltaSharesService.getTableMetadata(
-                  share, schema, table, startingTimestamp, clientCapabilities),
+                  share,
+                  schema,
+                  table,
+                  startingTimestamp,
+                  clientCapabilities,
+                  getRequestPrincipal()),
               m -> optionalToNotFound(
-                  deltaSharesService.getTableVersion(share, schema, table, startingTimestamp),
+                  deltaSharesService.getTableVersion(
+                      share, schema, table, startingTimestamp, getRequestPrincipal()),
                   v -> Response.ok(
                           tableResponseSerializer.serialize(
                               DeltaMappers.toTableResponseMetadata(m)),
@@ -104,12 +109,12 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
   @Override
   public Response getTableVersion(
       String share, String schema, String table, String startingTimestampStr) {
-
     return wrapExceptions(
         () -> {
           var startingTimestamp = parseTimestamp(startingTimestampStr);
           return optionalToNotFound(
-              deltaSharesService.getTableVersion(share, schema, table, startingTimestamp),
+              deltaSharesService.getTableVersion(
+                  share, schema, table, startingTimestamp, getRequestPrincipal()),
               t -> Response.ok().header(DELTA_TABLE_VERSION_HEADER, t).build());
         },
         exceptionToResponse);
@@ -120,7 +125,10 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
     return wrapExceptions(
         () -> optionalToNotFound(
             deltaSharesService.listTablesOfShare(
-                share, parseToken(pageToken), Optional.ofNullable(maxResults)),
+                share,
+                parseToken(pageToken),
+                Optional.ofNullable(maxResults),
+                getRequestPrincipal()),
             c -> Response.ok(c.getToken()
                     .map(t -> new ListTablesResponse()
                         .items(mapList(c.getContent(), DeltaMappers::table2api))
@@ -136,7 +144,11 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
     return wrapExceptions(
         () -> optionalToNotFound(
             deltaSharesService
-                .listSchemas(share, parseToken(pageToken), Optional.ofNullable(maxResults))
+                .listSchemas(
+                    share,
+                    parseToken(pageToken),
+                    Optional.ofNullable(maxResults),
+                    getRequestPrincipal())
                 .map(ct -> ct.getToken()
                     .map(t -> new ListSchemasResponse()
                         .nextPageToken(tokenEncoder.encodePageToken(t))
@@ -151,8 +163,8 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
   public Response listShares(Integer maxResults, String pageToken) {
     return wrapExceptions(
         () -> {
-          var c =
-              deltaSharesService.listShares(parseToken(pageToken), Optional.ofNullable(maxResults));
+          var c = deltaSharesService.listShares(
+              parseToken(pageToken), Optional.ofNullable(maxResults), getRequestPrincipal());
           var response =
               new ListShareResponse().items(mapList(c.getContent(), DeltaMappers::share2api));
           return Response.ok(c.getToken()
@@ -168,7 +180,11 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
     return wrapExceptions(
         () -> optionalToNotFound(
             deltaSharesService.listTables(
-                share, schema, parseToken(pageToken), Optional.ofNullable(maxResults)),
+                share,
+                schema,
+                parseToken(pageToken),
+                Optional.ofNullable(maxResults),
+                getRequestPrincipal()),
             c -> Response.ok(c.getToken()
                     .map(t -> new ListTablesResponse()
                         .items(mapList(c.getContent(), DeltaMappers::table2api))
@@ -201,7 +217,8 @@ public class DeltaSharesApiImpl implements DeltaApiApi, ApiUtils {
               schema,
               table,
               DeltaMappers.api2ReadTableRequest(queryRequest),
-              clientCapabilitiesMapper.parseDeltaSharingCapabilities(deltaSharingCapabilities));
+              clientCapabilitiesMapper.parseDeltaSharingCapabilities(deltaSharingCapabilities),
+              getRequestPrincipal());
           var serializedReadResult =
               tableQueryResponseSerializer.serialize(DeltaMappers.readTableResult2api(readResult));
           return Response.ok(serializedReadResult, ndjsonMediaType)

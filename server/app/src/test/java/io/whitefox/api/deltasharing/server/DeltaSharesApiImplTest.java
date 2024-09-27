@@ -109,6 +109,16 @@ public class DeltaSharesApiImplTest implements OpenApiValidatorUtils {
   }
 
   @Test
+  public void listSchemasNoAuth() {
+    given()
+        .when()
+        .filter(deltaFilter)
+        .get("delta-api/v1/shares/{share}/schemas", "noauthShare")
+        .then()
+        .statusCode(403);
+  }
+
+  @Test
   public void listSchemas() {
     given()
         .when()
