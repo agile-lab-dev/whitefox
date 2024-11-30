@@ -13,34 +13,49 @@ import java.util.Optional;
 public interface DeltaSharesService {
 
   Optional<Long> getTableVersion(
-      String share, String schema, String table, Optional<Timestamp> startingTimestamp);
+      String share,
+      String schema,
+      String table,
+      Optional<Timestamp> startingTimestamp,
+      Principal principal);
 
   ContentAndToken<List<Share>> listShares(
-      Optional<ContentAndToken.Token> nextPageToken, Optional<Integer> maxResults);
+      Optional<ContentAndToken.Token> nextPageToken,
+      Optional<Integer> maxResults,
+      Principal currentPrincipal);
 
   Optional<Metadata> getTableMetadata(
       String share,
       String schema,
       String table,
       Optional<Timestamp> startingTimestamp,
-      ClientCapabilities clientCapabilities);
+      ClientCapabilities clientCapabilities,
+      Principal currentPrincipal);
 
   Optional<ContentAndToken<List<Schema>>> listSchemas(
-      String share, Optional<ContentAndToken.Token> nextPageToken, Optional<Integer> maxResults);
+      String share,
+      Optional<ContentAndToken.Token> nextPageToken,
+      Optional<Integer> maxResults,
+      Principal currentPrincipal);
 
   Optional<ContentAndToken<List<SharedTable>>> listTables(
       String share,
       String schema,
       Optional<ContentAndToken.Token> nextPageToken,
-      Optional<Integer> maxResults);
+      Optional<Integer> maxResults,
+      Principal currentPrincipal);
 
   Optional<ContentAndToken<List<SharedTable>>> listTablesOfShare(
-      String share, Optional<ContentAndToken.Token> token, Optional<Integer> maxResults);
+      String share,
+      Optional<ContentAndToken.Token> token,
+      Optional<Integer> maxResults,
+      Principal currentPrincipal);
 
   ReadTableResult queryTable(
       String share,
       String schema,
       String table,
       ReadTableRequest queryRequest,
-      ClientCapabilities clientCapabilities);
+      ClientCapabilities clientCapabilities,
+      Principal currentPrincipal);
 }

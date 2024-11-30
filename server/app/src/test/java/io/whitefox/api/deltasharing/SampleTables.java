@@ -54,22 +54,39 @@ public class SampleTables {
   public static final InternalTable deltaTableWithHistory1 = deltaTable("delta-table-with-history");
 
   public static StorageManager createStorageManager() {
-    return new InMemoryStorageManager(List.of(new io.whitefox.core.Share(
-        "name",
-        "key",
-        Map.of(
-            "default",
-            new io.whitefox.core.Schema(
+    return new InMemoryStorageManager(List.of(
+        new io.whitefox.core.Share(
+            "name",
+            "key",
+            Map.of(
                 "default",
-                List.of(
-                    new SharedTable("table1", "default", "name", deltaTable1),
-                    new SharedTable(
-                        "table-with-history", "default", "name", deltaTableWithHistory1),
-                    new SharedTable("icebergtable1", "default", "name", icebergtable1),
-                    new SharedTable("icebergtable2", "default", "name", icebergtable2)),
-                "name")),
-        testPrincipal,
-        0L)));
+                new io.whitefox.core.Schema(
+                    "default",
+                    List.of(
+                        new SharedTable("table1", "default", "name", deltaTable1),
+                        new SharedTable(
+                            "table-with-history", "default", "name", deltaTableWithHistory1),
+                        new SharedTable("icebergtable1", "default", "name", icebergtable1),
+                        new SharedTable("icebergtable2", "default", "name", icebergtable2)),
+                    "name")),
+            testPrincipal,
+            0L),
+        new io.whitefox.core.Share(
+            "noauthShare",
+            "key",
+            Map.of(
+                "default",
+                new io.whitefox.core.Schema(
+                    "default",
+                    List.of(
+                        new SharedTable("table1", "default", "name", deltaTable1),
+                        new SharedTable(
+                            "table-with-history", "default", "name", deltaTableWithHistory1),
+                        new SharedTable("icebergtable1", "default", "name", icebergtable1),
+                        new SharedTable("icebergtable2", "default", "name", icebergtable2)),
+                    "name")),
+            new Principal("Mr. White"),
+            0L)));
   }
 
   public static final ParquetProtocol localIcebergTable1Protocol =

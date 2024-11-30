@@ -6,10 +6,7 @@ import io.whitefox.core.services.exceptions.*;
 import io.whitefox.persistence.StorageManager;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.Clock;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,10 +34,10 @@ public class ShareService {
         .collect(Collectors.toMap(Schema::name, schema -> schema));
     Share share = new Share(
         createShare.name(),
-        createShare.name(), // TODO
+        createShare.name(), // TODO: UUID creation
         newSchemas,
         createShare.comment(),
-        Set.of(),
+        new HashSet<>(createShare.recipients()),
         clock.millis(),
         currentUser,
         clock.millis(),
